@@ -36,10 +36,10 @@ async function auditTrail(ref: string): Promise<void> {
   }
   auditInUse++;
   try {
-    await store.query("INSERT audit_trail", "SELECT pg_sleep(0.8); INSERT INTO audit_trail ...", async () => {
+    await store.query("INSERT audit_trail", "SELECT pg_sleep(1.5); INSERT INTO audit_trail ...", async () => {
       const { SQL } = await import("bun");
       const conn = new SQL(env.DATABASE_URL!, { max: 1 }); // a fresh connection per booking: the defect
-      try { await conn`SELECT pg_sleep(0.8)`; } finally { await conn.close(); }
+      try { await conn`SELECT pg_sleep(1.5)`; } finally { await conn.close(); }
     });
   } finally {
     auditInUse--;
