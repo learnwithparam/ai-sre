@@ -70,7 +70,10 @@ for (const p of ps) {
     if (walk === undefined) fail(readme, `part README needs a "## Walkthrough" section`);
     else if (!walk.includes("```bash")) fail(readme, "the walkthrough needs the commands, each with an Expect: line");
   }
-  if (p.steps.length === 0) fail(p.dir, "part has no steps");
+  // A part skeleton waits for its own build session; it says so with TODO(part session) in its README.
+  const pending = existsSync(readme) && read(readme).includes("TODO(part session)");
+  if (p.steps.length === 0 && !pending) fail(p.dir, "part has no steps");
+  if (p.steps.length > 0 && pending) fail(readme, "the part has steps but its README still says TODO(part session)");
   for (const s of p.steps) {
     if (!VERB_THING.test(s.name)) fail(s.dir, `step name "${s.name}" must be verb-thing in lower case`);
     if (seen.has(s.name)) fail(s.dir, `step name "${s.name}" is used twice`);

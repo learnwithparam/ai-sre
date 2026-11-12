@@ -1,5 +1,30 @@
+# Parts mapped onto formats. Minutes add up from each part's steps; part sessions keep them in step.
+# Only this file holds time. A step not done in a session is take-home work with the same verify command.
+
 [one-day]
-sessions = [{ parts = ["meet-the-world"], minutes = 60 }]
+# 315 minutes in the room, the rest take-home with the same checks.
+room_steps = ["meet-the-harbour", "list-the-services", "tag-the-release", "chart-the-error-rate", "flag-the-anomaly",
+  "connect-the-read-tools", "find-the-new-pattern", "open-the-slowest-trace", "write-the-finding", "refuse-the-guess",
+  "propose-one-change", "refuse-without-approval", "approve-with-blast-radius", "roll-back-the-release",
+  "edit-the-wrong-fix", "write-the-postmortem", "score-the-ai-sre", "catch-the-injection"]
+sessions = [
+  { parts = ["orientation", "see-every-signal", "know-when-it-is-broken", "look-without-touching"], minutes = 230 },
+  { parts = ["say-what-broke", "ask-before-you-act", "write-it-down", "prove-the-ai-sre-right"], minutes = 305 },
+]
 
 [four-evenings]
-sessions = [{ parts = ["meet-the-world"], minutes = 60 }]
+sessions = [
+  { parts = ["orientation", "see-every-signal", "know-when-it-is-broken"], minutes = 160 },
+  { parts = ["look-without-touching", "say-what-broke"], minutes = 125 },
+  { parts = ["ask-before-you-act", "write-it-down"], minutes = 150 },
+  { parts = ["prove-the-ai-sre-right"], minutes = 100 },
+]
+
+[four-weeks]
+# One live session a week plus self study; the same split as four-evenings.
+sessions = [
+  { parts = ["orientation", "see-every-signal", "know-when-it-is-broken"], minutes = 160 },
+  { parts = ["look-without-touching", "say-what-broke"], minutes = 125 },
+  { parts = ["ask-before-you-act", "write-it-down"], minutes = 150 },
+  { parts = ["prove-the-ai-sre-right"], minutes = 100 },
+]

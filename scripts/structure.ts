@@ -20,9 +20,12 @@ export const bareName = (folder: string) => folder.replace(/^\d+-/, "");
 
 export function parts(): Part[] {
   const root = join(ROOT, "parts");
-  return dirs(root).map((p) => {
-    const dir = join(root, p);
-    const steps = dirs(dir).map((s) => {
+  // The orientation is a part too: its one step is checked like any other, and every schedule includes it.
+  const orientation = join(ROOT, "00-orientation");
+  const folders = [...(existsSync(orientation) ? [orientation] : []), ...dirs(root).map((p) => join(root, p))];
+  return folders.map((dir) => {
+    const p = dir === orientation ? "orientation" : dir.split("/").pop()!;
+    const steps = dirs(dir).filter((s) => existsSync(join(dir, s, "step.toml"))).map((s) => {
       const sdir = join(dir, s);
       const metaPath = join(sdir, "step.toml");
       const raw = existsSync(metaPath) ? (Bun.TOML.parse(readFileSync(metaPath, "utf8")) as any) : {};

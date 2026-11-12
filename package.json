@@ -4,7 +4,7 @@
   "type": "module",
   "packageManager": "bun@1.4.4",
   "scripts": {
-    "check": "bun scripts/check.ts && bun scripts/verify.ts --all",
+    "check": "bun install --frozen-lockfile && bun scripts/check.ts && bun scripts/verify.ts --all && bun test",
     "verify": "bun scripts/verify.ts",
     "world": "bun scripts/world.ts",
     "demo": "bun agent/demo.ts",
