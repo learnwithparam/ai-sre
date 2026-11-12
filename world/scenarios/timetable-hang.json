@@ -1,0 +1,12 @@
+{
+  "scenario": "timetable-hang",
+  "summary": "Two requests for a long tide range make timetable-loader build the table in memory forever. No release changed.",
+  "service": "timetable-loader",
+  "change": { "kind": "none", "value": "" },
+  "pattern": ["request received", "never completed"],
+  "right_action": { "action": "restart_service", "target": "timetable-loader", "params": {} },
+  "wrong_action": { "action": "rollback_release", "target": "booking-web", "params": { "release": "v1" } },
+  "distractors": [
+    { "signal": "booking-web GET /timetable errors", "why": "booking-web only times out waiting for timetable-loader" }
+  ]
+}

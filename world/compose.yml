@@ -1,0 +1,155 @@
+# Gullrock Ferries: the booking system, its telemetry, and harbour-control, the AI SRE's control plane.
+# Start it with `bun run world`; that script writes .env, builds both booking-web releases and waits for health.
+name: gullrock
+
+x-otlp: &otlp
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://clickstack:4318
+  OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+  OTEL_EXPORTER_OTLP_HEADERS: authorization=${HYPERDX_API_KEY:?run bun run world}
+
+services:
+  clickstack:
+    image: clickhouse/clickstack-all-in-one:2.44.0
+    ports:
+      - 127.0.0.1:8080:8080
+      - 127.0.0.1:4318:4318
+      - 127.0.0.1:8123:8123
+    environment:
+      CLICKHOUSE_READER_PASSWORD: ${CLICKHOUSE_READER_PASSWORD:?run bun run world}
+      CLICKHOUSE_WRITER_PASSWORD: ${CLICKHOUSE_WRITER_PASSWORD:?run bun run world}
+    volumes:
+      - clickstack_db:/data/db
+      - clickstack_ch:/var/lib/clickhouse
+      - ./clickhouse/sre.xml:/etc/clickhouse-server/users.d/sre.xml:ro
+    healthcheck:
+      # The collector opens 4318 only once a team exists, so health is ClickHouse and the UI;
+      # `bun run world` creates the team and then waits for ingest itself.
+      test: ["CMD", "bash", "-c", "curl -sf http://localhost:8123/ping >/dev/null && curl -sf -o /dev/null http://localhost:8080"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
+
+  postgres:
+    image: postgres:18.6
+    environment:
+      POSTGRES_DB: gullrock
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run bun run world}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  booking-web:
+    # Each release is its own image, so a rollback redeploys the previous image, as in production.
+    image: gullrock/booking-web:${BOOKING_RELEASE:-v1}
+    build:
+      context: ..
+      dockerfile: world/booking-web/Dockerfile
+      args:
+        BOOKING_RELEASE: ${BOOKING_RELEASE:-v1}
+    ports:
+      - 127.0.0.1:8000:8000
+    env_file:
+      - path: ./.state/fault.env
+        required: false
+    environment:
+      <<: *otlp
+      HYPERDX_API_KEY: ${HYPERDX_API_KEY}
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/gullrock
+      TIMETABLE_URL: http://timetable-loader:8001
+      FARES_FILE: /fares/current.json
+      BOOKING_HOOKS_DIR: /app/world/booking-web/hooks-live
+      BOOKING_QUIET: "1"
+    volumes:
+      - ./.state/fares:/fares:ro
+      - ${BOOKING_HOOKS:-./booking-web/src/hooks}:/app/world/booking-web/hooks-live:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "bun", "-e", "const r = await fetch('http://localhost:8000/health'); process.exit(r.ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 5s
+    depends_on:
+      clickstack: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      timetable-loader: { condition: service_healthy }
+
+  timetable-loader:
+    image: gullrock/timetable-loader:t3
+    build: ./timetable-loader
+    env_file:
+      - path: ./.state/fault.env
+        required: false
+    environment:
+      <<: *otlp
+      TIMETABLE_RELEASE: t3
+    restart: unless-stopped
+    # Two hung requests leak about 20 MB a second each; the cap keeps a forgotten hang from eating the laptop.
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8001/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      clickstack: { condition: service_healthy }
+
+  passengers:
+    image: oven/bun:1.4.4-slim
+    command: ["bun", "/app/passengers.ts"]
+    environment:
+      TARGET_URL: http://booking-web:8000
+      REQUESTS_PER_SECOND: "4"
+    volumes:
+      - ./passengers:/app:ro
+    restart: unless-stopped
+    depends_on:
+      booking-web: { condition: service_healthy }
+
+  harbour-control:
+    image: gullrock/harbour-control:1
+    build: ./harbour-control
+    ports:
+      - 127.0.0.1:8090:8090
+    environment:
+      <<: *otlp
+      OTEL_SERVICE_NAME: harbour-control
+      CLICKHOUSE_HOST: clickstack
+      CLICKHOUSE_READER_USER: sre_agent
+      CLICKHOUSE_READER_PASSWORD: ${CLICKHOUSE_READER_PASSWORD}
+      CLICKHOUSE_WRITER_USER: sre_control
+      CLICKHOUSE_WRITER_PASSWORD: ${CLICKHOUSE_WRITER_PASSWORD}
+      SRE_MCP_TOKEN: ${SRE_MCP_TOKEN:?run bun run world}
+      SRE_APPROVER_EMAIL: ${SRE_APPROVER_EMAIL:?run bun run world}
+      SRE_APPROVER_PASSWORD: ${SRE_APPROVER_PASSWORD:?run bun run world}
+      SRE_SESSION_SECRET: ${SRE_SESSION_SECRET:?run bun run world}
+      SRE_PUBLIC_URL: ${SRE_PUBLIC_URL:-http://localhost:8090}
+      WORLD_DIR: ${WORLD_DIR:?run bun run world}
+    volumes:
+      # Remediation runs `docker compose` against this same project, so it sees the repo at the same
+      # absolute path as the host does. Only the fare history is writable, for rollback_config.
+      - ${WORLD_DIR}:${WORLD_DIR}:ro
+      - ${WORLD_DIR}/world/.state/fares:${WORLD_DIR}/world/.state/fares
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/healthz', timeout=3)"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      clickstack: { condition: service_healthy }
+
+volumes:
+  clickstack_db:
+  clickstack_ch:
+  postgres_data:
