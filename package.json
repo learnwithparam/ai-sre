@@ -4,7 +4,8 @@
   "type": "module",
   "packageManager": "bun@1.4.4",
   "scripts": {
-    "check": "bun scripts/readable.ts && bun scripts/plain-english.ts && bun install --frozen-lockfile && bun scripts/check.ts && bun scripts/verify.ts --all && bun test",
+    "check": "bun scripts/readable.ts && bun scripts/plain-english.ts && bun install --frozen-lockfile && bun scripts/check.ts && bun scripts/verify.ts --all && bun test && bun run text-audit",
+    "text-audit": "AUDIT_URL=http://localhost:8000 AUDIT_SERVER=\"bash $PWD/e2e/serve.sh\" playwright test -c e2e/playwright.config.ts --trace off",
     "readable": "bun scripts/readable.ts",
     "plain-english": "bun scripts/plain-english.ts",
     "format": "biome check --write .",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.5",
+    "@playwright/test": "1.65.0",
     "@types/bun": "1.4.4",
     "chdb": "3.5.0",
     "playwright": "1.65.0"

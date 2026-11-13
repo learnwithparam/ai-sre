@@ -70,8 +70,8 @@
 
     .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
              padding: 20px 22px; display: grid; gap: 14px; align-content: start; }
-    .panel.tight { padding: 0; overflow: hidden; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+    .panel.tight { padding: 0; overflow-x: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px; }
     .title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 
     table { width: 100%; border-collapse: collapse; }
@@ -142,7 +142,7 @@
     }
   </style>
 </head>
-<body>
+<body data-audience="staff">
   <header class="top">
     <a class="brand" href="/"><span class="mark" aria-hidden="true">AI</span>Harbour Control</a>
     {% if who %}<span class="who">Signed in as {{ who }}</span>{% endif %}

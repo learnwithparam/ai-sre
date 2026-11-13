@@ -34,13 +34,13 @@
           <td><span class="chip">{{ f.service }}</span></td>
           <td class="mono">{{ f.change.kind }} {{ f.change.value }}</td>
           <td>{{ f.hypothesis }}</td>
-          <td class="mono">{% for t in f.trace_ids %}{{ t[:12] }} {% endfor %}</td>
+          <td class="mono" style="overflow-wrap:anywhere">{% for t in f.trace_ids %}{{ t }} {% endfor %}</td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
     {% else %}
-    <div style="padding: 24px 22px"><p class="muted">No grounded finding yet.</p></div>
+    <div style="padding: 24px 22px"><p class="muted">No finding yet. The AI SRE adds one here once it cites traces that exist.</p></div>
     {% endif %}
   </div>
 </div>
@@ -64,7 +64,7 @@
       </tbody>
     </table>
     {% else %}
-    <div style="padding: 24px 22px"><p class="muted">Nothing has been proposed yet.</p></div>
+    <div style="padding: 24px 22px"><p class="muted">Nothing proposed yet. The AI SRE proposes one change after its finding.</p></div>
     {% endif %}
   </div>
 </div>
