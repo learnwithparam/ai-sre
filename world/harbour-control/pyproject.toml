@@ -32,6 +32,9 @@ packages = ["harbour_control"]
 line-length = 100
 
 [tool.ruff.lint]
+# PLR1702 (nesting depth) is a preview rule; turn on only the preview rules named here.
+preview = true
+explicit-preview-rules = true
 select = ["E", "F", "W", "I", "N", "B", "SIM", "C90", "PLR0913", "PLR0915", "PLR1702"]
 
 [tool.ruff.lint.mccabe]

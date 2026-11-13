@@ -32,9 +32,12 @@ const MODEL_ID = /\b(claude-[a-z0-9-]+-\d|gpt-\d[\w.-]*|gemini-\d[\w.-]*|o\d-(mi
 
 const hasImage = (text: string) => [...text.matchAll(IMAGE)].length > 0;
 
+// Installed packages are other people's code, so the rules do not read them.
+const SKIPPED_FOLDERS = new Set(["node_modules", ".git", ".venv"]);
+
 function walk(dir: string, found: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
-    if (entry === "node_modules" || entry === ".git") continue;
+    if (SKIPPED_FOLDERS.has(entry)) continue;
     const path = join(dir, entry);
     if (statSync(path).isDirectory()) walk(path, found);
     else found.push(path);
