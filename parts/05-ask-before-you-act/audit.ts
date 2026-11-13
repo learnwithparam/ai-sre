@@ -26,6 +26,7 @@ export type Proposal = {
 // biome-ignore-end lint/style/useNamingConvention: harbour-control names these fields.
 
 const ACTION_ID = /^act-[0-9a-f]{12}$/;
+const EVENTS = "sre.incident_events";
 const COLUMNS = "toString(ts) AS ts, incident_id, action_id, kind, actor, payload";
 
 export function readJson(folder: string, fileName: string): Proposal {
@@ -44,12 +45,12 @@ export function isActionId(text: string | undefined): boolean {
 
 export async function rowsFor(folder: string, actionId: string): Promise<AuditRow[]> {
   if (!isActionId(actionId)) return [];
-  const sql = `SELECT ${COLUMNS} FROM sre.incident_events WHERE action_id = {id:String} ORDER BY ts`;
+  const sql = `SELECT ${COLUMNS} FROM ${EVENTS} WHERE action_id = {id:String} ORDER BY ts`;
   return query<AuditRow>(folder, sql, { id: actionId });
 }
 
 export async function incidentRows(folder: string, incidentId: string): Promise<AuditRow[]> {
-  const sql = `SELECT ${COLUMNS} FROM sre.incident_events WHERE incident_id = {id:String} ORDER BY ts`;
+  const sql = `SELECT ${COLUMNS} FROM ${EVENTS} WHERE incident_id = {id:String} ORDER BY ts`;
   return query<AuditRow>(folder, sql, { id: incidentId });
 }
 

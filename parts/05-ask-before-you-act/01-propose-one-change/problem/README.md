@@ -25,7 +25,7 @@ For example, the sample solution proposed this change for a recorded bad-release
 
 harbour-control stored it as `pending` and gave back the `action_id`. Nothing ran.
 
-![A pending proposal on the approval page in Harbour Control](../images/expected.png)
+![The incident page in Harbour Control with one pending proposal](../images/expected.png)
 
 ## Your challenge
 

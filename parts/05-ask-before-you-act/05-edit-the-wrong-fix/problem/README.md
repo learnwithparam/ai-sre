@@ -12,14 +12,14 @@ For example, the recorded timetable-hang incident shows these decisions for one 
 
 ```text
 remediation_proposed   ai-sre                 rollback_release booking-web
-remediation_rejected   oncall@gullrock.test   booking-web is a victim; timetable-loader hangs
+remediation_rejected   oncall@gullrock.test   rolling back booking-web cannot stop a hang in timetable-loader
 remediation_edited     oncall@gullrock.test   restart_service timetable-loader
 remediation_approved   oncall@gullrock.test
 remediation_executed   ai-sre
 verification_passed    harbour-control        stuck requests: 0
 ```
 
-![The edited proposal on the approval page](../images/expected.png)
+![The edited change in Harbour Control: a restart of timetable-loader, run and verified](../images/expected.png)
 
 ## Your challenge
 

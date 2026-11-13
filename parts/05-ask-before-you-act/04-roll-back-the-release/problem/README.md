@@ -9,10 +9,10 @@ At Gullrock, harbour-control watches for you. After an approved change runs, it 
 For example, the recorded bad-release incident ended with these rows in the audit log:
 
 ```text
-05:37:00  remediation_approved   oncall@gullrock.test
-05:37:16  remediation_executed   ai-sre                rollback_release booking-web release v1
-05:38:23  verification_passed    harbour-control       error rate 0.0 over 200 requests
-05:38:23  incident_resolved      harbour-control
+remediation_approved   oncall@gullrock.test
+remediation_executed   ai-sre                rollback_release booking-web release v1
+verification_passed    harbour-control       error rate 0.0 over 208 requests
+incident_resolved      harbour-control       Recovery confirmed on a full minute of traffic
 ```
 
 ![The resolved incident in Harbour Control after the rollback](../images/expected.png)

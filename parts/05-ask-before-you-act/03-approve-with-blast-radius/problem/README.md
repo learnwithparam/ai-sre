@@ -64,7 +64,7 @@ Each action has its own blast radius. For example, the wrong answer `copied-the-
 | What you see                       | Fix                                                             |
 | ---------------------------------- | --------------------------------------------------------------- |
 | `Nothing is waiting for approval.` | The proposal is gone or expired. Go back to propose-one-change. |
-| `FAIL you read the evidence`       | The page shortens trace ids. Copy the full id from HyperDX.     |
+| `FAIL you read the evidence`       | Copy one full trace id from the Evidence box of this action.    |
 | `FAIL a person approved it`        | Press Approve on the page, signed in as yourself.               |
 
 ## Words you will use

@@ -6,7 +6,9 @@ import { join } from "node:path";
 import { ROOT } from "../../world/lib/env";
 
 const HARBOUR = join(ROOT, "world", "harbour-control");
-const PYTHON = join(HARBOUR, ".venv", "bin", "python");
+// The Python environment lives in the temp folder, so no installed package lands in the repo.
+const VENV = join(tmpdir(), "gullrock-harbour-control-venv");
+const PYTHON = join(VENV, "bin", "python");
 const PROBE = join(import.meta.dir, "probe_policy.py");
 const STARTER = join(import.meta.dir, "06-add-the-config-rollback", "problem", "policy.py");
 
@@ -23,7 +25,12 @@ export type PolicyAnswers = {
 
 function ensurePython(): void {
   if (existsSync(PYTHON)) return;
-  Bun.spawnSync(["uv", "sync", "--frozen", "--quiet"], { cwd: HARBOUR });
+  // biome-ignore lint/style/useNamingConvention: environment variable names are upper case.
+  const venvSetting = { UV_PROJECT_ENVIRONMENT: VENV };
+  Bun.spawnSync(["uv", "sync", "--frozen", "--quiet"], {
+    cwd: HARBOUR,
+    env: { ...process.env, ...venvSetting },
+  });
 }
 
 // A copy of harbour-control with one policy file swapped in, and optionally one more test.
