@@ -2,7 +2,9 @@
 
 ## The problem
 
-You cannot judge an AI SRE on a system you have never seen working. Before anything breaks, follow one booking from the booking page to the bookings table, and watch the finished loop handle a fault once.
+You cannot judge an AI SRE on a system you have never seen working. So before anything breaks, you follow one booking. It goes from the booking page to a row in the bookings table. Then you watch the finished loop fix a fault once.
+
+A trace is the record of one request as it moves through the services. Each trace is made of spans, and a span is one piece of work, such as one database call. Every span in a trace shares the same trace id.
 
 ![The booking page after Book and pay, with the reference and the release in the footer](../images/expected.png)
 
@@ -18,6 +20,15 @@ Trace id: 32 lower-case hex characters from HyperDX
 ```
 
 4. Run the finished loop: `bun run demo bad-release`, `bun run approve --yes`, `bun run demo finish`.
+
+For example, the sample solution booked a sailing and got the reference `GR-CTZPCM`. In HyperDX, its `POST /api/bookings` trace had the id `b2fc93d8894696a202c4d28649297fe6`. So its `answers.md` says:
+
+```text
+Booking reference: GR-CTZPCM
+Trace id: b2fc93d8894696a202c4d28649297fe6
+```
+
+Your own reference and trace id are different. Use the ones from your booking.
 
 ## Done when
 
@@ -42,6 +53,6 @@ Expect: `Done. All 4 rules pass.` and a `Progress:` line.
 
 ## Words you will use
 
-- **Trace id**: the id shared by every span of one request; HyperDX shows it on the trace panel.
-- **Incident**: a page that harbour-control's detector opens when a signal crosses its bound.
-- **Audit log**: the append-only table `sre.incident_events`; every finding, proposal, approval and run is a row.
+- **Trace id**: the id that every span of one request shares. HyperDX shows it on the trace panel.
+- **Incident**: a page (an alert to the on-call engineer) that harbour-control's detector opens. It opens one when a signal crosses its limit.
+- **Audit log**: the table `sre.incident_events`. Rows are only added, never changed. Every finding, proposal, approval and run is a row.
