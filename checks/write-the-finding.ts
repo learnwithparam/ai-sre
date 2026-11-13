@@ -18,6 +18,7 @@ import { query } from "./lib/world";
 const FILE = "findings/bad-release.json";
 const SEND = `bun parts/04-say-what-broke/call-tool.ts submit_finding ${FILE}`;
 const planted = plantedFault("bad-release");
+const plantedChange = `${planted.change.kind} ${planted.change.value}`;
 
 async function stored(folder: string): Promise<Finding | null> {
   const finding = readFinding(folder, FILE);
@@ -84,7 +85,7 @@ export default [
     tryNext: "do not edit the file after you send it. Change it, then send it again",
   },
   {
-    says: `it blames the planted fault: ${planted.service}, ${planted.change.kind} ${planted.change.value}`,
+    says: `it blames the planted fault: ${planted.service}, ${plantedChange}`,
     test: async (folder) => {
       const saved = await stored(folder);
       const sameChange = JSON.stringify(saved?.change) === JSON.stringify(planted.change);
