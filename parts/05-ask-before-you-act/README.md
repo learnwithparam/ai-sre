@@ -2,9 +2,38 @@
 
 ## The problem
 
-Most large outages follow a change, and the worst ones come from automation that acted at once. The learner builds the stop: one proposed change against a stored finding, a named human approval, a fixed list of actions with their blast radius, and a check on fresh traffic.
+Most large outages follow a change. The worst ones come from automation that acted at once, with no person in the loop.
 
-Why it matters: TODO(part session): cite a company's own page with its number, read on the day (the research brief proposes Knight Capital, CrowdStrike and AWS us-east-1; none could be read on the build date).
+In this part you build the stop. It has four pieces:
+
+- **One proposed change.** The AI SRE proposes one fix, tied to a stored finding.
+- **A named human approval.** A person says yes, and the audit log records their name.
+- **A fixed list of actions.** The AI can only propose actions on this list. Each action shows its blast radius. The blast radius is what else breaks, or who is affected, when the action runs.
+- **A check on fresh traffic.** After the fix, harbour-control watches new requests to confirm that the service is healthy again.
+
+For example, this is the blast radius text for `rollback_release`, from `world/harbour-control/harbour_control/policy.py`. The approver reads it before saying yes:
+
+```text
+Redeploys booking-web on the previous image. The booking page returns errors for the few seconds
+the container takes to pass its health check, so passengers mid-booking must try again. Anything
+shipped in the newer release is withdrawn until it is fixed and deployed again.
+```
+
+And here is the real order of events in the audit log of the recorded bad-release morning, shortened:
+
+```text
+04:24:59.851  remediation_proposed   ai-sre                rollback_release booking-web to v1
+04:24:59.958  remediation_refused    ai-sre                state: pending
+04:25:06.533  remediation_approved   oncall@gullrock.test
+04:25:22.623  remediation_executed   ai-sre
+04:26:31.682  verification_passed    harbour-control       error rate 0.0 over 207 requests
+```
+
+The AI tried to run the fix before approval, and harbour-control refused. It ran only after a person approved it.
+
+Why it matters: TODO(part session). Cite a company's own page with its number, read on the day. The research brief proposes Knight Capital, CrowdStrike and AWS us-east-1. None of them could be read on the build date.
+
+This picture shows the states of one proposed change:
 
 ```mermaid
 stateDiagram-v2
@@ -30,7 +59,9 @@ stateDiagram-v2
 
 ## Walkthrough
 
-TODO(part session): the step folders, their checks and these commands are built in this part's own session.
+TODO(part session): this part's own session builds the step folders, their checks and these commands.
+
+This command checks the whole part. It has no steps yet.
 
 ```bash
 bun run verify part ask-before-you-act
