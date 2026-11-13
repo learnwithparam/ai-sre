@@ -10,7 +10,13 @@ The AI SRE writes its claim as a finding. A finding names the broken service, th
 - a log line, quoted word for word;
 - the release or config that changed.
 
-harbour-control checks every finding before it stores it. This is called grounding: each piece of evidence must be real. If a piece is made up, harbour-control refuses the finding and says why. For example, it refuses a finding with only one trace id and gives this reason: `cite at least two trace ids that a tool returned`.
+harbour-control checks every finding before it stores it. This is called grounding: each piece of evidence must exist in the data. If a piece is made up, harbour-control refuses the finding and says why. For example, it refuses a finding with only one trace id and gives this reason: `cite at least two trace ids that a tool returned`.
+
+Grounding has limits. Read them, so you do not trust it too much:
+
+- A trace id must exist, touch the named service, and start no more than 15 minutes before the incident opened. It does not have to be a failing trace. A healthy trace passes.
+- The quote is checked only when it is not empty. An empty quote skips the check. The noisy-morning step relies on this, because nothing is broken and there is nothing to quote.
+- Grounding proves that the evidence exists. It does not prove that the cause is right. A person still reads the evidence before approving.
 
 Then a grader compares the finding with the fault that the course planted. The grader is code, not an AI.
 
@@ -162,6 +168,6 @@ For advanced learners: make your agent list what it could not check, in its hypo
 
 ## Finished
 
-You now have an AI SRE whose every claim is checked. It names the service and the change. It cites trace ids that exist, and a log line from this run. When it guesses, harbour-control refuses it and writes down why. On a quiet morning, it says "nothing changed" and lists what it ruled out.
+You now have an AI SRE whose evidence is checked. It names the service and the change. It cites trace ids that exist, and a log line from this run when it gives one. When it guesses, harbour-control refuses it and writes down why. On a quiet morning, it says "nothing changed" and lists what it ruled out.
 
 A finding changes nothing in the world. Next, in ask-before-you-act, the AI SRE proposes one change for a stored finding. A named person approves it before anything runs.

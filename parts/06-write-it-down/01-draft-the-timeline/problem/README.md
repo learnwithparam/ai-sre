@@ -62,12 +62,13 @@ You can ask your AI SRE to draft the lines from the rows. Then read each line ag
 - The timeline has at least five lines, in time order.
 - Every line has the same second and the same event kind as one audit row.
 - The page, the finding, the approval, the change and the recovery each have a line.
+- Every line has four words or more after the colon.
 
 ```bash
 bun run verify draft-the-timeline
 ```
 
-Expect: `Done. All 6 rules pass.` and a `Progress:` line.
+Expect: `Done. All 7 rules pass.` and a `Progress:` line.
 
 ## If you get stuck
 

@@ -47,7 +47,7 @@ bun parts/03-look-without-touching/try-insert.ts
 
 Expect: `ClickHouse refused it:` and a line with `ACCESS_DENIED`.
 
-5. Optional: start Claude Code in this folder, with the keys from `.env`, and ask it which tools it has.
+5. Optional: start Claude Code in this folder, with the keys from `.env`, and ask it which tools it has. This also puts the approver password in its shell.
 
 ```bash
 cd parts/03-look-without-touching/01-connect-the-read-tools/problem && set -a && . ../../../../.env && set +a && claude

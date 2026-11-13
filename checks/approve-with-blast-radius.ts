@@ -13,7 +13,7 @@ import {
   sharesWords,
 } from "../parts/05-ask-before-you-act/audit";
 import type { Rule } from "../scripts/verify";
-import { field, read } from "./lib/files";
+import { field, hasReason, read } from "./lib/files";
 
 const FILE = "approval.md";
 const actionId = (folder: string) => field(read(folder, FILE), "Action id");
@@ -82,5 +82,12 @@ export default [
     tryNext:
       "copy the sentence about who is affected from the Blast radius box of this action's " +
       "approval page",
+  },
+  {
+    says: "you wrote why you approve: Why I approve is a real reason of four words or more",
+    test: async (folder) => hasReason(field(read(folder, FILE), "Why I approve")),
+    tryNext:
+      "after Why I approve: write one plain sentence about what the evidence showed, " +
+      "for example which release failed and how",
   },
 ] satisfies Rule[];

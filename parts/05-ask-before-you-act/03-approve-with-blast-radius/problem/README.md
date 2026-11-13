@@ -45,12 +45,13 @@ Expect: `Approved act-` and the id, `as oncall@gullrock.test`.
 - The approval came after the proposal.
 - `Evidence` is a trace id of the finding behind the change.
 - `Blast radius` is copied from this action's blast radius.
+- `Why I approve` has four words or more.
 
 ```bash
 bun run verify approve-with-blast-radius
 ```
 
-Expect: `Done. All 5 rules pass.` and a `Progress:` line.
+Expect: `Done. All 6 rules pass.` and a `Progress:` line.
 
 ## If you get stuck
 

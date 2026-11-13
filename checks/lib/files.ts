@@ -19,3 +19,11 @@ export function field(text: string, label: string): string {
 }
 
 export const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
+
+// A reason needs a few real words. One letter such as "x" is not a reason.
+export const MIN_REASON_WORDS = 4;
+
+export function hasReason(text: string): boolean {
+  const words = text.split(/\s+/).filter((word) => /[A-Za-z0-9]/.test(word));
+  return words.length >= MIN_REASON_WORDS;
+}

@@ -103,7 +103,7 @@ bun run approve --yes
 bun run verify approve-with-blast-radius
 ```
 
-Expect: `Approved act-` with your action id, then `Done. All 5 rules pass.`
+Expect: `Approved act-` with your action id, then `Done. All 6 rules pass.`
 
 Copy the same `action_id` into `parts/05-ask-before-you-act/04-roll-back-the-release/problem/run.json` and run it. Wait about 90 seconds for the check on fresh traffic.
 

@@ -19,7 +19,11 @@ The grant lets `sre_agent` read and nothing else. The `readonly` setting stops i
 Code: 497. DB::Exception: sre_agent: Not enough privileges. ... (ACCESS_DENIED)
 ```
 
-The model cannot write, whatever its prompt says.
+As `sre_agent`, the model cannot write, whatever its prompt says.
+
+This lock covers one database user only. The HyperDX MCP tool `clickstack_sql` uses a different connection, so the `sre_agent` lock does not cover it. For HyperDX, your protection is the `readOnlyHint` flag and your deny list. A flag is only a promise, so the deny list matters.
+
+One more limit. The file `.env` also holds the approver password (`SRE_APPROVER_PASSWORD`). If you load `.env` into the shell that starts your agent, the agent can read that password. In this workshop, you keep the approver login to yourself. In production, give the agent its own environment with no approver login.
 
 Then you find the cause of bad-release by hand. You do it yourself first, so you can judge the AI SRE later. For example, the most common error line in the recorded bad-release morning is this one. It appears 84 times:
 
@@ -147,6 +151,6 @@ For advanced learners: write a short note, `why-the-hint-is-not-the-lock.md`. Ex
 
 ## Finished
 
-You now have a read path you can defend. Your client allows only tools that say they read. It denies every tool that can write. And the database refuses a write, even if a tool lies. With those tools you found the cause of bad-release by hand: a new error pattern, a slow `INSERT audit_trail` that holds the two connections, and one release that owns every failed booking.
+You now have a read path you can defend. Your client allows only tools that say they read. It denies every tool that can write. And the `sre_agent` database user refuses a write, even if a harbour-control tool lies. The HyperDX MCP uses another connection, so for that server your deny list is the lock. With those tools you found the cause of bad-release by hand: a new error pattern, a slow `INSERT audit_trail` that holds the two connections, and one release that owns every failed booking.
 
-In the next part, `say-what-broke`, your AI SRE does the same investigation. It writes a finding that names the service, the release and the pattern, and cites trace ids that a script can look up. A finding with a made-up trace id is refused.
+In the next part, `say-what-broke`, your AI SRE does the same investigation. It writes a finding that names the service, the release and the pattern, and cites trace ids that a script can look up. A finding with a made-up trace id is refused. The checks have limits, and the next part says what they are.
