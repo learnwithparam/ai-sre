@@ -102,8 +102,10 @@ function printDevAgreement(folder: string, verdicts: Record<string, Verdict>): v
     verdict: verdicts[hypothesis.id],
   }));
   const rates = agreement(rows);
+  const shown = (rate: number) =>
+    Number.isNaN(rate) ? "n/a (label the dev half)" : rate.toFixed(2);
   console.log(
-    `Dev half: TPR ${rates.truePositiveRate.toFixed(2)}, TNR ${rates.trueNegativeRate.toFixed(2)}`,
+    `Dev half: TPR ${shown(rates.truePositiveRate)}, TNR ${shown(rates.trueNegativeRate)}`,
   );
   for (const [index, row] of rows.entries()) {
     const disagrees = row.label && row.verdict.toLowerCase() !== row.label;

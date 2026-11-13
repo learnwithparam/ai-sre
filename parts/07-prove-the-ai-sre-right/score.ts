@@ -72,8 +72,12 @@ export function compareText(folder: string): string {
 // The table rows of a report with spacing and separator lines removed, so a report that a
 // formatter tidied still matches the scorer's own text.
 export function tableRows(text: string): string[] {
-  const rows = text.split("\n").filter((line) => line.trim().startsWith("|"));
-  const cells = rows.map((line) => line.split("|").map((cell) => cell.trim()));
+  const lines = text.split("\n");
+  const rows = lines.filter((line) => line.trim().startsWith("|"));
+  const cells = rows.map((line) => {
+    const pieces = line.split("|");
+    return pieces.map((cell) => cell.trim());
+  });
   const withoutSeparators = cells.filter((row) => !row.every((cell) => /^-*$/.test(cell)));
   return withoutSeparators.map((row) => row.join("|"));
 }
