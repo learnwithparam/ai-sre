@@ -1,0 +1,13 @@
+{
+  "incident_id": "",
+  "service": "",
+  "change": {
+    "kind": "",
+    "value": ""
+  },
+  "pattern": "",
+  "quote": "",
+  "trace_ids": [],
+  "hypothesis": "",
+  "ruled_out": []
+}

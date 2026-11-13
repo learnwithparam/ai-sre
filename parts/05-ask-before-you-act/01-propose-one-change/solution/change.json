@@ -1,0 +1,10 @@
+{
+  "incident_id": "inc-f0ac746f5c16",
+  "finding_id": "fnd-bac37db7a73c",
+  "action": "rollback_release",
+  "target": "booking-web",
+  "params": {
+    "release": "v1"
+  },
+  "action_id": "act-f8c3206aec14"
+}
