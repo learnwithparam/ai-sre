@@ -2,11 +2,11 @@
 
 import pytest
 
-from harbour_control.approvals import ApprovalRequired, InvalidTransition
+from harbour_control.approvals import ApprovalRequiredError, InvalidTransitionError, PlannedAction
 
 
 def test_execute_without_approval_refuses(remediations, rollback, runner):
-    with pytest.raises(ApprovalRequired):
+    with pytest.raises(ApprovalRequiredError):
         remediations.execute(rollback.action_id, executed_by="ai-sre")
     assert runner.calls == []
     assert remediations.status(rollback.action_id).state == "pending"
@@ -23,7 +23,7 @@ def test_execute_twice_runs_once(remediations, rollback, runner):
 
 def test_reject_never_executes(remediations, rollback, runner):
     remediations.reject(rollback.action_id, approver="oncall@example.com", reason="wrong target")
-    with pytest.raises(ApprovalRequired):
+    with pytest.raises(ApprovalRequiredError):
         remediations.execute(rollback.action_id, executed_by="ai-sre")
     assert runner.calls == []
     assert remediations.status(rollback.action_id).state == "rejected"
@@ -34,9 +34,7 @@ def test_edit_resets_to_pending_and_still_needs_approval(remediations, rollback,
     remediations.edit(
         rollback.action_id,
         editor="oncall@example.com",
-        action="restart_service",
-        target="booking-web",
-        params={},
+        plan=PlannedAction(action="restart_service", target="booking-web", params={}),
     )
     state = remediations.status(rollback.action_id)
     assert (state.state, state.action, state.target) == (
@@ -44,7 +42,7 @@ def test_edit_resets_to_pending_and_still_needs_approval(remediations, rollback,
         "restart_service",
         "booking-web",
     )
-    with pytest.raises(ApprovalRequired):
+    with pytest.raises(ApprovalRequiredError):
         remediations.execute(rollback.action_id, executed_by="ai-sre")
     remediations.approve(rollback.action_id, approver="oncall@example.com")
     remediations.execute(rollback.action_id, executed_by="ai-sre")
@@ -54,9 +52,9 @@ def test_edit_resets_to_pending_and_still_needs_approval(remediations, rollback,
 def test_decisions_only_apply_to_pending_actions(remediations, rollback):
     remediations.approve(rollback.action_id, approver="oncall@example.com")
     remediations.execute(rollback.action_id, executed_by="ai-sre")
-    with pytest.raises(InvalidTransition):
+    with pytest.raises(InvalidTransitionError):
         remediations.reject(rollback.action_id, approver="oncall@example.com", reason="late")
-    with pytest.raises(InvalidTransition):
+    with pytest.raises(InvalidTransitionError):
         remediations.approve(rollback.action_id, approver="oncall@example.com")
 
 
@@ -64,19 +62,22 @@ def test_audit_records_every_step_with_actor_and_time(remediations, rollback, st
     remediations.approve(rollback.action_id, approver="oncall@example.com")
     remediations.execute(rollback.action_id, executed_by="ai-sre")
     events = store.events(action_id=rollback.action_id)
-    kinds = [e.kind for e in events]
+    kinds = [event.kind for event in events]
     assert kinds == ["remediation_proposed", "remediation_approved", "remediation_executed"]
-    assert [e.actor for e in events] == ["ai-sre", "oncall@example.com", "ai-sre"]
-    assert all(e.ts is not None for e in events)
-    assert events == sorted(events, key=lambda e: e.ts)
+    assert [event.actor for event in events] == ["ai-sre", "oncall@example.com", "ai-sre"]
+    assert all(event.ts is not None for event in events)
+    assert events == sorted(events, key=lambda event: event.ts)
 
 
-def test_proposing_twice_returns_the_waiting_proposal(
-    remediations, rollback, incident, store, finding
-):
+def test_proposing_twice_returns_the_waiting_proposal(remediations, rollback):
     again = remediations.propose(
-        incident_id=incident.id, finding_id=finding.finding_id, action="restart_service", target="booking-web",
-        params={}, proposed_by="ai-sre",
-    )  # fmt: skip
+        incident_id=rollback.incident_id,
+        finding_id=rollback.finding_id,
+        plan=PlannedAction(action="restart_service", target="booking-web", params={}),
+        proposed_by="ai-sre",
+    )
     assert again.action_id == rollback.action_id
-    assert len(store.events(incident_id=incident.id, kind="remediation_proposed")) == 1
+    proposed = remediations.store.events(
+        incident_id=rollback.incident_id, kind="remediation_proposed"
+    )
+    assert len(proposed) == 1

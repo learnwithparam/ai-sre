@@ -1,4 +1,4 @@
-"""Watches two signals, opens one incident per failure, and verifies recovery after a remediation."""
+"""Watches two signals, opens one incident per failure, and verifies recovery after a fix."""
 
 import logging
 from collections.abc import Callable
@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 
 from harbour_control.anomaly import clean_baseline, error_rate, three_sigma
-from harbour_control.store import Store
+from harbour_control.store import IncidentReport, Store
 
 log = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class ClickHouseSignals:
     def error_rates(self, service: str) -> ErrorRateSample:
         (row,) = self.telemetry.rows("error_rate_window", service=service, baseline_minutes=15)
         current = error_rate(row["current_errors"], row["current_requests"])
-        buckets = [(at.replace(tzinfo=UTC), rate) for at, rate in row["baseline"]]
+        buckets = [(start.replace(tzinfo=UTC), rate) for start, rate in row["baseline"]]
         return ErrorRateSample(buckets, current, row["current_requests"])
 
     def stuck_requests(self, service: str) -> StuckRequests:
@@ -49,14 +49,16 @@ class ClickHouseSignals:
         return StuckRequests(row["stuck"], row["oldest_s"] or 0, list(row["example_trace_ids"]))
 
 
+def awaits_verdict(action) -> bool:
+    return action.state == "executed" and action.verification is None
+
+
 class Detector:
     def __init__(self, *, signals, store: Store, clock: Callable[[], datetime], remediations=None):
-        self.signals, self.store, self.clock, self.remediations = (
-            signals,
-            store,
-            clock,
-            remediations,
-        )
+        self.signals = signals
+        self.store = store
+        self.clock = clock
+        self.remediations = remediations
 
     def tick(self) -> None:
         self._check_error_rate("booking-web")
@@ -89,32 +91,32 @@ class Detector:
             bound = 0.0
         else:
             return
-        self.store.open_incident(
+        report = IncidentReport(
             rule="error_rate",
             service=service,
             summary=f"{service} error rate {sample.current:.0%} over the last minute, {why}",
-            opened_at=now,
             details={"current": sample.current, "bound": bound, "baseline_buckets": len(baseline)},
         )
+        self.store.open_incident(report, opened_at=now)
 
     def _check_stuck(self, service: str) -> None:
         stuck = self.signals.stuck_requests(service)
         if stuck.count == 0 or self.store.open_incident_for("stuck_requests", service):
             return
-        self.store.open_incident(
+        report = IncidentReport(
             rule="stuck_requests",
             service=service,
             summary=(
                 f"{stuck.count} requests to {service} logged 'request received' and never "
                 f"'request completed'; the oldest has been open {stuck.oldest_s}s"
             ),
-            opened_at=self.clock(),
             details={
                 "stuck": stuck.count,
                 "oldest_s": stuck.oldest_s,
                 "trace_ids": stuck.trace_ids,
             },
         )
+        self.store.open_incident(report, opened_at=self.clock())
 
     def _verify_executed(self) -> None:
         now = self.clock()
@@ -125,28 +127,36 @@ class Detector:
             # Nothing is waiting on a verdict: either nothing ran, or what ran has been judged.
             # Without the second case a failed verification would hold the incident open forever,
             # and an open incident stops the same signal from ever opening the next one.
-            awaiting = [a for a in actions if a.state == "executed" and a.verification is None]
+            awaiting = [action for action in actions if awaits_verdict(action)]
             if not awaiting and now - incident.opened_at > SELF_RECOVERY_AFTER:
-                healthy, evidence = self._healthy(incident)
-                if healthy:
-                    for action in actions:
-                        if action.state == "pending":
-                            self.remediations.expire(action.action_id, reason="self_recovered")
-                    note = f"signal recovered with no remediation executed: {evidence}"
-                    self.store.resolve_incident(incident.id, actor="detector", at=now, note=note)
+                self._close_if_recovered(incident, actions, now)
                 continue
-            for action in actions:
-                if action.state != "executed" or action.verification is not None:
-                    continue
-                executed_at = next(e.ts for e in action.history if e.kind == "remediation_executed")
-                if now - executed_at < RECOVERY_WINDOW:
-                    continue
-                healthy, evidence = self._healthy(incident)
-                timed_out = now - executed_at > timedelta(minutes=5)
-                if healthy or timed_out:
-                    self.remediations.record_verification(
-                        action.action_id, passed=healthy, evidence=evidence
-                    )
+            for action in awaiting:
+                self._verify(incident, action, now)
+
+    def _close_if_recovered(self, incident, actions, now: datetime) -> None:
+        """Close an incident whose signal healed with nothing executed, and expire its proposals."""
+        healthy, evidence = self._healthy(incident)
+        if not healthy:
+            return
+        for action in actions:
+            if action.state == "pending":
+                self.remediations.expire(action.action_id, reason="self_recovered")
+        note = f"signal recovered with no remediation executed: {evidence}"
+        self.store.resolve_incident(incident.id, actor="detector", resolved_at=now, note=note)
+
+    def _verify(self, incident, action, now: datetime) -> None:
+        """Judge an executed action once a full recovery window of traffic has passed."""
+        executed = (event for event in action.history if event.kind == "remediation_executed")
+        executed_at = next(executed).ts
+        if now - executed_at < RECOVERY_WINDOW:
+            return
+        healthy, evidence = self._healthy(incident)
+        timed_out = now - executed_at > timedelta(minutes=5)
+        if healthy or timed_out:
+            self.remediations.record_verification(
+                action.action_id, passed=healthy, evidence=evidence
+            )
 
     def _healthy(self, incident) -> tuple[bool, dict]:
         if incident.rule == "error_rate":

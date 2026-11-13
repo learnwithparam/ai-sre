@@ -33,10 +33,19 @@ def load_queries(directory: Path) -> dict[str, Query]:
         for name, body in BLOCK.findall(path.read_text()):
             if name in queries:
                 raise ValueError(f"query {name} is defined twice")
-            example = EXAMPLE.search(body)
-            # key=value pairs; a value may contain spaces and runs until the next key=
-            example_line = example.group(1) if example else ""
-            pairs = dict(re.findall(r"(\w+)=(.*?)(?=\s+\w+=|$)", example_line))
-            sql = "\n".join(line for line in body.splitlines() if not line.startswith("--")).strip()
-            queries[name] = Query(name=name, sql=sql.rstrip(";").strip(), example=pairs)
+            queries[name] = Query(name=name, sql=sql_without_comments(body), example=example(body))
     return queries
+
+
+def example(body: str) -> dict[str, str]:
+    """The values in a block's `-- example:` line, which the workshop runs the query with."""
+    found = EXAMPLE.search(body)
+    example_line = found.group(1) if found else ""
+    # key=value pairs; a value may contain spaces and runs until the next key=
+    return dict(re.findall(r"(\w+)=(.*?)(?=\s+\w+=|$)", example_line))
+
+
+def sql_without_comments(body: str) -> str:
+    lines = [line for line in body.splitlines() if not line.startswith("--")]
+    sql = "\n".join(lines).strip()
+    return sql.rstrip(";").strip()

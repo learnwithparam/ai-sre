@@ -29,4 +29,8 @@ def clean_baseline(
     buckets: list[tuple[datetime, float]], incidents: list[tuple[datetime, datetime]]
 ) -> list[float]:
     """Drop buckets that fall inside a past incident, so one outage cannot hide the next."""
-    return [rate for at, rate in buckets if not any(start <= at <= end for start, end in incidents)]
+    return [
+        rate
+        for bucket_start, rate in buckets
+        if not any(start <= bucket_start <= end for start, end in incidents)
+    ]

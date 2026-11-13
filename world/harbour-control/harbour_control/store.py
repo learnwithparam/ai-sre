@@ -1,4 +1,6 @@
-"""The audit log. Every incident and remediation is an append-only stream of events; state is derived.
+"""The audit log. Every incident and remediation is an append-only stream of events.
+
+State is derived from those events.
 
 Append-only means the record of who decided what, and when, can never be edited after the fact.
 """
@@ -32,8 +34,26 @@ class Incident:
     resolved_at: datetime | None = None
 
 
+@dataclass(frozen=True)
+class IncidentReport:
+    """What a detector or a person reports when they open an incident."""
+
+    rule: str
+    service: str
+    summary: str
+    details: dict[str, Any] = field(default_factory=dict)
+
+
 def new_id(prefix: str) -> str:
     return f"{prefix}-{secrets.token_hex(6)}"
+
+
+def event_time(event: Event) -> datetime:
+    return event.ts
+
+
+def first_of_kind(events: list[Event], kind: str) -> Event | None:
+    return next((event for event in events if event.kind == kind), None)
 
 
 class Store:
@@ -51,54 +71,53 @@ class Store:
     ) -> list[Event]:
         raise NotImplementedError
 
-    def open_incident(
-        self,
-        *,
-        rule: str,
-        service: str,
-        summary: str,
-        opened_at: datetime,
-        details: dict | None = None,
-    ) -> Incident:
+    def open_incident(self, report: IncidentReport, *, opened_at: datetime) -> Incident:
         incident_id = new_id("inc")
-        payload = {"rule": rule, "service": service, "summary": summary, "details": details or {}}
+        payload = {
+            "rule": report.rule,
+            "service": report.service,
+            "summary": report.summary,
+            "details": report.details or {},
+        }
         self.append(Event(opened_at, incident_id, "", "incident_opened", "detector", payload))
         return self.incident(incident_id)
 
-    def resolve_incident(self, incident_id: str, *, actor: str, at: datetime, note: str) -> None:
-        self.append(Event(at, incident_id, "", "incident_resolved", actor, {"note": note}))
+    def resolve_incident(
+        self, incident_id: str, *, actor: str, resolved_at: datetime, note: str
+    ) -> None:
+        payload = {"note": note}
+        self.append(Event(resolved_at, incident_id, "", "incident_resolved", actor, payload))
 
     def incident(self, incident_id: str) -> Incident:
         events = self.events(incident_id=incident_id)
-        opened = next((e for e in events if e.kind == "incident_opened"), None)
+        opened = first_of_kind(events, "incident_opened")
         if opened is None:
             raise KeyError(incident_id)
-        resolved = next((e for e in events if e.kind == "incident_resolved"), None)
-        p = opened.payload
+        resolved = first_of_kind(events, "incident_resolved")
+        payload = opened.payload
         return Incident(
             id=incident_id,
-            rule=p["rule"],
-            service=p["service"],
-            summary=p["summary"],
+            rule=payload["rule"],
+            service=payload["service"],
+            summary=payload["summary"],
             opened_at=opened.ts,
             state="resolved" if resolved else "open",
-            details=p.get("details", {}),
+            details=payload.get("details", {}),
             resolved_at=resolved.ts if resolved else None,
         )
 
     def incidents(self) -> list[Incident]:
         opened = self.events(kind="incident_opened")
-        return [
-            self.incident(e.incident_id) for e in sorted(opened, key=lambda e: e.ts, reverse=True)
-        ]
+        newest_first = sorted(opened, key=event_time, reverse=True)
+        return [self.incident(event.incident_id) for event in newest_first]
 
     def incident_windows(
         self, rule: str, service: str, *, now: datetime, margin: timedelta
     ) -> list[tuple[datetime, datetime]]:
         return [
-            (i.opened_at - margin, (i.resolved_at or now) + margin)
-            for i in self.incidents()
-            if (i.rule, i.service) == (rule, service)
+            (incident.opened_at - margin, (incident.resolved_at or now) + margin)
+            for incident in self.incidents()
+            if (incident.rule, incident.service) == (rule, service)
         ]
 
     def open_incident_for(self, rule: str, service: str) -> Incident | None:
@@ -118,13 +137,13 @@ class MemoryStore(Store):
     def events(self, *, incident_id=None, action_id=None, kind=None) -> list[Event]:
         return sorted(
             (
-                e
-                for e in self._events
-                if (incident_id is None or e.incident_id == incident_id)
-                and (action_id is None or e.action_id == action_id)
-                and (kind is None or e.kind == kind)
+                event
+                for event in self._events
+                if (incident_id is None or event.incident_id == incident_id)
+                and (action_id is None or event.action_id == action_id)
+                and (kind is None or event.kind == kind)
             ),
-            key=lambda e: e.ts,
+            key=event_time,
         )
 
 
@@ -185,10 +204,13 @@ class ClickHouseStore(Store):
                ORDER BY ts LIMIT 10000""",
             parameters=params,
         ).result_rows
-        return [
-            Event(ts.replace(tzinfo=UTC), i, a, k, actor, json.loads(p))
-            for ts, i, a, k, actor, p in rows
-        ]
+        return [event_from_row(row) for row in rows]
+
+
+def event_from_row(row: tuple) -> Event:
+    """Columns arrive in the order the SELECT names them; ClickHouse drops the time zone."""
+    time, incident_id, action_id, kind, actor, payload = row
+    return Event(time.replace(tzinfo=UTC), incident_id, action_id, kind, actor, json.loads(payload))
 
 
 def utcnow() -> datetime:

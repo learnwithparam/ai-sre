@@ -76,11 +76,27 @@
     <div class="grid">
       <div class="field">
         <label for="action">Action</label>
-        <select id="action" name="action">{% for name in actions %}<option value="{{ name }}" {% if name == a.action %}selected{% endif %}>{{ phrase(name) }}</option>{% endfor %}</select>
+        <select id="action" name="action">
+          {% for name in actions %}
+            {% if name == a.action %}
+            <option value="{{ name }}" selected>{{ phrase(name) }}</option>
+            {% else %}
+            <option value="{{ name }}">{{ phrase(name) }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
       </div>
       <div class="field">
         <label for="target">Target</label>
-        <select id="target" name="target">{% for t in targets %}<option value="{{ t }}" {% if t == a.target %}selected{% endif %}>{{ t }}</option>{% endfor %}</select>
+        <select id="target" name="target">
+          {% for target in targets %}
+            {% if target == a.target %}
+            <option value="{{ target }}" selected>{{ target }}</option>
+            {% else %}
+            <option value="{{ target }}">{{ target }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
       </div>
     </div>
     <p><button class="btn ghost" type="submit">Save changes</button></p>

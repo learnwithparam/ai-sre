@@ -21,7 +21,8 @@ class FakeTelemetry:
     def trace_window(self, trace_ids):
         from harbour_control.approvals import TraceSeen
 
-        return [TraceSeen(t, *self.traces[t]) for t in trace_ids if t in self.traces]
+        known = [trace_id for trace_id in trace_ids if trace_id in self.traces]
+        return [TraceSeen(trace_id, *self.traces[trace_id]) for trace_id in known]
 
     def service_seen(self, service):
         return service in self.services
@@ -80,12 +81,14 @@ def remediations(store, runner):
 
 @pytest.fixture
 def incident(store):
-    return store.open_incident(
+    from harbour_control.store import IncidentReport
+
+    report = IncidentReport(
         rule="error_rate",
         service="booking-web",
         summary="error rate 34% against a 3 sigma bound of 2%",
-        opened_at=NOW,
     )
+    return store.open_incident(report, opened_at=NOW)
 
 
 SECOND_TRACE = "5cf92f3577b34da6a3ce929d0e0e4737"
@@ -93,27 +96,34 @@ SECOND_TRACE = "5cf92f3577b34da6a3ce929d0e0e4737"
 
 @pytest.fixture
 def finding(remediations, incident):
+    from harbour_control.approvals import FindingReport
+
     remediations.telemetry.traces[SECOND_TRACE] = remediations.telemetry.traces[KNOWN_TRACE]
-    return remediations.submit_finding(
+    report = FindingReport(
         incident_id=incident.id,
         service="booking-web",
         change={"kind": "release", "value": "v2"},
         pattern="connection pool exhausted (audit_trail)",
         quote="connection pool exhausted: 2 of 2 connections in use (audit_trail) ref=GR-TEST1",
         trace_ids=[KNOWN_TRACE, SECOND_TRACE],
-        hypothesis="Release v2 of booking-web opens a connection per booking for its audit trail and runs out.",
+        hypothesis=(
+            "Release v2 of booking-web opens a connection per booking for its audit trail "
+            "and runs out."
+        ),
         ruled_out=[],
-        submitted_by="ai-sre",
     )
+    return remediations.submit_finding(report, submitted_by="ai-sre")
 
 
 @pytest.fixture
 def rollback(remediations, incident, finding):
+    from harbour_control.approvals import PlannedAction
+
     return remediations.propose(
         incident_id=incident.id,
         finding_id=finding.finding_id,
-        action="rollback_release",
-        target="booking-web",
-        params={"release": "v1"},
+        plan=PlannedAction(
+            action="rollback_release", target="booking-web", params={"release": "v1"}
+        ),
         proposed_by="ai-sre",
     )
