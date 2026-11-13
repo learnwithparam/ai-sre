@@ -52,7 +52,7 @@ The check always runs your query on the recorded bad-release morning, so you get
 
 ## If you get stuck
 
-A common mistake is to count every span. One booking makes four spans: the request, two INSERTs and a SELECT. So the rate looks four times smaller than it is. The check prints:
+A common mistake is to count every span. One booking makes several spans: the request, and the SELECT and INSERTs behind it. Only the request fails, so the rate looks several times smaller than it is. The check prints:
 
 ```text
   FAIL  each bucket counts booking-web requests only, without health checks
