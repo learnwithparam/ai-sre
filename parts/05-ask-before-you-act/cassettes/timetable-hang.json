@@ -1,0 +1,45 @@
+{
+  "name": "timetable-hang",
+  "note": "The AI SRE on timetable-hang, as it really goes wrong: it sees booking-web errors, blames booking-web, and proposes rolling booking-web back. The rollback cannot help, because timetable-loader is the service that hangs.",
+  "steps": [
+    { "tool": "list_incidents", "input": { "state": "open" } },
+    {
+      "tool": "get_incident",
+      "input": { "incident_id": { "$from": "list_incidents", "path": "incidents.0.id" } }
+    },
+    {
+      "tool": "search_logs",
+      "input": { "service": "booking-web", "text": "did not answer", "minutes": 15 }
+    },
+    {
+      "tool": "submit_finding",
+      "input": {
+        "incident_id": { "$from": "get_incident", "path": "incident.id" },
+        "service": "booking-web",
+        "change": { "kind": "none", "value": "" },
+        "pattern": "timetable-loader did not answer",
+        "quote": {
+          "$from": "search_logs",
+          "path": "logs.*.body",
+          "match": "timetable-loader did not answer.*"
+        },
+        "trace_ids": { "$from": "search_logs", "path": "logs.*.trace_id", "take": 2 },
+        "hypothesis": "booking-web fails on GET /timetable because its calls to timetable-loader time out.",
+        "ruled_out": []
+      }
+    },
+    {
+      "tool": "propose_remediation",
+      "input": {
+        "incident_id": { "$from": "get_incident", "path": "incident.id" },
+        "finding_id": { "$from": "submit_finding", "path": "finding_id" },
+        "action": "rollback_release",
+        "target": "booking-web",
+        "params": { "release": "v1" }
+      }
+    },
+    {
+      "text": "booking-web fails on GET /timetable. I proposed rolling booking-web back to v1. A human must approve it in Harbour Control."
+    }
+  ]
+}

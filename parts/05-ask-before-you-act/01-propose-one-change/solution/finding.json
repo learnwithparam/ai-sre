@@ -1,0 +1,23 @@
+{
+  "incident_id": "inc-f0ac746f5c16",
+  "service": "booking-web",
+  "change": {
+    "kind": "release",
+    "value": "v2"
+  },
+  "pattern": "connection pool exhausted: N of N connections in use (audit_trail)",
+  "quote": "POST /api/bookings failed: connection pool exhausted: 2 of 2 connections in use (audit_trail) ref=HX-38ACB2",
+  "trace_ids": [
+    "0140c241e40c8eaf043f9844d89613bf",
+    "1bb3b9783eeeb610e60d00f18f3fb137",
+    "a333c1f60a65d19f7a7efbb841679924"
+  ],
+  "hypothesis": "Release v2 of booking-web holds a new database connection for each booking's audit trail, so the two audit connections run out and bookings fail.",
+  "ruled_out": [
+    {
+      "signal": "card declined by payments gateway",
+      "why": "declines run at the same rate as before the release"
+    }
+  ],
+  "finding_id": "fnd-bac37db7a73c"
+}
