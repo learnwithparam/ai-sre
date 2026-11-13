@@ -1,15 +1,19 @@
-// Start booking-web with the learner's hooks from a step folder, on SQLite, sending telemetry to a local
-// receiver. The check then uses the site like a passenger and judges what the telemetry says.
+// Start booking-web with the learner's hooks from a step folder, on SQLite, sending telemetry to a
+// local receiver. The check then uses the site like a passenger and judges what the telemetry says.
 import { join } from "node:path";
 import { ROOT } from "../../world/lib/env";
 import { startReceiver } from "./otlp";
 
 export type Booking = Awaited<ReturnType<typeof startBooking>>;
 
-export async function startBooking(hooksDir: string, release = "v7") {
-  const receiver = startReceiver();
-  const port = 20000 + Math.floor(Math.random() * 20000);
-  const proc = Bun.spawn(["bun", join(ROOT, "world", "booking-web", "src", "server.ts")], {
+// What booking-web answered: the status, the body as JSON when it is JSON, and the raw text.
+// The checks only read the booking reference from the JSON.
+type ResponseJson = { ref?: string } | null;
+type SiteAnswer = { status: number; json: ResponseJson; text: string };
+
+function startServer(hooksDir: string, release: string, port: number, telemetryUrl: string) {
+  return Bun.spawn(["bun", join(ROOT, "world", "booking-web", "src", "server.ts")], {
+    // biome-ignore-start lint/style/useNamingConvention: environment variable names are upper case.
     env: {
       PATH: process.env.PATH ?? "",
       HOME: process.env.HOME ?? "",
@@ -18,38 +22,58 @@ export async function startBooking(hooksDir: string, release = "v7") {
       DATABASE_URL: "sqlite://:memory:",
       BOOKING_RELEASE: release,
       BOOKING_HOOKS_DIR: hooksDir,
-      OTEL_EXPORTER_OTLP_ENDPOINT: receiver.url,
+      OTEL_EXPORTER_OTLP_ENDPOINT: telemetryUrl,
       OTEL_EXPORT_DELAY_MS: "100",
       BOOKING_QUIET: "1",
     },
+    // biome-ignore-end lint/style/useNamingConvention: environment variable names are upper case.
     stdout: "pipe",
     stderr: "pipe",
   });
-  const base = `http://127.0.0.1:${port}`;
-  let up = false;
-  for (let i = 0; i < 100 && !up; i++) {
-    up = await fetch(`${base}/health`)
-      .then((r) => r.ok)
+}
+
+// Ask /health up to 100 times, 100 ms apart, so a slow start still counts as up.
+async function waitUntilUp(baseUrl: string): Promise<boolean> {
+  for (let i = 0; i < 100; i++) {
+    const healthy = await fetch(`${baseUrl}/health`)
+      .then((response) => response.ok)
       .catch(() => false);
-    if (!up) await Bun.sleep(100);
+    if (healthy) return true;
+    await Bun.sleep(100);
   }
-  const call = async (method: string, path: string, body?: unknown) => {
-    const res = await fetch(base + path, {
+  return false;
+}
+
+function parseJson(text: string): ResponseJson {
+  try {
+    return JSON.parse(text);
+  } catch {
+    // The page sent HTML, not JSON.
+    return null;
+  }
+}
+
+function siteCaller(baseUrl: string) {
+  return async (method: string, path: string, body?: unknown): Promise<SiteAnswer> => {
+    const response = await fetch(baseUrl + path, {
       method,
       headers: { "content-type": "application/json" },
       body: body ? JSON.stringify(body) : undefined,
     });
-    const text = await res.text();
-    let json: any = null;
-    try {
-      json = JSON.parse(text);
-    } catch {
-      /* html */
-    }
-    return { status: res.status, json, text };
+    const text = await response.text();
+    return { status: response.status, json: parseJson(text), text };
   };
+}
+
+export async function startBooking(hooksDir: string, release = "v7") {
+  const receiver = startReceiver();
+  const port = 20000 + Math.floor(Math.random() * 20000);
+  const server = startServer(hooksDir, release, port, receiver.url);
+  const baseUrl = `http://127.0.0.1:${port}`;
+  const serverIsUp = await waitUntilUp(baseUrl);
+  const call = siteCaller(baseUrl);
   return {
-    up,
+    up: serverIsUp,
     release,
     ...receiver,
     call,
@@ -57,6 +81,7 @@ export async function startBooking(hooksDir: string, release = "v7") {
       return call("POST", "/api/bookings", {
         name: "Ana Ferreira",
         email,
+        // biome-ignore lint/style/useNamingConvention: booking-web reads this snake_case field.
         sailing_id: "2",
         vehicle: "car",
         card: "4000000000000001",
@@ -67,16 +92,20 @@ export async function startBooking(hooksDir: string, release = "v7") {
       await Bun.sleep(150);
     },
     async stop() {
-      proc.kill();
-      await proc.exited;
+      server.kill();
+      await server.exited;
       receiver.stop();
     },
   };
 }
 
 // Runs one session against booking-web and caches it per folder, so each rule reads the same run.
-const runs = new Map<string, Promise<any>>();
+const runs = new Map<string, Promise<unknown>>();
 export function once<T>(key: string, run: () => Promise<T>): Promise<T> {
-  if (!runs.has(key)) runs.set(key, run());
-  return runs.get(key)!;
+  let saved = runs.get(key);
+  if (!saved) {
+    saved = run();
+    runs.set(key, saved);
+  }
+  return saved as Promise<T>;
 }
