@@ -54,7 +54,7 @@ The check starts booking-web as release `v7`, a name you cannot guess. For examp
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `FAIL every span carries the resource attribute service.version` | The key is exactly `service.version`. OpenTelemetry defines this name.                                             |
 | `FAIL service.version names the release that is running`         | Read the value from `env.BOOKING_RELEASE`. Do not write a fixed value.                                             |
-| `FAIL booking-web starts with your telemetry.ts`                 | From this folder, run `BOOKING_HOOKS_DIR=$PWD bun ../../../../world/booking-web/src/server.ts` and read the error. |
+| `FAIL booking-web starts with your telemetry.ts`                 | Check that `telemetry.ts` is in `problem/`. Then run the command in the Try next line and read the error. Port 8100 keeps it apart from the world on port 8000. |
 
 ## Words you will use
 

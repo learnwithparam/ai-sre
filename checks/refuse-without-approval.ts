@@ -11,7 +11,9 @@ import {
 import type { Rule } from "../scripts/verify";
 
 const FILE = "run.json";
-const RUN = `bun parts/05-ask-before-you-act/call-tool.ts execute_remediation <path to ${FILE}>`;
+const PROBLEM_FOLDER = "parts/05-ask-before-you-act/02-refuse-without-approval/problem";
+const CALL_TOOL = "bun parts/05-ask-before-you-act/call-tool.ts";
+const RUN = `${CALL_TOOL} execute_remediation ${PROBLEM_FOLDER}/${FILE}`;
 
 async function actionRows(folder: string): Promise<AuditRow[]> {
   const rows = await rowsFor(folder, readJson(folder, FILE).action_id ?? "");

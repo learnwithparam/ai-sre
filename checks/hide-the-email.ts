@@ -1,5 +1,7 @@
 // hide-the-email: passengers book with real-looking emails. No email may leave booking-web in a
 // span attribute or a log line, and the spans must still say what happened.
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Rule } from "../scripts/verify";
 import { once, startBooking } from "./lib/booking";
 import { EMAIL } from "./lib/files";
@@ -41,10 +43,14 @@ function logLeaks(log: LogRow): boolean {
 export default [
   {
     says: "booking-web starts with your redact.ts and takes bookings",
-    test: async (folder) => (await session(folder)).booked === 3,
+    // booking-web uses the finished file when yours is missing, so a missing file must fail here.
+    test: async (folder) =>
+      existsSync(join(folder, "redact.ts")) && (await session(folder)).booked === 3,
     tryNext:
-      "run bun world/booking-web/src/server.ts with BOOKING_HOOKS_DIR set to this folder " +
-      "and read the error",
+      "from the repo root, run PORT=8100 " +
+      "BOOKING_HOOKS_DIR=parts/01-see-every-signal/04-hide-the-email/problem " +
+      "bun world/booking-web/src/server.ts " +
+      "and read the error it prints",
   },
   {
     says: "no span attribute holds an email address",

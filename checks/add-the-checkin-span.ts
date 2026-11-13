@@ -1,5 +1,7 @@
 // add-the-checkin-span: a passenger books, then checks in. The check-in trace must hold a span
 // named checkin.validate, inside the POST /api/checkin request, carrying the booking reference.
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Rule } from "../scripts/verify";
 import { once, startBooking } from "./lib/booking";
 import type { SpanRow } from "./lib/otlp";
@@ -41,10 +43,13 @@ function hasCheckinParent(run: Session, child: SpanRow): boolean {
 export default [
   {
     says: "booking-web starts with your checkin.ts",
-    test: async (folder) => (await session(folder)).up,
+    // booking-web uses the finished file when yours is missing, so a missing file must fail here.
+    test: async (folder) => existsSync(join(folder, "checkin.ts")) && (await session(folder)).up,
     tryNext:
-      "run bun world/booking-web/src/server.ts with BOOKING_HOOKS_DIR set to this folder " +
-      "and read the error",
+      "from the repo root, run PORT=8100 " +
+      "BOOKING_HOOKS_DIR=parts/01-see-every-signal/03-add-the-checkin-span/problem " +
+      "bun world/booking-web/src/server.ts " +
+      "and read the error it prints",
   },
   {
     says: "check-in still works, and an unknown reference is refused",
