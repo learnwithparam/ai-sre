@@ -37,7 +37,7 @@ test("every step named in a part README table is unique across the course", () =
   const names = parts().flatMap((p) =>
     [
       ...read(join(p.dir.replace(ROOT + "/", ""), "README.md")).matchAll(
-        /^\| `([a-z-]+)` \| \d+/gm,
+        /^\| `([a-z-]+)` +\| \d+/gm,
       ),
     ].map((m) => m[1]),
   );
