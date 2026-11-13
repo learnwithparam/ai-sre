@@ -16,7 +16,9 @@ import type { Rule } from "../scripts/verify";
 import { query } from "./lib/world";
 
 const FILE = "findings/bad-release.json";
-const SEND = `bun parts/04-say-what-broke/call-tool.ts submit_finding ${FILE}`;
+const PROBLEM_FOLDER = "parts/04-say-what-broke/01-write-the-finding/problem";
+const CALL_TOOL = "bun parts/04-say-what-broke/call-tool.ts";
+const SEND = `${CALL_TOOL} submit_finding ${PROBLEM_FOLDER}/${FILE}`;
 const planted = plantedFault("bad-release");
 const plantedChange = `${planted.change.kind} ${planted.change.value}`;
 

@@ -6,7 +6,7 @@ For example, you run `bun run verify meet-the-harbour` and you see:
 
 ```text
   FAIL  the booking is a row in the bookings table
-        Try next: copy the reference the booking page showed after Book and pay; check it with bun run world status running
+        Try next: copy the reference the booking page showed after Book and pay; check that the world is up with bun run world status
 ```
 
 The last row of the table matches this message. So you do what the Try next line says, and you run the check again.
@@ -32,5 +32,5 @@ The last row of the table matches this message. So you do what the Try next line
 | `LLM_PROVIDER=... needs ..._API_KEY in .env`                  | You chose a live model provider, but it has no key.                   | Put the key in `.env`, never on a command line. Or set `LLM_PROVIDER=replay`.                                         |
 | `LLM_PROVIDER=... is not one of ...`                          | The provider name is wrong.                                           | Use replay, anthropic, openrouter, openai or ollama.                                                                  |
 | `... role(s) failed. Check LLM_PROVIDER and its key in .env.` | `bun run models` could not reach a model.                             | Check the key and the provider. Replay never fails.                                                                   |
-| `the world is not running: bun run world`                     | The check reads the live world, but it found no ClickHouse.           | Start the world with `bun run world`. Or read the step's notes on recorded checks.                                    |
+| `The world is not running. Start it with bun run world`       | The check reads the live world, but it found no ClickHouse.           | Start the world with `bun run world`. Or read the step's notes on recorded checks.                                    |
 | `FAIL ...` with `Try next: ...`                               | One rule of a step check failed.                                      | Do what the Try next line says. Then run the check again.                                                             |

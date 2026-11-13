@@ -72,7 +72,7 @@ bun run world break bad-release
 
 Expect: `The world is up: every service is healthy.` and then `Planted bad-release.`
 
-When the incident opens, fill in `01-propose-one-change/problem/finding.json` and send it. Then fill in `change.json` with the `finding_id` and send that.
+When the incident opens, fill in `parts/05-ask-before-you-act/01-propose-one-change/problem/finding.json` and send it. Then fill in `change.json` with the `finding_id` and send that.
 
 ```bash
 bun parts/05-ask-before-you-act/call-tool.ts submit_finding parts/05-ask-before-you-act/01-propose-one-change/problem/finding.json
@@ -87,7 +87,7 @@ bun run verify propose-one-change
 
 Expect: `Done. All 6 rules pass.`
 
-Copy the `action_id` into `02-refuse-without-approval/problem/run.json`, and try to run it before anyone approves.
+Copy the `action_id` into `parts/05-ask-before-you-act/02-refuse-without-approval/problem/run.json`, and try to run it before anyone approves.
 
 ```bash
 bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-before-you-act/02-refuse-without-approval/problem/run.json
@@ -96,7 +96,7 @@ bun run verify refuse-without-approval
 
 Expect: `REFUSED  execute_remediation:` with `a human must approve it`, then `Done. All 4 rules pass.`
 
-Read the approval page, fill in `03-approve-with-blast-radius/problem/approval.md`, and approve.
+Read the approval page, fill in `parts/05-ask-before-you-act/03-approve-with-blast-radius/problem/approval.md`, and approve.
 
 ```bash
 bun run approve --yes
@@ -105,7 +105,7 @@ bun run verify approve-with-blast-radius
 
 Expect: `Approved act-` with your action id, then `Done. All 5 rules pass.`
 
-Copy the same `action_id` into `04-roll-back-the-release/problem/run.json` and run it. Wait about 90 seconds for the check on fresh traffic.
+Copy the same `action_id` into `parts/05-ask-before-you-act/04-roll-back-the-release/problem/run.json` and run it. Wait about 90 seconds for the check on fresh traffic.
 
 ```bash
 bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-before-you-act/04-roll-back-the-release/problem/run.json
@@ -129,7 +129,7 @@ bun parts/05-ask-before-you-act/ai-sre.ts timetable-hang
 
 Expect: `Healed:`, then `Planted timetable-hang.`, then `I proposed rolling booking-web back to v1.`
 
-Reject it in Harbour Control, edit it to `restart_service` on `timetable-loader`, approve it, and run it with `call-tool.ts execute_remediation`. Write `05-edit-the-wrong-fix/problem/decision.md`.
+Reject it in Harbour Control, edit it to `restart_service` on `timetable-loader`, approve it, and run it with `call-tool.ts execute_remediation`. Write `parts/05-ask-before-you-act/05-edit-the-wrong-fix/problem/decision.md`.
 
 ```bash
 bun run verify edit-the-wrong-fix
@@ -137,7 +137,7 @@ bun run verify edit-the-wrong-fix
 
 Expect: `Done. All 7 rules pass.`
 
-Last, add `rollback_config` to `06-add-the-config-rollback/problem/policy.py`, with its tests. Then run harbour-control with your policy and plant the fare push.
+Last, add `rollback_config` to `parts/05-ask-before-you-act/06-add-the-config-rollback/problem/policy.py`, with its tests. Then run harbour-control with your policy and plant the fare push.
 
 ```bash
 bun parts/05-ask-before-you-act/deploy-policy.ts

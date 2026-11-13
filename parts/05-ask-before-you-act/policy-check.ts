@@ -10,7 +10,8 @@ const HARBOUR = join(ROOT, "world", "harbour-control");
 const VENV = join(tmpdir(), "gullrock-harbour-control-venv");
 const PYTHON = join(VENV, "bin", "python");
 const PROBE = join(import.meta.dir, "probe_policy.py");
-const STARTER = join(import.meta.dir, "06-add-the-config-rollback", "problem", "policy.py");
+// A frozen copy of the starter. You edit problem/policy.py, so it cannot be the "before" policy.
+const STARTER = join(import.meta.dir, "starter-policy.py");
 
 // biome-ignore-start lint/style/useNamingConvention: probe_policy.py prints snake_case keys.
 export type PolicyAnswers = {

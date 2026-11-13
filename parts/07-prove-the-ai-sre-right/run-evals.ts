@@ -74,10 +74,12 @@ async function runOnce(folder: string, label: string, caseName: string, runNumbe
   const incidentId = await waitForIncident(caseName, since);
   say(`  ${caseName} run ${runNumber}: incident ${incidentId}, running your AI SRE...`);
   const command = agentCommand(folder, label);
+  // The agent runs from the repo root. STEP_FOLDER lets it find files that agent.toml names
+  // from this step folder, such as evals/challenger-prompt.md.
   Bun.spawnSync(["sh", "-c", command], {
     cwd: ROOT,
     // biome-ignore lint/style/useNamingConvention: environment variables are upper case.
-    env: { ...process.env, INCIDENT_ID: incidentId, SCENARIO: caseName },
+    env: { ...process.env, INCIDENT_ID: incidentId, SCENARIO: caseName, STEP_FOLDER: folder },
     stdout: "inherit",
     stderr: "inherit",
     timeout: 300_000,

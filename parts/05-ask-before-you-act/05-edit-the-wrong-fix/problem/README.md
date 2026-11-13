@@ -42,7 +42,14 @@ Expect: a `propose_remediation` line with an `action_id`, and `I proposed rollin
 
 3. Open that action in Harbour Control. Write why it is wrong in the reason box, and press Reject.
 4. Use Edit to change it to `restart_service` on `timetable-loader`. Then press Approve.
-5. Put the `action_id` in a JSON file such as `{"action_id": "act-..."}` and run it with `call-tool.ts execute_remediation`.
+5. Run the edited change. Put your own `action_id` in place of `act-...`:
+
+```bash
+bun parts/05-ask-before-you-act/call-tool.ts execute_remediation '{"action_id": "act-..."}'
+```
+
+Expect: one JSON reply with your `action_id` and `"exit_code":0`.
+
 6. Fill in `decision.md` in this folder: the `Action id` and one sentence for `Why I rejected`.
 
 ## Done when

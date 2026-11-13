@@ -10,7 +10,7 @@ Your AI SRE does five things:
 - It waits until a named human approves that change.
 - It gets a score on past incidents, so you know if you can trust it.
 
-For example, in the `bad-release` incident, release v2 of booking-web breaks about a third of bookings. Your AI SRE finds this log line:
+For example, in the `bad-release` incident, release v2 of booking-web breaks about 1 in 5 bookings. Your AI SRE finds this log line:
 
 ```text
 connection pool exhausted: 2 of 2 connections in use (audit_trail)
@@ -30,7 +30,7 @@ All three of you follow the same path to the end.
 
 ## Run the finished system first
 
-You need Docker with 4 GB of memory or more, and Bun 1.4.4. You do not need a model key. Replay mode plays back a recorded AI SRE against your own live world. Every claim it makes is checked against the data from your run.
+You need Docker with 4 GB of memory or more, Bun 1.4.4, uv and a bash shell. On Windows, use WSL. You do not need a model key. Replay mode plays back a recorded AI SRE against your own live world. Every claim it makes is checked against the data from your run.
 
 ```bash
 bun install

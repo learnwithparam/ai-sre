@@ -14,7 +14,9 @@ import {
 import type { Rule } from "../scripts/verify";
 
 const FILE = "change.json";
-const SEND = `bun parts/05-ask-before-you-act/call-tool.ts propose_remediation <path to ${FILE}>`;
+const PROBLEM_FOLDER = "parts/05-ask-before-you-act/01-propose-one-change/problem";
+const CALL_TOOL = "bun parts/05-ask-before-you-act/call-tool.ts";
+const SEND = `${CALL_TOOL} propose_remediation ${PROBLEM_FOLDER}/${FILE}`;
 const right = rightAction("bad-release");
 
 async function proposalRows(folder: string): Promise<AuditRow[]> {

@@ -1,5 +1,7 @@
 // tag-the-release: booking-web runs with the learner's telemetry.ts under a release name the
 // learner cannot guess. Every exported span must say which release served it.
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Rule } from "../scripts/verify";
 import { once, startBooking } from "./lib/booking";
 import type { SpanRow } from "./lib/otlp";
@@ -32,9 +34,12 @@ function hasVersion(span: SpanRow): boolean {
 export default [
   {
     says: "booking-web starts with your telemetry.ts",
-    test: async (folder) => (await session(folder)).up,
+    // booking-web uses the finished file when yours is missing, so a missing file must fail here.
+    test: async (folder) => existsSync(join(folder, "telemetry.ts")) && (await session(folder)).up,
     tryNext:
-      "run bun world/booking-web/src/server.ts with BOOKING_HOOKS_DIR set to this folder " +
+      "from the repo root, run PORT=8100 " +
+      "BOOKING_HOOKS_DIR=parts/01-see-every-signal/02-tag-the-release/problem " +
+      "bun world/booking-web/src/server.ts " +
       "and read the error it prints",
   },
   {

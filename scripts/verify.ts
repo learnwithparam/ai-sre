@@ -29,11 +29,17 @@ async function rulesFor(step: Step): Promise<Rule[]> {
   return checkModule.default;
 }
 
+// Set when a rule fails because the world is down, so the learner sees that, not a wrong answer.
+let worldWasDown = false;
+
 // A rule that throws counts as a fail, so one broken rule never hides the others.
 async function rulePasses(rule: Rule, dir: string): Promise<boolean> {
   try {
     return await rule.test(dir);
-  } catch {
+  } catch (error) {
+    if (String((error as Error)?.message).startsWith("the world is not running")) {
+      worldWasDown = true;
+    }
     return false;
   }
 }
@@ -193,6 +199,9 @@ async function verifyStep(stepName: string | undefined, which: string | undefine
   console.log(`Checking ${step.name} (${asSolution ? "sample solution" : "your work"}):`);
   const result = await run(step, asSolution ? join(step.dir, "solution") : work(step), true);
   if (result.status === "error") process.exit(2);
+  if (worldWasDown) {
+    console.log("The world is not running. Start it with bun run world, then run this again.");
+  }
   console.log(
     result.status === "pass"
       ? `Done. All ${result.total} rules pass.`
@@ -200,6 +209,8 @@ async function verifyStep(stepName: string | undefined, which: string | undefine
   );
   if (!asSolution) {
     // Done is recomputed from the checks every time, never read from a saved flag.
+    // This runs every check, so it can take a minute. Say so, or it looks stuck.
+    console.log("Counting your progress on every step. This can take a minute...");
     const everyStep = await runEveryStep();
     console.log(`Progress: ${countPassing(everyStep)}/${everyStep.length} steps pass.`);
   }

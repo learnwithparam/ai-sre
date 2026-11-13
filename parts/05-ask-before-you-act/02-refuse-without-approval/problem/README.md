@@ -49,7 +49,7 @@ Order matters. For example, the wrong answer `approved-first` approved the chang
 
 ```text
   FAIL  the attempt to run it was refused while it was pending: a remediation_refused row
-        Try next: before anyone approves, run: bun parts/05-ask-before-you-act/call-tool.ts execute_remediation <path to run.json>. You should see a REFUSED line
+        Try next: before anyone approves, run: bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-before-you-act/02-refuse-without-approval/problem/run.json. You should see a REFUSED line
 ```
 
 | What you see                 | Fix                                                                           |

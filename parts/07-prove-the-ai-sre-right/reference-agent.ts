@@ -4,7 +4,7 @@
 // bun parts/07-prove-the-ai-sre-right/reference-agent.ts [--prompt <file>]
 //   --prompt swaps in your own system prompt, so you can test a prompt change against the
 //   baseline. In replay mode each scenario plays its recorded run from cassettes/.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createMCPClient } from "@ai-sdk/mcp";
 import { generateText, isStepCount } from "ai";
@@ -19,7 +19,12 @@ const cassetteFor = (scenario: string) =>
 function systemPrompt(words: string[]): string {
   const flagPosition = words.indexOf("--prompt");
   if (flagPosition < 0) return SYSTEM;
-  return readFileSync(words[flagPosition + 1], "utf8");
+  const promptFile = words[flagPosition + 1];
+  // agent.toml names the prompt from the step folder, such as evals/challenger-prompt.md.
+  const stepFolder = process.env.STEP_FOLDER ?? "";
+  const fromStepFolder = join(stepFolder, promptFile);
+  if (stepFolder && existsSync(fromStepFolder)) return readFileSync(fromStepFolder, "utf8");
+  return readFileSync(promptFile, "utf8");
 }
 
 async function investigate(incidentId: string, scenario: string, system: string) {

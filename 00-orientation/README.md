@@ -33,6 +33,8 @@ flowchart LR
 
 - Docker with at least 4 GB of memory. 8 GB is better.
 - Bun 1.4.4, from bun.sh.
+- uv, from docs.astral.sh/uv. uv runs Python. Part 5 uses it to test your Python code.
+- A bash shell. On macOS and Linux you have one. On Windows, use WSL (Windows Subsystem for Linux). The commands do not work in PowerShell.
 - No model key. Every command here runs in replay mode. Replay mode plays back a recorded AI SRE against your live world.
 
 Later you can use a live model. To do that, set `LLM_PROVIDER` and one key in `.env` (see `.env.example`). Then run `bun run models`.
@@ -62,7 +64,7 @@ Now you follow one booking through the system. A trace is the record of one requ
 1. Open http://localhost:8000.
 2. Choose the 08:15 sailing from Port Maren to Gullrock, with a car.
 3. Press Book and pay. The page shows your booking reference.
-4. Write that reference into `meet-the-harbour/problem/answers.md`.
+4. Write that reference into `00-orientation/meet-the-harbour/problem/answers.md`.
 5. Open http://localhost:8080. The login is `HYPERDX_USER_EMAIL` and `HYPERDX_USER_PASSWORD` in `.env`.
 6. Search for your reference and open the `POST /api/bookings` trace.
 7. Copy its Trace ID into the same file.
@@ -76,7 +78,7 @@ Trace id: b2fc93d8894696a202c4d28649297fe6
 
 Your reference and Trace ID are different. The step page, [meet-the-harbour](meet-the-harbour/problem/README.md), shows each screen.
 
-Next you watch the finished AI SRE handle the `bad-release` fault. In that fault, release v2 of booking-web makes about a third of bookings fail.
+Next you watch the finished AI SRE handle the `bad-release` fault. In that fault, release v2 of booking-web makes about 1 in 5 bookings fail.
 
 ```bash
 bun run demo bad-release

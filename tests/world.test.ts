@@ -102,3 +102,9 @@ test("replay resolves references to this run's tool results", async () => {
   // biome-ignore-end lint/style/useNamingConvention: recorded tool and argument names.
   expect(result.steps.length).toBeGreaterThan(1);
 });
+
+test("the frozen starter policy is the add-the-config-rollback starter, byte for byte", () => {
+  const frozen = read("parts/05-ask-before-you-act/starter-policy.py");
+  const starter = read("parts/05-ask-before-you-act/06-add-the-config-rollback/problem/policy.py");
+  expect(frozen).toBe(starter);
+});

@@ -34,7 +34,7 @@ export default [
     test: async (folder) => !!(await bookingByRef(folder, bookingRef(folder))),
     tryNext:
       "copy the reference the booking page showed after Book and pay; " +
-      "check it with bun run world status running",
+      "check that the world is up with bun run world status",
   },
   {
     says: "the trace exists and is the POST /api/bookings request that made that booking",

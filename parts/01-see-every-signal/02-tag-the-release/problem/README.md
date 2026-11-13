@@ -30,7 +30,7 @@ To see your version live, run `bun run world try tag-the-release`. Book a sailin
 
 ## Done when
 
-- booking-web starts with your `telemetry.ts`, and its spans reach the collector.
+- booking-web starts with your `telemetry.ts`, and its spans reach the collector. The collector is the program that receives spans and stores them.
 - Every span carries the resource attribute `service.version`.
 - It names the release that is running, whatever that release is called.
 - `service.name` is still `booking-web`.
@@ -50,11 +50,11 @@ The check starts booking-web as release `v7`, a name you cannot guess. For examp
         Try next: read the release from env.BOOKING_RELEASE; a fixed value like v1 is wrong as soon as v2 ships
 ```
 
-| What you see                                                     | Fix                                                                                                                |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `FAIL every span carries the resource attribute service.version` | The key is exactly `service.version`. OpenTelemetry defines this name.                                             |
-| `FAIL service.version names the release that is running`         | Read the value from `env.BOOKING_RELEASE`. Do not write a fixed value.                                             |
-| `FAIL booking-web starts with your telemetry.ts`                 | From this folder, run `BOOKING_HOOKS_DIR=$PWD bun ../../../../world/booking-web/src/server.ts` and read the error. |
+| What you see                                                     | Fix                                                                                                                                                             |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FAIL every span carries the resource attribute service.version` | The key is exactly `service.version`. OpenTelemetry defines this name.                                                                                          |
+| `FAIL service.version names the release that is running`         | Read the value from `env.BOOKING_RELEASE`. Do not write a fixed value.                                                                                          |
+| `FAIL booking-web starts with your telemetry.ts`                 | Check that `telemetry.ts` is in `problem/`. Then run the command in the Try next line and read the error. Port 8100 keeps it apart from the world on port 8000. |
 
 ## Words you will use
 

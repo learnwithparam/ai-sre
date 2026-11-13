@@ -11,7 +11,9 @@ import type { Rule } from "../scripts/verify";
 import { query } from "./lib/world";
 
 const FILE = "findings/guess.json";
-const SEND = `bun parts/04-say-what-broke/call-tool.ts submit_finding ${FILE}`;
+const PROBLEM_FOLDER = "parts/04-say-what-broke/02-refuse-the-guess/problem";
+const CALL_TOOL = "bun parts/04-say-what-broke/call-tool.ts";
+const SEND = `${CALL_TOOL} submit_finding ${PROBLEM_FOLDER}/${FILE}`;
 
 const traceIds = (folder: string) => readFinding(folder, FILE).trace_ids ?? [];
 

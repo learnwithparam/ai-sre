@@ -35,12 +35,12 @@ Open `find-the-new-pattern.sql`. The `pattern`, `incident_start` and `baseline_s
 | `baseline_lines` | lines in the minute before                                                                 |
 | `is_new`         | `baseline_lines = 0 AND incident_lines > 0`                                                |
 
-Read both windows: `Timestamp >= baseline_start`. Keep only patterns with lines in the incident window. Put new patterns first, then the most lines.
+Read both windows: `Timestamp >= baseline_start`. Keep only patterns with lines in the incident window. For example, add `HAVING incident_lines > 0` after the `GROUP BY`. Put new patterns first, then the most lines.
 
 ## Done when
 
 - Each row is a pattern, with the five columns.
-- The access log line is not new: it was in the baseline too.
+- The access log line is not new: it was in the baseline too. The access log is the line booking-web writes for every request.
 - The top row is the connection pool error, it is new, and it comes from release v2.
 
 ```bash

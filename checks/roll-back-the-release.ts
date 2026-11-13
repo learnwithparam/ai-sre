@@ -16,7 +16,9 @@ import type { Rule } from "../scripts/verify";
 import { sourceFor } from "./lib/world";
 
 const FILE = "run.json";
-const RUN = `bun parts/05-ask-before-you-act/call-tool.ts execute_remediation <path to ${FILE}>`;
+const PROBLEM_FOLDER = "parts/05-ask-before-you-act/04-roll-back-the-release/problem";
+const CALL_TOOL = "bun parts/05-ask-before-you-act/call-tool.ts";
+const RUN = `${CALL_TOOL} execute_remediation ${PROBLEM_FOLDER}/${FILE}`;
 const right = rightAction("bad-release");
 
 async function actionRows(folder: string): Promise<AuditRow[]> {
