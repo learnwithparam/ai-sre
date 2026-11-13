@@ -27,7 +27,7 @@ class Copy(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         classes = dict(attrs).get("class", "") or ""
-        if self._skip or tag in RAW or any(c in classes for c in RAW_CLASSES):
+        if self._skip or tag in RAW or any(name in classes for name in RAW_CLASSES):
             self._skip += 1
 
     def handle_endtag(self, tag):
@@ -65,32 +65,34 @@ def settings():
 
 
 @pytest.fixture
-def client(settings, remediations, store):
-    app = create_app(settings=settings, remediations=remediations, store=store)
-    with TestClient(app, follow_redirects=False) as c:
-        yield c
+def client(settings, remediations):
+    app = create_app(settings=settings, remediations=remediations)
+    with TestClient(app, follow_redirects=False) as test_client:
+        yield test_client
 
 
 def login(client):
-    r = client.post("/login", data={"email": "oncall@example.com", "password": "correct horse"})
-    assert r.status_code == 303
+    response = client.post(
+        "/login", data={"email": "oncall@example.com", "password": "correct horse"}
+    )
+    assert response.status_code == 303
 
 
 @pytest.mark.parametrize("path", ["/", "/incidents/abc", "/actions/abc"])
 def test_pages_require_login(client, path):
-    r = client.get(path)
-    assert r.status_code == 303
-    assert r.headers["location"].startswith("/login")
+    response = client.get(path)
+    assert response.status_code == 303
+    assert response.headers["location"].startswith("/login")
 
 
 def test_wrong_password_is_refused(client):
-    r = client.post("/login", data={"email": "oncall@example.com", "password": "guess"})
-    assert r.status_code == 401
+    response = client.post("/login", data={"email": "oncall@example.com", "password": "guess"})
+    assert response.status_code == 401
 
 
 def test_mcp_requires_a_token(client):
-    r = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
-    assert r.status_code == 401
+    response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    assert response.status_code == 401
 
 
 def test_approval_page_shows_the_evidence(client, rollback, known_trace):
@@ -102,8 +104,8 @@ def test_approval_page_shows_the_evidence(client, rollback, known_trace):
 
 def test_approval_records_the_logged_in_approver(client, rollback, remediations, store):
     login(client)
-    r = client.post(f"/actions/{rollback.action_id}/approve")
-    assert r.status_code == 303
+    response = client.post(f"/actions/{rollback.action_id}/approve")
+    assert response.status_code == 303
     assert remediations.status(rollback.action_id).state == "approved"
     (event,) = store.events(action_id=rollback.action_id, kind="remediation_approved")
     assert event.actor == "oncall@example.com"
@@ -126,13 +128,14 @@ def test_every_machine_name_is_phrased():
     import harbour_control
     from harbour_control.policy import ACTIONS
 
-    source = "\n".join(p.read_text() for p in Path(harbour_control.__file__).parent.glob("*.py"))
+    modules = Path(harbour_control.__file__).parent.glob("*.py")
+    source = "\n".join(module.read_text() for module in modules)
     kinds = set(re.findall(r'"(incident_\w+|remediation_\w+|verification_\w+)"', source))
     rules = set(re.findall(r'rule="(\w+)"', source))
     names = set(ACTIONS) | kinds | rules
     assert len(names) > 10, "found almost no machine names to check"
-    assert [n for n in sorted(names) if "_" in phrase(n)] == []
-    assert [n for n in sorted(names) if not phrase(n)[0].isupper()] == []
+    assert [name for name in sorted(names) if "_" in phrase(name)] == []
+    assert [name for name in sorted(names) if not phrase(name)[0].isupper()] == []
 
 
 def test_the_pages_read_as_english(client, rollback, incident):
@@ -144,6 +147,6 @@ def test_the_pages_read_as_english(client, rollback, incident):
 
 
 def test_decisions_require_login(client, rollback, remediations):
-    r = client.post(f"/actions/{rollback.action_id}/approve")
-    assert r.status_code == 303
+    response = client.post(f"/actions/{rollback.action_id}/approve")
+    assert response.status_code == 303
     assert remediations.status(rollback.action_id).state == "pending"

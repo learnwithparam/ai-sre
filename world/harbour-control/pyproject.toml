@@ -26,3 +26,21 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["harbour_control"]
+
+# Python follows the same readable-code rules as TypeScript. See STANDARD.md, "Readable code".
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# PLR1702 (nesting depth) is a preview rule; turn on only the preview rules named here.
+preview = true
+explicit-preview-rules = true
+select = ["E", "F", "W", "I", "N", "B", "SIM", "C90", "PLR0913", "PLR0915", "PLR1702"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-args = 4
+max-statements = 30
+max-nested-blocks = 3

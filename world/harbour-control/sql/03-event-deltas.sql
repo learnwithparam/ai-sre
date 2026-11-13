@@ -4,11 +4,16 @@
 
 -- name: get_event_deltas
 -- teaches: compare the incident window with the same length of time just before it, and rank
--- what is new, then what grew most. New error signatures float to the top; steady background noise cancels out.
+-- what is new, then what grew most. New error signatures float to the top;
+-- steady background noise cancels out.
 -- example: service=booking-web incident_minutes=5
 WITH
     replaceRegexpAll(
-        replaceRegexpAll(replaceRegexpAll(Body, '\\[[^\\]]*\\]', '[ts]'), '[0-9a-f]{16,}|\\S+@\\S+', '<id>'),
+        replaceRegexpAll(
+            replaceRegexpAll(Body, '\\[[^\\]]*\\]', '[ts]'),
+            '[0-9a-f]{16,}|\\S+@\\S+',
+            '<id>'
+        ),
         '\\d+(\\.\\d+)?', 'N'
     ) AS pattern,
     now() - toIntervalMinute({incident_minutes:UInt32}) AS incident_start,
@@ -29,7 +34,8 @@ ORDER BY is_new DESC, severity = 'error' DESC, delta DESC
 LIMIT 20;
 
 -- name: error_span_deltas
--- teaches: the same delta over spans, so a failing endpoint and its status message show up by release.
+-- teaches: the same delta over spans,
+-- so a failing endpoint and its status message show up by release.
 -- example: service=booking-web incident_minutes=5
 WITH now() - toIntervalMinute({incident_minutes:UInt32}) AS incident_start
 SELECT
@@ -54,7 +60,11 @@ LIMIT 20;
 -- example: service=timetable-loader minutes=10
 SELECT
     replaceRegexpAll(
-        replaceRegexpAll(replaceRegexpAll(Body, '\\[[^\\]]*\\]', '[ts]'), '[0-9a-f]{16,}|\\S+@\\S+', '<id>'),
+        replaceRegexpAll(
+            replaceRegexpAll(Body, '\\[[^\\]]*\\]', '[ts]'),
+            '[0-9a-f]{16,}|\\S+@\\S+',
+            '<id>'
+        ),
         '\\d+(\\.\\d+)?', 'N'
     ) AS pattern,
     count() AS events,

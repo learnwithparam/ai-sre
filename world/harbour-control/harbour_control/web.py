@@ -1,26 +1,25 @@
 """Incident and approval pages, plus the MCP endpoint, in one app on :8090.
 
-Pages need an approver login. /mcp and /api need the bearer token the AI SRE holds. Every decision made
-here is recorded against the signed-in approver.
+Pages need an approver login. /mcp and /api need the bearer token the AI SRE holds. Every decision
+made here is recorded against the signed-in approver.
 """
 
 import hashlib
 import hmac
 import time
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import quote
 
-from fastapi import Header
-from datetime import UTC, datetime
-
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, Form, Header, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from harbour_control.approvals import InvalidTransition, Remediations
+from harbour_control.approvals import InvalidTransitionError, PlannedAction, Remediations
 from harbour_control.config import Settings
 from harbour_control.policy import ACTIONS, BLAST_RADIUS, PolicyError
-from harbour_control.store import Store
+from harbour_control.store import IncidentReport
 from harbour_control.tools import build_mcp
 
 COOKIE = "sre_session"
@@ -47,8 +46,9 @@ templates.env.globals["phrase"] = phrase
 
 
 def sign(secret: str, email: str, expires: int) -> str:
-    mac = hmac.new(secret.encode(), f"{email}|{expires}".encode(), hashlib.sha256).hexdigest()
-    return f"{email}|{expires}|{mac}"
+    message = f"{email}|{expires}".encode()
+    signature = hmac.new(secret.encode(), message, hashlib.sha256).hexdigest()
+    return f"{email}|{expires}|{signature}"
 
 
 def verify(secret: str, cookie: str | None) -> str | None:
@@ -60,9 +60,35 @@ def verify(secret: str, cookie: str | None) -> str | None:
         return None
 
 
-def create_app(
-    *, settings: Settings, remediations: Remediations, store: Store, telemetry=None, lifespan=None
-):
+def signed_in_user(settings: Settings, request: Request) -> str | None:
+    return verify(settings.session_secret, request.cookies.get(COOKIE))
+
+
+def login_redirect(request: Request) -> RedirectResponse:
+    return RedirectResponse(f"/login?next={quote(request.url.path)}", status_code=303)
+
+
+def see_other(path: str) -> RedirectResponse:
+    return RedirectResponse(path, status_code=303)
+
+
+def credentials_match(settings: Settings, email: str, password: str) -> bool:
+    # Both comparisons always run, so the response time does not reveal which one failed.
+    typed_email = email.lower().encode()
+    approver_email = settings.approver_email.lower().encode()
+    email_ok = hmac.compare_digest(typed_email, approver_email)
+    password_ok = hmac.compare_digest(password.encode(), settings.approver_password.encode())
+    return email_ok & password_ok
+
+
+def safe_next_path(next_path: str) -> str:
+    """Only a path on this site, so a crafted login link cannot send the approver elsewhere."""
+    if next_path.startswith("/") and not next_path.startswith("//"):
+        return next_path
+    return "/"
+
+
+def create_app(*, settings: Settings, remediations: Remediations, telemetry=None, lifespan=None):
     mcp = build_mcp(
         telemetry=telemetry,
         remediations=remediations,
@@ -70,21 +96,25 @@ def create_app(
         public_url=settings.public_url,
     )
     mcp_app = mcp.http_app(path="/mcp")
-    app = FastAPI(title="harbour-control", lifespan=lifespan or mcp_app.lifespan, docs_url=None, redoc_url=None)
+    app = FastAPI(
+        title="harbour-control",
+        lifespan=lifespan or mcp_app.lifespan,
+        docs_url=None,
+        redoc_url=None,
+    )
     app.state.mcp_app = mcp_app
+    add_login_routes(app, settings, remediations)
+    add_page_routes(app, settings, remediations)
+    add_decision_routes(app, settings, remediations)
+    add_api_routes(app, settings, remediations)
+    app.mount("/", mcp_app)
+    return app
 
-    def user(request: Request) -> str | None:
-        return verify(settings.session_secret, request.cookies.get(COOKIE))
 
-    def to_login(request: Request) -> RedirectResponse:
-        return RedirectResponse(f"/login?next={quote(request.url.path)}", status_code=303)
-
-    def back(path: str) -> RedirectResponse:
-        return RedirectResponse(path, status_code=303)
-
+def add_login_routes(app: FastAPI, settings: Settings, remediations: Remediations) -> None:
     @app.get("/healthz")
     def healthz():
-        store.events(kind="healthz")
+        remediations.store.events(kind="healthz")
         return {"ok": True}
 
     @app.get("/login", response_class=HTMLResponse)
@@ -93,39 +123,41 @@ def create_app(
 
     @app.post("/login")
     def login(request: Request, email: str = Form(), password: str = Form(), next: str = Form("/")):
-        # Both comparisons always run, so the response time does not reveal which one failed.
-        email_ok = hmac.compare_digest(email.lower().encode(), settings.approver_email.lower().encode())
-        password_ok = hmac.compare_digest(password.encode(), settings.approver_password.encode())
-        ok = email_ok & password_ok
-        if not ok:
-            ctx = {"next": next, "error": "That email and password do not match."}
-            return templates.TemplateResponse(request, "login.html", ctx, status_code=401)
-        target = next if next.startswith("/") and not next.startswith("//") else "/"
-        response = back(target)
-        secure = settings.public_url.startswith("https://")
+        if not credentials_match(settings, email, password):
+            context = {"next": next, "error": "That email and password do not match."}
+            return templates.TemplateResponse(request, "login.html", context, status_code=401)
+        response = see_other(safe_next_path(next))
+        expires = int(time.time()) + SESSION_S
         response.set_cookie(
-            COOKIE, sign(settings.session_secret, email.lower(), int(time.time()) + SESSION_S),
-            httponly=True, samesite="lax", secure=secure, max_age=SESSION_S,
-        )  # fmt: skip
+            COOKIE,
+            sign(settings.session_secret, email.lower(), expires),
+            httponly=True,
+            samesite="lax",
+            secure=settings.public_url.startswith("https://"),
+            max_age=SESSION_S,
+        )
         return response
+
+
+def add_page_routes(app: FastAPI, settings: Settings, remediations: Remediations) -> None:
+    store = remediations.store
 
     @app.get("/", response_class=HTMLResponse)
     def incidents(request: Request):
-        if not (who := user(request)):
-            return to_login(request)
-        return templates.TemplateResponse(
-            request, "incidents.html", {"who": who, "incidents": store.incidents()}
-        )
+        if not (who := signed_in_user(settings, request)):
+            return login_redirect(request)
+        context = {"who": who, "incidents": store.incidents()}
+        return templates.TemplateResponse(request, "incidents.html", context)
 
     @app.get("/incidents/{incident_id}", response_class=HTMLResponse)
     def incident(request: Request, incident_id: str):
-        if not (who := user(request)):
-            return to_login(request)
+        if not (who := signed_in_user(settings, request)):
+            return login_redirect(request)
         try:
             found = store.incident(incident_id)
         except KeyError:
             return HTMLResponse("No such incident", status_code=404)
-        ctx = {
+        context = {
             "who": who,
             "incident": found,
             "actions": remediations.actions_for(incident_id),
@@ -133,70 +165,90 @@ def create_app(
             "findings": remediations.findings_for(incident_id),
             "mcp_url": f"{settings.public_url}/mcp",
         }
-        return templates.TemplateResponse(request, "incident.html", ctx)
+        return templates.TemplateResponse(request, "incident.html", context)
 
     @app.get("/actions/{action_id}", response_class=HTMLResponse)
     def action(request: Request, action_id: str, error: str | None = None):
-        if not (who := user(request)):
-            return to_login(request)
+        if not (who := signed_in_user(settings, request)):
+            return login_redirect(request)
         try:
             state = remediations.status(action_id)
         except KeyError:
             return HTMLResponse("No such remediation", status_code=404)
-        ctx = {
+        every_target = {target for targets in ACTIONS.values() for target in targets}
+        context = {
             "who": who,
             "a": state,
             "incident": store.incident(state.incident_id),
             "blast_radius": BLAST_RADIUS[state.action],
             "actions": ACTIONS,
-            "targets": sorted({t for targets in ACTIONS.values() for t in targets}),
+            "targets": sorted(every_target),
             "error": error,
         }
-        return templates.TemplateResponse(request, "action.html", ctx)
+        return templates.TemplateResponse(request, "action.html", context)
 
-    def decide(request: Request, action_id: str, fn) -> RedirectResponse:
-        if not (who := user(request)):
-            return to_login(request)
-        try:
-            fn(who)
-        except (InvalidTransition, PolicyError) as err:
-            return back(f"/actions/{action_id}?error={quote(str(err))}")
-        return back(f"/actions/{action_id}")
 
+def decide(
+    settings: Settings, request: Request, action_id: str, record_decision: Callable[[str], object]
+) -> RedirectResponse:
+    """Record a decision as the signed-in approver, then show the action again."""
+    if not (who := signed_in_user(settings, request)):
+        return login_redirect(request)
+    try:
+        record_decision(who)
+    except (InvalidTransitionError, PolicyError) as err:
+        return see_other(f"/actions/{action_id}?error={quote(str(err))}")
+    return see_other(f"/actions/{action_id}")
+
+
+def only_allowed_params(action: str, target: str) -> dict[str, str]:
+    # Each allowed parameter has exactly one allowed value, so the form only picks action and
+    # target.
+    allowed = ACTIONS.get(action, {}).get(target, {})
+    return {name: next(iter(values)) for name, values in allowed.items()}
+
+
+def add_decision_routes(app: FastAPI, settings: Settings, remediations: Remediations) -> None:
     @app.post("/actions/{action_id}/approve")
     def approve(request: Request, action_id: str):
-        return decide(request, action_id, lambda who: remediations.approve(action_id, approver=who))
+        def record_approval(who: str):
+            return remediations.approve(action_id, approver=who)
+
+        return decide(settings, request, action_id, record_approval)
 
     @app.post("/actions/{action_id}/reject")
     def reject(request: Request, action_id: str, reason: str = Form("")):
-        return decide(
-            request, action_id, lambda who: remediations.reject(action_id, approver=who, reason=reason)
-        )
+        def record_rejection(who: str):
+            return remediations.reject(action_id, approver=who, reason=reason)
+
+        return decide(settings, request, action_id, record_rejection)
 
     @app.post("/actions/{action_id}/edit")
     def edit(request: Request, action_id: str, action: str = Form(), target: str = Form()):
-        # Each allowed parameter has exactly one allowed value, so the form only picks action and target.
-        params = {k: next(iter(v)) for k, v in ACTIONS.get(action, {}).get(target, {}).items()}
-        return decide(
-            request,
-            action_id,
-            lambda who: remediations.edit(action_id, editor=who, action=action, target=target, params=params),
-        )
+        plan = PlannedAction(action, target, only_allowed_params(action, target))
 
+        def record_edit(who: str):
+            return remediations.edit(action_id, editor=who, plan=plan)
+
+        return decide(settings, request, action_id, record_edit)
+
+
+def add_api_routes(app: FastAPI, settings: Settings, remediations: Remediations) -> None:
     @app.post("/api/incidents")
     def page(body: dict, authorization: str = Header("")):
         # A person or a noisy alert can page by hand; the incident it opens is like any other.
-        if not hmac.compare_digest(authorization.encode(), f"Bearer {settings.mcp_token}".encode()):
+        expected = f"Bearer {settings.mcp_token}".encode()
+        if not hmac.compare_digest(authorization.encode(), expected):
             return JSONResponse({"error": "a bearer token is required"}, status_code=401)
-        found = store.open_incident(
-            rule="manual_page", service=str(body.get("service", "")), summary=str(body.get("summary", "")),
-            opened_at=datetime.now(UTC), details={"paged_by": str(body.get("paged_by", "on-call"))},
-        )  # fmt: skip
+        report = IncidentReport(
+            rule="manual_page",
+            service=str(body.get("service", "")),
+            summary=str(body.get("summary", "")),
+            details={"paged_by": str(body.get("paged_by", "on-call"))},
+        )
+        found = remediations.store.open_incident(report, opened_at=datetime.now(UTC))
         return {"incident_id": found.id}
 
     @app.exception_handler(KeyError)
-    def not_found(request: Request, exc: KeyError):
-        return JSONResponse({"error": f"not found: {exc}"}, status_code=404)
-
-    app.mount("/", mcp_app)
-    return app
+    def not_found(request: Request, error: KeyError):
+        return JSONResponse({"error": f"not found: {error}"}, status_code=404)

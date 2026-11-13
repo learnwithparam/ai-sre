@@ -35,7 +35,7 @@ def clickhouse(settings: Settings, user: str, password: str):
 def build(settings: Settings):
     queries = load_queries(settings.sql_dir)
     store = ClickHouseStore(clickhouse(settings, settings.writer_user, settings.writer_password))
-    store.migrate([q.sql for name, q in queries.items() if name.startswith("create_")])
+    store.migrate([query.sql for name, query in queries.items() if name.startswith("create_")])
     telemetry = ClickHouseTelemetry(
         clickhouse(settings, settings.reader_user, settings.reader_password), queries
     )
@@ -44,13 +44,13 @@ def build(settings: Settings):
     detector = Detector(
         signals=ClickHouseSignals(telemetry), store=store, clock=utcnow, remediations=remediations
     )
-    return store, telemetry, remediations, detector
+    return telemetry, remediations, detector
 
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     settings = load_settings(os.environ)
-    store, telemetry, remediations, detector = build(settings)
+    telemetry, remediations, detector = build(settings)
 
     async def detector_loop():
         while True:
@@ -68,9 +68,13 @@ def main() -> None:
             task.cancel()
 
     app = create_app(
-        settings=settings, remediations=remediations, store=store, telemetry=telemetry, lifespan=lifespan
+        settings=settings,
+        remediations=remediations,
+        telemetry=telemetry,
+        lifespan=lifespan,
     )
-    uvicorn.run(app, host="0.0.0.0", port=8090, log_level="info")  # noqa: S104  container port
+    # Every interface, because the container's published port is the only way in.
+    uvicorn.run(app, host="0.0.0.0", port=8090, log_level="info")
 
 
 if __name__ == "__main__":

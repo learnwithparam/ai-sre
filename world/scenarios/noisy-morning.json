@@ -6,7 +6,13 @@
   "pattern": [],
   "right_action": null,
   "distractors": [
-    { "signal": "card declined by payments gateway", "why": "the decline rate matches the baseline" },
-    { "signal": "TLS handshake failed with payments gateway", "why": "it stopped 30 minutes ago, before the page" }
+    {
+      "signal": "card declined by payments gateway",
+      "why": "the decline rate matches the baseline"
+    },
+    {
+      "signal": "TLS handshake failed with payments gateway",
+      "why": "it stopped 30 minutes ago, before the page"
+    }
   ]
 }

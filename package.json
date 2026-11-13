@@ -4,7 +4,10 @@
   "type": "module",
   "packageManager": "bun@1.4.4",
   "scripts": {
-    "check": "bun install --frozen-lockfile && bun scripts/check.ts && bun scripts/verify.ts --all && bun test",
+    "check": "bun scripts/readable.ts && bun scripts/plain-english.ts && bun install --frozen-lockfile && bun scripts/check.ts && bun scripts/verify.ts --all && bun test",
+    "readable": "bun scripts/readable.ts",
+    "plain-english": "bun scripts/plain-english.ts",
+    "format": "biome check --write .",
     "verify": "bun scripts/verify.ts",
     "world": "bun scripts/world.ts",
     "demo": "bun agent/demo.ts",
@@ -33,6 +36,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.6.5",
     "@types/bun": "1.4.4",
     "chdb": "3.5.0",
     "playwright": "1.65.0"

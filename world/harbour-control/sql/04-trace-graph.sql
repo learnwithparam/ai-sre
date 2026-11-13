@@ -39,7 +39,8 @@ ORDER BY Timestamp
 LIMIT 200;
 
 -- name: errors_by_release
--- teaches: break the failure down by service.version; a change that lines up with a release is a lead.
+-- teaches: break the failure down by service.version;
+-- a change that lines up with a release is a lead.
 -- example: service=booking-web minutes=30
 SELECT
     ResourceAttributes['service.version'] AS release,
@@ -58,19 +59,26 @@ ORDER BY first_seen
 LIMIT 20;
 
 -- name: trace_window
--- teaches: grounding. A proposal is refused unless every trace id it cites exists as a span or, for a
--- request that never finished and so never exported a span, as a correlated log line. The control plane
--- also reads when each trace began and which services it touched, so an old trace or one that never reached
--- the failing service cannot justify a change.
+-- teaches: grounding. A proposal is refused unless every trace id it cites exists as a span or,
+-- for a request that never finished and so never exported a span, as a correlated log line.
+-- The control plane also reads when each trace began and which services it touched,
+-- so an old trace or one that never reached the failing service cannot justify a change.
 -- example: trace_ids=@sample_error_traces hours=6
 SELECT trace_id, min(ts) AS first_seen, groupUniqArray(service) AS services FROM (
     SELECT TraceId AS trace_id, Timestamp AS ts, ServiceName AS service
     FROM default.otel_traces
-    WHERE TraceId IN {trace_ids:Array(String)} AND Timestamp > now() - toIntervalHour({hours:UInt32})
+    WHERE TraceId IN {trace_ids:Array(String)}
+      AND Timestamp > now() - toIntervalHour({hours:UInt32})
     UNION ALL
-    SELECT if(TraceId != '', TraceId, LogAttributes['trace_id']) AS trace_id, Timestamp AS ts, ServiceName AS service
+    SELECT
+        if(TraceId != '', TraceId, LogAttributes['trace_id']) AS trace_id,
+        Timestamp AS ts,
+        ServiceName AS service
     FROM default.otel_logs
-    WHERE (TraceId IN {trace_ids:Array(String)} OR LogAttributes['trace_id'] IN {trace_ids:Array(String)})
+    WHERE (
+        TraceId IN {trace_ids:Array(String)}
+        OR LogAttributes['trace_id'] IN {trace_ids:Array(String)}
+    )
       AND Timestamp > now() - toIntervalHour({hours:UInt32})
 )
 GROUP BY trace_id
@@ -100,7 +108,8 @@ WHERE ServiceName = {service:String} AND Timestamp > now() - toIntervalHour({hou
 LIMIT 50;
 
 -- name: log_contains
--- teaches: grounding. A finding that quotes a log line is refused unless that exact text was logged.
+-- teaches: grounding.
+-- A finding that quotes a log line is refused unless that exact text was logged.
 -- example: service=booking-web text=listening on hours=6
 SELECT 1 AS found
 FROM default.otel_logs

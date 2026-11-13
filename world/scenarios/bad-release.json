@@ -4,8 +4,15 @@
   "service": "booking-web",
   "change": { "kind": "release", "value": "v2" },
   "pattern": ["connection pool exhausted", "audit_trail"],
-  "right_action": { "action": "rollback_release", "target": "booking-web", "params": { "release": "v1" } },
+  "right_action": {
+    "action": "rollback_release",
+    "target": "booking-web",
+    "params": { "release": "v1" }
+  },
   "distractors": [
-    { "signal": "card declined by payments gateway", "why": "about 1 in 30 cards is declined at every hour; the rate did not change" }
+    {
+      "signal": "card declined by payments gateway",
+      "why": "about 1 in 30 cards is declined at every hour; the rate did not change"
+    }
   ]
 }

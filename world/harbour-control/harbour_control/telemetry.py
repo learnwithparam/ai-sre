@@ -1,4 +1,7 @@
-"""Read-only access to ClickStack telemetry, always as the sre_agent user, always through named SQL."""
+"""Read-only access to ClickStack telemetry.
+
+It always reads as the sre_agent user, and always through named SQL.
+"""
 
 from datetime import UTC
 from typing import Any
@@ -7,9 +10,16 @@ from harbour_control.approvals import GROUNDING_HOURS, TraceSeen
 from harbour_control.queries import Query
 
 
+def trace_seen(row: dict[str, Any]) -> TraceSeen:
+    first_seen = row["first_seen"]
+    first_seen = first_seen.replace(tzinfo=first_seen.tzinfo or UTC)
+    return TraceSeen(row["trace_id"], first_seen, frozenset(row["services"]))
+
+
 class ClickHouseTelemetry:
     def __init__(self, client, queries: dict[str, Query]):
-        self.client, self.queries = client, queries
+        self.client = client
+        self.queries = queries
 
     def rows(self, name: str, **params: Any) -> list[dict[str, Any]]:
         result = self.client.query(self.queries[name].sql, parameters=params)
@@ -17,17 +27,11 @@ class ClickHouseTelemetry:
 
     def trace_window(self, trace_ids: list[str]) -> list[TraceSeen]:
         rows = self.rows("trace_window", trace_ids=trace_ids, hours=GROUNDING_HOURS)
-        return [
-            TraceSeen(
-                r["trace_id"],
-                r["first_seen"].replace(tzinfo=r["first_seen"].tzinfo or UTC),
-                frozenset(r["services"]),
-            )
-            for r in rows
-        ]
+        return [trace_seen(row) for row in rows]
 
     def releases(self, service: str) -> set[str]:
-        return {r["release"] for r in self.rows("service_releases", service=service, hours=GROUNDING_HOURS)}
+        rows = self.rows("service_releases", service=service, hours=GROUNDING_HOURS)
+        return {row["release"] for row in rows}
 
     def service_seen(self, service: str) -> bool:
         return bool(self.releases(service))

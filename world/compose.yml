@@ -1,5 +1,7 @@
-# Gullrock Ferries: the booking system, its telemetry, and harbour-control, the AI SRE's control plane.
-# Start it with `bun run world`; that script writes .env, builds both booking-web releases and waits for health.
+# Gullrock Ferries: the booking system, its telemetry,
+# and harbour-control, the AI SRE's control plane.
+# Start it with `bun run world`; that script writes .env,
+# builds both booking-web releases and waits for health.
 name: gullrock
 
 x-otlp: &otlp
@@ -24,7 +26,13 @@ services:
     healthcheck:
       # The collector opens 4318 only once a team exists, so health is ClickHouse and the UI;
       # `bun run world` creates the team and then waits for ingest itself.
-      test: ["CMD", "bash", "-c", "curl -sf http://localhost:8123/ping >/dev/null && curl -sf -o /dev/null http://localhost:8080"]
+      test:
+        [
+          "CMD",
+          "bash",
+          "-c",
+          "curl -sf http://localhost:8123/ping >/dev/null && curl -sf -o /dev/null http://localhost:8080",
+        ]
       interval: 5s
       timeout: 10s
       retries: 30
@@ -69,7 +77,13 @@ services:
       - ${BOOKING_HOOKS:-./booking-web/src/hooks}:/app/world/booking-web/hooks-live:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "bun", "-e", "const r = await fetch('http://localhost:8000/health'); process.exit(r.ok ? 0 : 1)"]
+      test:
+        [
+          "CMD",
+          "bun",
+          "-e",
+          "const r = await fetch('http://localhost:8000/health'); process.exit(r.ok ? 0 : 1)",
+        ]
       interval: 5s
       timeout: 10s
       retries: 20
@@ -89,7 +103,8 @@ services:
       <<: *otlp
       TIMETABLE_RELEASE: t3
     restart: unless-stopped
-    # Two hung requests leak about 20 MB a second each; the cap keeps a forgotten hang from eating the laptop.
+    # Two hung requests leak about 20 MB a second each;
+    # the cap keeps a forgotten hang from eating the laptop.
     deploy:
       resources:
         limits:
@@ -141,7 +156,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/healthz', timeout=3)"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8090/healthz', timeout=3)",
+        ]
       interval: 5s
       timeout: 10s
       retries: 20

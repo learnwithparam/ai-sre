@@ -62,6 +62,7 @@
     .section { display: grid; gap: 12px; margin-top: 36px; }
     .muted { color: var(--ink-muted); }
     .mono, code, pre { font-family: var(--mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+    td a { color: var(--ink); }
     .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: var(--mono);
               font-size: 0.8rem; color: var(--ink-faint); margin-bottom: 14px; }
     .crumbs a { color: var(--ink-muted); text-decoration: none; }
@@ -78,7 +79,6 @@
     tbody tr:last-child td { border-bottom: 0; }
     th { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
          color: var(--ink-faint); background: var(--surface-raised); }
-    td a { color: var(--ink); }
     /* A service name broke at its hyphen at 1280 wide, and a click between the halves missed the link. */
     .service { white-space: nowrap; }
     .facts th { background: transparent; text-transform: none; letter-spacing: 0; font-size: 0.85rem;
