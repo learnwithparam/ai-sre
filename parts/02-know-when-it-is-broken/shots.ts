@@ -3,7 +3,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "playwright";
-import { countPages, isPaging, type Moment, queryAtMoment, replayRule } from "./replay";
+import { isPaging, type Moment, queryAtMoment, replayRule } from "./replay";
 
 const PART = import.meta.dir;
 const executablePath = existsSync("/opt/pw-browsers/chromium")
@@ -57,7 +57,8 @@ async function drawErrorRate() {
 
 function timelineLine(name: string, timeline: Moment[]): string {
   const marks = timeline.map((moment) => (isPaging(moment, "page") ? "P" : ".")).join("");
-  return `${name.padEnd(15)} ${marks}   ${countPages(timeline, "page")} page(s)`;
+  // No page count here: counting the pages is the learner's job in this step.
+  return `${name.padEnd(15)} ${marks}`;
 }
 
 async function replayLines(sql: string): Promise<string[]> {

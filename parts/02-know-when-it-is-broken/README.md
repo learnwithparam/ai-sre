@@ -48,12 +48,12 @@ flowchart LR
 
 You do four steps. Every check runs on two recorded mornings at Gullrock, so you do not need the world running. You can still try each query on the live world in HyperDX.
 
-| Step                   | Minutes | You produce                                                           | The check reads                                                                 |
-| ---------------------- | ------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `chart-the-error-rate` | 15      | `chart-the-error-rate.sql`: errors over requests per 10 second bucket | every bucket against the reference on the recorded bad-release morning          |
-| `flag-the-anomaly`     | 20      | `flag-the-anomaly.sql`: a 3 sigma rule over a clean baseline          | your rule, replayed every 30 s: pages on bad-release, silent on noisy-morning   |
-| `burn-the-budget`      | 20      | `burn-the-budget.sql`: burn for a 99.5% objective over 5 min and 1 h  | both burn rates within 1% of the reference; the page fires on bad-release only  |
-| `count-the-pages`      | 15      | `count-the-pages.md`: pages before and after your rule                | both rules replayed, and the pages counted again, to match your two numbers     |
+| Step                   | Minutes | You produce                                                           | The check reads                                                                |
+| ---------------------- | ------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `chart-the-error-rate` | 15      | `chart-the-error-rate.sql`: errors over requests per 10 second bucket | every bucket against the reference on the recorded bad-release morning         |
+| `flag-the-anomaly`     | 20      | `flag-the-anomaly.sql`: a 3 sigma rule over a clean baseline          | your rule, replayed every 30 s: pages on bad-release, silent on noisy-morning  |
+| `burn-the-budget`      | 20      | `burn-the-budget.sql`: burn for a 99.5% objective over 5 min and 1 h  | both burn rates within 1% of the reference; the page fires on bad-release only |
+| `count-the-pages`      | 15      | `count-the-pages.md`: pages before and after your rule                | both rules replayed, and the pages counted again, to match your two numbers    |
 
 The two recordings:
 
@@ -122,7 +122,7 @@ Part know-when-it-is-broken:
 
 ## Assignment
 
-The old alert paged PAGES_BEFORE times on the two recorded mornings. Hand in the rule that replaces it.
+The old alert pages 12 times on the two recorded mornings, and 11 of them are on the morning when nothing is broken. Hand in the rule that replaces it.
 
 - **Hand in**: `burn-the-budget.sql` and `count-the-pages.md` from your `problem/` folders.
 - **Checked by**: `bun run verify part know-when-it-is-broken`.
@@ -139,6 +139,6 @@ For advanced learners: add a third, slower window, such as 6 hours with a burn a
 
 ## Finished
 
-You now have a detector you can defend with numbers. It reads the error rate from the traces, compares it with a clean baseline, and pages on the burn of a real objective. The replay shows how many people it would wake: PAGES_BEFORE pages with the old alert, one with yours.
+You now have a detector you can defend with numbers. It reads the error rate from the traces, compares it with a clean baseline, and pages on the burn of a real objective. The replay shows how many people it would wake: 12 pages with the old alert, 1 with yours.
 
-A page says that something is broken. It does not say what. In the next part, `look-without-touching`, you connect your AI SRE to the telemetry with read-only tools, and you find the cause of the bad release by hand.
+A page says that something is broken. It does not say what. In the next part, `look-without-touching`, you connect your AI SRE to the telemetry with read-only tools. Then you find the cause of the bad release by hand.

@@ -11,9 +11,11 @@ A **page** is one alert that calls a person. An alert that stays on for five che
 For example, this is the old alert replayed through both recorded mornings. Each character is one check, 30 seconds apart:
 
 ```text
-bad-release     OLD_ALERT_BAD_RELEASE
-noisy-morning   OLD_ALERT_NOISY_MORNING
+bad-release     PPPPPPPPPPPPPPPPPPP.
+noisy-morning   P...PPPPPPPP.......PPP..PP....PP...PP..PPP.PPP.......PPPPPP.......P.PPPPPPPPP.
 ```
+
+On the noisy morning, nothing is broken, and the old alert still turns on again and again. The first long run is the TLS blip. Most of the others are card declines.
 
 ![Your rule and the old alert, replayed through both mornings](../images/expected.png)
 
@@ -64,11 +66,11 @@ The most common mistake is to count every `P`. A `P` is one check, not one page.
         Try next: replay old-alert.sql, then add up the pages of both lines; a run of P next to each other is one page, not one page per P
 ```
 
-| What you see                                | Fix                                                             |
-| ------------------------------------------- | --------------------------------------------------------------- |
-| `FAIL my-rule.sql holds your burn-the-budget rule` | Paste the whole file, from the first line to the last.   |
-| `FAIL Pages after is the number of pages`   | Count both lines, `bad-release` and `noisy-morning`, and add them. |
-| `FAIL old-alert.sql is still the old alert` | Put the file back as it was. `git checkout` that one file.      |
+| What you see                                       | Fix                                                                |
+| -------------------------------------------------- | ------------------------------------------------------------------ |
+| `FAIL my-rule.sql holds your burn-the-budget rule` | Paste the whole file, from the first line to the last.             |
+| `FAIL Pages after is the number of pages`          | Count both lines, `bad-release` and `noisy-morning`, and add them. |
+| `FAIL old-alert.sql is still the old alert`        | Put the file back as it was. `git checkout` that one file.         |
 
 ## Words you will use
 

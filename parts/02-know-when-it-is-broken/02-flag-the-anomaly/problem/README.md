@@ -4,7 +4,7 @@
 
 You now have an error rate for every 10 seconds. When is it high enough to page someone?
 
-A fixed line, such as "page above 5%", is wrong for most services. A busy service may live at 3%. A quiet one may live at 0%. So you compare the last minute with what is normal for this service. That normal is the **baseline**.
+A fixed line, such as "page above 5%", fits few services. So you compare the last minute with what is normal for this service: the **baseline**.
 
 The 3 sigma rule does this. Sigma is the usual distance of a bucket from the mean. The **bound** is the mean plus three sigma. A minute above the bound is very unlikely to be normal.
 
@@ -18,7 +18,7 @@ with past incidents          0.057      0.211          0.096              0
 without past incidents       0.020      0.092          0.096              1
 ```
 
-With the past incidents in the baseline, the bound is 21%, and nobody is paged. Without them, the bound is 9%, and the rule pages.
+With past incidents in the baseline, the bound is 21%: no page. Without them, it is 9%: a page.
 
 ```mermaid
 flowchart LR
@@ -56,7 +56,7 @@ bun run verify flag-the-anomaly
 
 Expect: `Done. All 8 rules pass.` and a `Progress:` line.
 
-The check replays two recordings. At each moment it moves the recording so that `now()` is that moment, then runs your query.
+The check replays two recordings and runs your query at each moment.
 
 ## If you get stuck
 
