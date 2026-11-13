@@ -43,12 +43,22 @@ class Store:
         raise NotImplementedError
 
     def events(
-        self, *, incident_id: str | None = None, action_id: str | None = None, kind: str | None = None
+        self,
+        *,
+        incident_id: str | None = None,
+        action_id: str | None = None,
+        kind: str | None = None,
     ) -> list[Event]:
         raise NotImplementedError
 
     def open_incident(
-        self, *, rule: str, service: str, summary: str, opened_at: datetime, details: dict | None = None
+        self,
+        *,
+        rule: str,
+        service: str,
+        summary: str,
+        opened_at: datetime,
+        details: dict | None = None,
     ) -> Incident:
         incident_id = new_id("inc")
         payload = {"rule": rule, "service": service, "summary": summary, "details": details or {}}
@@ -78,7 +88,9 @@ class Store:
 
     def incidents(self) -> list[Incident]:
         opened = self.events(kind="incident_opened")
-        return [self.incident(e.incident_id) for e in sorted(opened, key=lambda e: e.ts, reverse=True)]
+        return [
+            self.incident(e.incident_id) for e in sorted(opened, key=lambda e: e.ts, reverse=True)
+        ]
 
     def incident_windows(
         self, rule: str, service: str, *, now: datetime, margin: timedelta
@@ -160,7 +172,11 @@ class ClickHouseStore(Store):
 
     def events(self, *, incident_id=None, action_id=None, kind=None) -> list[Event]:
         # An empty parameter means "any", so the SQL text is fixed and every value is bound.
-        params = {"incident_id": incident_id or "", "action_id": action_id or "", "kind": kind or ""}
+        params = {
+            "incident_id": incident_id or "",
+            "action_id": action_id or "",
+            "kind": kind or "",
+        }
         rows = self.client.query(
             """SELECT ts, incident_id, action_id, kind, actor, payload FROM sre.incident_events
                WHERE ({incident_id:String} = '' OR incident_id = {incident_id:String})
@@ -170,7 +186,8 @@ class ClickHouseStore(Store):
             parameters=params,
         ).result_rows
         return [
-            Event(ts.replace(tzinfo=UTC), i, a, k, actor, json.loads(p)) for ts, i, a, k, actor, p in rows
+            Event(ts.replace(tzinfo=UTC), i, a, k, actor, json.loads(p))
+            for ts, i, a, k, actor, p in rows
         ]
 
 

@@ -2,7 +2,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-export const read = (dir: string, name: string) => (existsSync(join(dir, name)) ? readFileSync(join(dir, name), "utf8") : "");
+export const read = (dir: string, name: string) =>
+  existsSync(join(dir, name)) ? readFileSync(join(dir, name), "utf8") : "";
 
 // "Label: value" lines, as the answers files use.
 export function field(text: string, label: string): string {

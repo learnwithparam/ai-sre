@@ -18,12 +18,12 @@ flowchart LR
 
 ## Steps
 
-| Step | Minutes | You produce | The check reads |
-|---|---|---|---|
-| `chart-the-error-rate` | 15 | `chart-the-error-rate.sql`: errors over requests per 10 second bucket | rows against the reference shape on the recorded bad-release window; every rate between 0 and 1 |
-| `flag-the-anomaly` | 20 | a 3 sigma rule over a clean baseline | pages on the recorded bad-release window, silent on the recorded noisy-morning window |
-| `burn-the-budget` | 20 | SLO burn for a 99.5% booking objective over 5 minutes and 1 hour | burn rate within 1% of the reference; the page rule fires on bad-release only |
-| `count-the-pages` | 15 | `answers/count-the-pages.md`: pages before and after your rule | replays the recorded windows and gets the same two numbers |
+| Step                   | Minutes | You produce                                                           | The check reads                                                                                 |
+| ---------------------- | ------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `chart-the-error-rate` | 15      | `chart-the-error-rate.sql`: errors over requests per 10 second bucket | rows against the reference shape on the recorded bad-release window; every rate between 0 and 1 |
+| `flag-the-anomaly`     | 20      | a 3 sigma rule over a clean baseline                                  | pages on the recorded bad-release window, silent on the recorded noisy-morning window           |
+| `burn-the-budget`      | 20      | SLO burn for a 99.5% booking objective over 5 minutes and 1 hour      | burn rate within 1% of the reference; the page rule fires on bad-release only                   |
+| `count-the-pages`      | 15      | `answers/count-the-pages.md`: pages before and after your rule        | replays the recorded windows and gets the same two numbers                                      |
 
 ## Walkthrough
 

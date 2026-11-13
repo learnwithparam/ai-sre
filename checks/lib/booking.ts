@@ -11,32 +11,66 @@ export async function startBooking(hooksDir: string, release = "v7") {
   const port = 20000 + Math.floor(Math.random() * 20000);
   const proc = Bun.spawn(["bun", join(ROOT, "world", "booking-web", "src", "server.ts")], {
     env: {
-      PATH: process.env.PATH ?? "", HOME: process.env.HOME ?? "",
-      PORT: String(port), HOST: "127.0.0.1", DATABASE_URL: "sqlite://:memory:", BOOKING_RELEASE: release,
-      BOOKING_HOOKS_DIR: hooksDir, OTEL_EXPORTER_OTLP_ENDPOINT: receiver.url, OTEL_EXPORT_DELAY_MS: "100", BOOKING_QUIET: "1",
+      PATH: process.env.PATH ?? "",
+      HOME: process.env.HOME ?? "",
+      PORT: String(port),
+      HOST: "127.0.0.1",
+      DATABASE_URL: "sqlite://:memory:",
+      BOOKING_RELEASE: release,
+      BOOKING_HOOKS_DIR: hooksDir,
+      OTEL_EXPORTER_OTLP_ENDPOINT: receiver.url,
+      OTEL_EXPORT_DELAY_MS: "100",
+      BOOKING_QUIET: "1",
     },
-    stdout: "pipe", stderr: "pipe",
+    stdout: "pipe",
+    stderr: "pipe",
   });
   const base = `http://127.0.0.1:${port}`;
   let up = false;
   for (let i = 0; i < 100 && !up; i++) {
-    up = await fetch(`${base}/health`).then((r) => r.ok).catch(() => false);
+    up = await fetch(`${base}/health`)
+      .then((r) => r.ok)
+      .catch(() => false);
     if (!up) await Bun.sleep(100);
   }
   const call = async (method: string, path: string, body?: unknown) => {
-    const res = await fetch(base + path, { method, headers: { "content-type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+    const res = await fetch(base + path, {
+      method,
+      headers: { "content-type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+    });
     const text = await res.text();
     let json: any = null;
-    try { json = JSON.parse(text); } catch { /* html */ }
+    try {
+      json = JSON.parse(text);
+    } catch {
+      /* html */
+    }
     return { status: res.status, json, text };
   };
   return {
-    up, release, ...receiver, call,
+    up,
+    release,
+    ...receiver,
+    call,
     async book(email = "ana@example.test") {
-      return call("POST", "/api/bookings", { name: "Ana Ferreira", email, sailing_id: "2", vehicle: "car", card: "4000000000000001" });
+      return call("POST", "/api/bookings", {
+        name: "Ana Ferreira",
+        email,
+        sailing_id: "2",
+        vehicle: "car",
+        card: "4000000000000001",
+      });
     },
-    async flush() { await call("POST", "/telemetry/flush"); await Bun.sleep(150); },
-    async stop() { proc.kill(); await proc.exited; receiver.stop(); },
+    async flush() {
+      await call("POST", "/telemetry/flush");
+      await Bun.sleep(150);
+    },
+    async stop() {
+      proc.kill();
+      await proc.exited;
+      receiver.stop();
+    },
   };
 }
 

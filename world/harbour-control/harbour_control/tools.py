@@ -56,8 +56,14 @@ def jsonable(value: Any) -> Any:
     return value
 
 
-def build_mcp(*, telemetry, remediations: Remediations, token: str | None, public_url: str = "") -> FastMCP:
-    auth = StaticTokenVerifier(tokens={token: {"client_id": "ai-sre", "scopes": []}}) if token else None
+def build_mcp(
+    *, telemetry, remediations: Remediations, token: str | None, public_url: str = ""
+) -> FastMCP:
+    auth = (
+        StaticTokenVerifier(tokens={token: {"client_id": "ai-sre", "scopes": []}})
+        if token
+        else None
+    )
     mcp = FastMCP("harbour-control", instructions=INSTRUCTIONS, auth=auth)
     store = remediations.store
     tool = sre_tool(mcp)
@@ -80,7 +86,9 @@ def build_mcp(*, telemetry, remediations: Remediations, token: str | None, publi
     def analyze_service_anomalies(baseline_minutes: int = 10) -> dict:
         """Compare each service's last minute with a 3 sigma bound over its trailing baseline."""
         return {
-            "services": rows("analyze_service_anomalies", baseline_minutes=baseline_minutes, min_delta=0.05)
+            "services": rows(
+                "analyze_service_anomalies", baseline_minutes=baseline_minutes, min_delta=0.05
+            )
         }
 
     @tool
@@ -91,13 +99,18 @@ def build_mcp(*, telemetry, remediations: Remediations, token: str | None, publi
             "log_patterns": rows("get_event_deltas", 10, **window),
             "span_changes": rows("error_span_deltas", 10, **window),
             "releases": rows("errors_by_release", service=service, minutes=incident_minutes * 3),
-            "failing_traces": rows("sample_error_traces", 5, service=service, minutes=incident_minutes),
+            "failing_traces": rows(
+                "sample_error_traces", 5, service=service, minutes=incident_minutes
+            ),
         }
 
     @tool
     def event_patterns(service: str, minutes: int = 10) -> dict:
         """Cluster recent logs for one service into patterns with counts and an example each."""
-        return {"service": service, "patterns": rows("event_patterns", 15, service=service, minutes=minutes)}
+        return {
+            "service": service,
+            "patterns": rows("event_patterns", 15, service=service, minutes=minutes),
+        }
 
     @tool
     def get_trace_waterfall(trace_id: str) -> dict:
@@ -122,7 +135,11 @@ def build_mcp(*, telemetry, remediations: Remediations, token: str | None, publi
     @tool
     def slo_burn(service: str, slo: float = 0.995) -> dict:
         """Error budget burn rate over the last hour and the last six hours for one service."""
-        return {"service": service, "slo": slo, "burn": rows("slo_burn", 1, service=service, slo=slo)}
+        return {
+            "service": service,
+            "slo": slo,
+            "burn": rows("slo_burn", 1, service=service, slo=slo),
+        }
 
     @tool
     def list_incidents(state: str = "open") -> dict:
@@ -143,7 +160,12 @@ def build_mcp(*, telemetry, remediations: Remediations, token: str | None, publi
         ]
         allowed = {action: sorted(targets) for action, targets in ACTIONS.items()}
         findings = [
-            {"finding_id": f.finding_id, "service": f.service, "change": f.change, "hypothesis": f.hypothesis}
+            {
+                "finding_id": f.finding_id,
+                "service": f.service,
+                "change": f.change,
+                "hypothesis": f.hypothesis,
+            }
             for f in remediations.findings_for(incident_id)
         ]
         return {
@@ -169,8 +191,15 @@ def build_mcp(*, telemetry, remediations: Remediations, token: str | None, publi
 
     @tool
     def submit_finding(
-        incident_id: Annotated[str, Field(description="The incident id, for example inc-1a2b3c4d5e6f.")],
-        service: Annotated[str, Field(description="The service whose telemetry shows the fault, as telemetry names it.")],
+        incident_id: Annotated[
+            str, Field(description="The incident id, for example inc-1a2b3c4d5e6f.")
+        ],
+        service: Annotated[
+            str,
+            Field(
+                description="The service whose telemetry shows the fault, as telemetry names it."
+            ),
+        ],
         change: Annotated[
             dict[str, str],
             Field(
@@ -180,15 +209,21 @@ def build_mcp(*, telemetry, remediations: Remediations, token: str | None, publi
                 )
             ),
         ],
-        pattern: Annotated[str, Field(description="The log or error pattern that is new in the incident window.")],
-        trace_ids: Annotated[list[str], Field(description="Two or more trace ids exactly as a tool returned them.")],
+        pattern: Annotated[
+            str, Field(description="The log or error pattern that is new in the incident window.")
+        ],
+        trace_ids: Annotated[
+            list[str], Field(description="Two or more trace ids exactly as a tool returned them.")
+        ],
         hypothesis: Annotated[str, Field(description="One sentence: what fails, where, and why.")],
         quote: Annotated[
             str, Field(description="One failing log line, copied word for word from a tool result.")
         ] = "",
         ruled_out: Annotated[
             list[dict[str, str]] | None,
-            Field(description='Signals you checked and ruled out, each {"signal": "...", "why": "..."}.'),
+            Field(
+                description='Signals you checked and ruled out, each {"signal": "...", "why": "..."}.'
+            ),
         ] = None,
     ) -> dict:
         """Record your diagnosis. It is checked against telemetry and refused if any evidence is not real."""
@@ -199,14 +234,21 @@ def build_mcp(*, telemetry, remediations: Remediations, token: str | None, publi
             )  # fmt: skip
         except Ungrounded as err:
             raise ToolError(f"finding refused: {err}") from err
-        return {"finding_id": f.finding_id, "next": "Propose one remediation for this finding, or none if nothing changed."}
+        return {
+            "finding_id": f.finding_id,
+            "next": "Propose one remediation for this finding, or none if nothing changed.",
+        }
 
     @tool
     def propose_remediation(
         incident_id: Annotated[str, Field(description="The incident id.")],
-        finding_id: Annotated[str, Field(description="The finding_id that submit_finding returned.")],
+        finding_id: Annotated[
+            str, Field(description="The finding_id that submit_finding returned.")
+        ],
         action: Annotated[str, Field(description="One of get_incident's allowed_actions keys.")],
-        target: Annotated[str, Field(description="A target listed for that action in allowed_actions.")],
+        target: Annotated[
+            str, Field(description="A target listed for that action in allowed_actions.")
+        ],
         params: Annotated[
             dict[str, str] | None,
             Field(

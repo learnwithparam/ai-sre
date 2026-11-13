@@ -26,8 +26,17 @@ async function open(name: string) {
   for (const [db, table, ts] of TABLES) {
     const path = join(dir, `${table}.native.zst`);
     session.query(`CREATE DATABASE IF NOT EXISTS ${db}`);
-    session.query(`CREATE TABLE ${db}.${table}_raw ENGINE = MergeTree ORDER BY tuple() AS SELECT * FROM file('${path}', 'Native')`);
-    const end = Number(JSON.parse(session.query(`SELECT toUnixTimestamp64Milli(max(${ts})) AS m FROM ${db}.${table}_raw`, "JSONEachRow")).m);
+    session.query(
+      `CREATE TABLE ${db}.${table}_raw ENGINE = MergeTree ORDER BY tuple() AS SELECT * FROM file('${path}', 'Native')`,
+    );
+    const end = Number(
+      JSON.parse(
+        session.query(
+          `SELECT toUnixTimestamp64Milli(max(${ts})) AS m FROM ${db}.${table}_raw`,
+          "JSONEachRow",
+        ),
+      ).m,
+    );
     if (end) ends.push(end);
   }
   const shiftMs = Date.now() - Math.max(...ends);
@@ -40,10 +49,18 @@ async function open(name: string) {
   return session;
 }
 
-export async function queryRecorded<T = Record<string, unknown>>(name: string, sql: string): Promise<T[]> {
+export async function queryRecorded<T = Record<string, unknown>>(
+  name: string,
+  sql: string,
+): Promise<T[]> {
   const s = await open(name);
   const text: string = s.query(sql.trim().replace(/;\s*$/, ""), "JSONEachRow");
-  return text.trim() ? text.trim().split("\n").map((l) => JSON.parse(l)) : [];
+  return text.trim()
+    ? text
+        .trim()
+        .split("\n")
+        .map((l) => JSON.parse(l))
+    : [];
 }
 
 export function recordedBookings(name: string): Record<string, unknown>[] {

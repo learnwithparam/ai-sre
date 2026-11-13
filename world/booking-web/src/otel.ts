@@ -2,13 +2,30 @@
 // BOOKING_HOOKS_DIR points at a step folder to load your version of a hook instead of the finished one.
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { context, logs, propagation, SeverityNumber, trace, type Attributes } from "@opentelemetry/api";
+import {
+  type Attributes,
+  context,
+  logs,
+  propagation,
+  SeverityNumber,
+  trace,
+} from "@opentelemetry/api";
 import { AsyncLocalStorageContextManager } from "@opentelemetry/context-async-hooks";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
-import { BatchSpanProcessor, TracerProvider, type ReadableSpan, type SpanExporter } from "@opentelemetry/sdk-trace";
-import { BatchLogRecordProcessor, LoggerProvider, type LogRecordProcessor, type ReadWriteLogRecord } from "@opentelemetry/sdk-logs";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
+import {
+  BatchLogRecordProcessor,
+  LoggerProvider,
+  type LogRecordProcessor,
+  type ReadWriteLogRecord,
+} from "@opentelemetry/sdk-logs";
+import {
+  BatchSpanProcessor,
+  type ReadableSpan,
+  type SpanExporter,
+  TracerProvider,
+} from "@opentelemetry/sdk-trace";
 
 type Hooks = {
   telemetry: typeof import("./hooks/telemetry");
@@ -21,22 +38,35 @@ export async function loadHooks(env = process.env): Promise<Hooks> {
     const mine = env.BOOKING_HOOKS_DIR ? join(env.BOOKING_HOOKS_DIR, `${name}.ts`) : "";
     return import(mine && existsSync(mine) ? mine : join(import.meta.dir, "hooks", `${name}.ts`));
   };
-  return { telemetry: await pick("telemetry"), checkin: await pick("checkin"), redact: await pick("redact") };
+  return {
+    telemetry: await pick("telemetry"),
+    checkin: await pick("checkin"),
+    redact: await pick("redact"),
+  };
 }
 
 // Applies the redact hook to every span on its way out, so nothing unredacted reaches the collector.
 class RedactingExporter implements SpanExporter {
-  constructor(private inner: SpanExporter, private redact: Hooks["redact"]) {}
+  constructor(
+    private inner: SpanExporter,
+    private redact: Hooks["redact"],
+  ) {}
   export(spans: ReadableSpan[], done: Parameters<SpanExporter["export"]>[1]) {
     const clean = spans.map((s) => {
       const copy = Object.create(s) as ReadableSpan;
-      Object.defineProperty(copy, "attributes", { value: this.redact.redactAttributes({ ...s.attributes }) });
+      Object.defineProperty(copy, "attributes", {
+        value: this.redact.redactAttributes({ ...s.attributes }),
+      });
       return copy;
     });
     this.inner.export(clean, done);
   }
-  shutdown() { return this.inner.shutdown(); }
-  forceFlush() { return this.inner.forceFlush?.() ?? Promise.resolve(); }
+  shutdown() {
+    return this.inner.shutdown();
+  }
+  forceFlush() {
+    return this.inner.forceFlush?.() ?? Promise.resolve();
+  }
 }
 
 class RedactingLogs implements LogRecordProcessor {
@@ -46,8 +76,12 @@ class RedactingLogs implements LogRecordProcessor {
     const attrs = this.redact.redactAttributes({ ...record.attributes });
     for (const [k, v] of Object.entries(attrs)) record.setAttribute(k, v as never);
   }
-  forceFlush() { return Promise.resolve(); }
-  shutdown() { return Promise.resolve(); }
+  forceFlush() {
+    return Promise.resolve();
+  }
+  shutdown() {
+    return Promise.resolve();
+  }
 }
 
 export function startTelemetry(hooks: Hooks, env = process.env) {
@@ -63,7 +97,10 @@ export function startTelemetry(hooks: Hooks, env = process.env) {
     resource,
     spanProcessors: [
       new BatchSpanProcessor({
-        exporter: new RedactingExporter(new OTLPTraceExporter({ url: `${base}/v1/traces`, headers }), hooks.redact),
+        exporter: new RedactingExporter(
+          new OTLPTraceExporter({ url: `${base}/v1/traces`, headers }),
+          hooks.redact,
+        ),
         scheduledDelayMillis: delay,
       }),
     ],
@@ -74,13 +111,19 @@ export function startTelemetry(hooks: Hooks, env = process.env) {
     resource,
     processors: [
       new RedactingLogs(hooks.redact),
-      new BatchLogRecordProcessor({ exporter: new OTLPLogExporter({ url: `${base}/v1/logs`, headers }), scheduledDelayMillis: delay }),
+      new BatchLogRecordProcessor({
+        exporter: new OTLPLogExporter({ url: `${base}/v1/logs`, headers }),
+        scheduledDelayMillis: delay,
+      }),
     ],
   });
   logs.setGlobalLoggerProvider(logProvider);
 
   return {
-    flush: async () => { await traces.forceFlush(); await logProvider.forceFlush(); },
+    flush: async () => {
+      await traces.forceFlush();
+      await logProvider.forceFlush();
+    },
   };
 }
 
@@ -93,6 +136,8 @@ const LEVELS = {
 // One log line, tied to the active trace so the waterfall and the logs line up.
 export function log(level: keyof typeof LEVELS, body: string, attributes: Attributes = {}) {
   const [severityNumber, severityText] = LEVELS[level];
-  logs.getLogger("booking-web").emit({ severityNumber, severityText, body, attributes, context: context.active() });
+  logs
+    .getLogger("booking-web")
+    .emit({ severityNumber, severityText, body, attributes, context: context.active() });
   if (process.env.BOOKING_QUIET !== "1") console.log(`${severityText} ${body}`);
 }

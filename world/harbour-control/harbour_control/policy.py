@@ -76,4 +76,6 @@ def validate_action(action: str, target: str, params: dict[str, str]) -> None:
         raise PolicyError(f"{action} takes exactly {sorted(allowed)}, got {sorted(params)}")
     for key, value in params.items():
         if not SAFE.match(str(value)) or value not in allowed[key]:
-            raise PolicyError(f"{action} {key}={value!r} is not allowed; allowed: {sorted(allowed[key])}")
+            raise PolicyError(
+                f"{action} {key}={value!r} is not allowed; allowed: {sorted(allowed[key])}"
+            )

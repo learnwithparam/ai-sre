@@ -17,7 +17,9 @@ def test_spike_is_flagged():
 def test_ramp_is_not_flagged():
     # Traffic grows tenfold while the share of failures holds, so the rate signal stays quiet.
     baseline = [error_rate(errors=n // 100, requests=n) for n in range(100, 1100, 100)]
-    assert not three_sigma(baseline, current=error_rate(errors=15, requests=1500), min_delta=0.05).anomalous
+    assert not three_sigma(
+        baseline, current=error_rate(errors=15, requests=1500), min_delta=0.05
+    ).anomalous
 
 
 def test_blip_over_a_silent_baseline_needs_the_floor():

@@ -7,6 +7,7 @@ export function redactBody(body: string): string {
 
 export function redactAttributes(attributes: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(attributes)) out[key] = typeof value === "string" ? value.replace(EMAIL, "[email]") : value;
+  for (const [key, value] of Object.entries(attributes))
+    out[key] = typeof value === "string" ? value.replace(EMAIL, "[email]") : value;
   return out;
 }

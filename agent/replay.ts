@@ -18,7 +18,8 @@ function dig(value: unknown, path: string): unknown[] {
     const next: unknown[] = [];
     for (const v of cur) {
       if (key === "*" && Array.isArray(v)) next.push(...v);
-      else if (v && typeof v === "object" && key in (v as object)) next.push((v as Record<string, unknown>)[key]);
+      else if (v && typeof v === "object" && key in (v as object))
+        next.push((v as Record<string, unknown>)[key]);
     }
     cur = next;
   }
@@ -30,13 +31,15 @@ function resolve(value: unknown, results: Record<string, unknown>): unknown {
   if (!value || typeof value !== "object") return value;
   const ref = value as Ref;
   if (typeof ref.$from === "string") {
-    let found = dig(results[ref.$from], ref.path).filter((v) => v !== null && v !== undefined && v !== "");
+    let found = dig(results[ref.$from], ref.path).filter(
+      (v) => v !== null && v !== undefined && v !== "",
+    );
     if (ref.match) {
       const re = new RegExp(ref.match);
       found = found.map((v) => String(v).match(re)?.[0]).filter(Boolean) as string[];
     }
-    found = [...new Set(found.map((v) => (typeof v === "object" ? JSON.stringify(v) : v)))].map((v) =>
-      typeof v === "string" && v.startsWith("{") ? JSON.parse(v) : v,
+    found = [...new Set(found.map((v) => (typeof v === "object" ? JSON.stringify(v) : v)))].map(
+      (v) => (typeof v === "string" && v.startsWith("{") ? JSON.parse(v) : v),
     );
     if (ref.take === undefined) return found[0] ?? "";
     return found.slice(0, ref.take);
@@ -53,13 +56,30 @@ function toolResults(prompt: any[]): Record<string, unknown> {
       if (part.type !== "tool-result") continue;
       const o = part.output ?? {};
       let v: unknown = o.value;
-      if (o.type === "content" && Array.isArray(o.value)) v = o.value.map((c: any) => c.text ?? "").join("");
-      if (typeof v === "string") { try { v = JSON.parse(v); } catch { /* plain text */ } }
+      if (o.type === "content" && Array.isArray(o.value))
+        v = o.value.map((c: any) => c.text ?? "").join("");
+      if (typeof v === "string") {
+        try {
+          v = JSON.parse(v);
+        } catch {
+          /* plain text */
+        }
+      }
       // MCP tools return { content: [{ type: "text", text: "<json>" }], structuredContent? }
-      if (v && typeof v === "object" && "structuredContent" in (v as object) && (v as any).structuredContent) v = (v as any).structuredContent;
+      if (
+        v &&
+        typeof v === "object" &&
+        "structuredContent" in (v as object) &&
+        (v as any).structuredContent
+      )
+        v = (v as any).structuredContent;
       else if (v && typeof v === "object" && Array.isArray((v as any).content)) {
         const text = (v as any).content.map((c: any) => c.text ?? "").join("");
-        try { v = JSON.parse(text); } catch { v = text; }
+        try {
+          v = JSON.parse(text);
+        } catch {
+          v = text;
+        }
       }
       out[part.toolName] = v;
     }
@@ -71,7 +91,10 @@ export function loadCassette(name: string): Cassette {
   return JSON.parse(readFileSync(join(CASSETTES, `${name}.json`), "utf8"));
 }
 
-const usage = { inputTokens: { total: 0, noCache: 0, cacheRead: 0, cacheWrite: 0 }, outputTokens: { total: 0, text: 0, reasoning: 0 } };
+const usage = {
+  inputTokens: { total: 0, noCache: 0, cacheRead: 0, cacheWrite: 0 },
+  outputTokens: { total: 0, text: 0, reasoning: 0 },
+};
 
 export function replayModel(cassette: string): LanguageModel {
   return {
@@ -86,11 +109,23 @@ export function replayModel(cassette: string): LanguageModel {
       const finish = (unified: string) => ({ unified, raw: unified });
       if ("text" in step || turn >= steps.length) {
         const text = "text" in step ? step.text : "Done.";
-        return { content: [{ type: "text", text }], finishReason: finish("stop"), usage, warnings: [] };
+        return {
+          content: [{ type: "text", text }],
+          finishReason: finish("stop"),
+          usage,
+          warnings: [],
+        };
       }
       const input = resolve(step.input, toolResults(options.prompt));
       return {
-        content: [{ type: "tool-call", toolCallId: `replay-${turn}`, toolName: step.tool, input: JSON.stringify(input) }],
+        content: [
+          {
+            type: "tool-call",
+            toolCallId: `replay-${turn}`,
+            toolName: step.tool,
+            input: JSON.stringify(input),
+          },
+        ],
         finishReason: finish("tool-calls"),
         usage,
         warnings: [],

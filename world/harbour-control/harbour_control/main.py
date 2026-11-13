@@ -68,7 +68,11 @@ def main() -> None:
             task.cancel()
 
     app = create_app(
-        settings=settings, remediations=remediations, store=store, telemetry=telemetry, lifespan=lifespan
+        settings=settings,
+        remediations=remediations,
+        store=store,
+        telemetry=telemetry,
+        lifespan=lifespan,
     )
     uvicorn.run(app, host="0.0.0.0", port=8090, log_level="info")  # noqa: S104  container port
 

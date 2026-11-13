@@ -12,11 +12,11 @@ ClickStack keeps every span in one ClickHouse table, `otel_traces`. One row is o
 
 Edit `list-the-services.sql` in this folder. Write one SELECT over `otel_traces` that returns, for the last 60 minutes:
 
-| Column | Meaning |
-|---|---|
-| `service` | the service that sent the span (`ServiceName`) |
-| `spans` | how many spans it sent |
-| `error_spans` | how many of them failed (`StatusCode`) |
+| Column        | Meaning                                        |
+| ------------- | ---------------------------------------------- |
+| `service`     | the service that sent the span (`ServiceName`) |
+| `spans`       | how many spans it sent                         |
+| `error_spans` | how many of them failed (`StatusCode`)         |
 
 Busiest service first. Try it in HyperDX first: open http://localhost:8080, choose SQL, and run it there.
 
@@ -36,10 +36,10 @@ The check runs your query against the live world when it is up. In CI it runs ag
 
 ## If you get stuck
 
-| What you see | Fix |
-|---|---|
-| `FAIL the query runs` | Paste the query into HyperDX's SQL view; it shows the ClickHouse error in full. |
-| `FAIL one row per service` | Add `GROUP BY service`. Without it you get one row per span. |
+| What you see                       | Fix                                                                                                                   |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `FAIL the query runs`              | Paste the query into HyperDX's SQL view; it shows the ClickHouse error in full.                                       |
+| `FAIL one row per service`         | Add `GROUP BY service`. Without it you get one row per span.                                                          |
 | `FAIL span and error counts match` | Look at a few rows of `StatusCode` first: `SELECT DISTINCT StatusCode FROM otel_traces`. The value is case sensitive. |
 
 ## Words you will use

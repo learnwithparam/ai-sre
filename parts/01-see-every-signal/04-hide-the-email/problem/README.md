@@ -34,10 +34,10 @@ Expect: `Done. All 4 rules pass.` and a `Progress:` line.
 
 ## If you get stuck
 
-| What you see | Fix |
-|---|---|
+| What you see                                               | Fix                                                                               |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `FAIL no log line or log attribute holds an email address` | The "booking confirmed" line names the passenger. `redactBody` must clean it too. |
-| `FAIL spans still say what happened` | Return every attribute; replace only the email inside the value. |
+| `FAIL spans still say what happened`                       | Return every attribute; replace only the email inside the value.                  |
 
 ## Words you will use
 

@@ -5,7 +5,11 @@ import type { CheckinStore } from "../store";
 const tracer = trace.getTracer("booking-web");
 
 export async function validateCheckin(ref: string, store: CheckinStore): Promise<string | null> {
-  const span = tracer.startSpan("checkin.validate", { attributes: { "booking.ref": ref } }, ROOT_CONTEXT);
+  const span = tracer.startSpan(
+    "checkin.validate",
+    { attributes: { "booking.ref": ref } },
+    ROOT_CONTEXT,
+  );
   try {
     const booking = await store.findBooking(ref);
     if (!booking) return "no booking with that reference";

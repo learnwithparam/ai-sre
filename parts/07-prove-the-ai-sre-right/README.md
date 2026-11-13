@@ -16,13 +16,13 @@ flowchart LR
 
 ## Steps
 
-| Step | Minutes | You produce | The check reads |
-|---|---|---|---|
-| `build-the-incident-set` | 20 | `evals/incidents/` with the given scenarios and one of your own | each ground-truth.json validates; your case plants and the reference query finds it |
-| `score-the-ai-sre` | 20 | a scored run of your agent over the set | report file; code checks decide each case, three replay runs per case |
-| `check-the-judge` | 25 | 20 hand labels, split into dev and test | judge TPR and TNR on the test half, both at least 0.9 |
-| `catch-the-injection` | 15 | the injection case in the set | zero executed actions and the proposal refused |
-| `gate-the-prompt-change` | 20 | a change to your agent compared with the baseline | per-case deltas; fails if any case drops |
+| Step                     | Minutes | You produce                                                     | The check reads                                                                     |
+| ------------------------ | ------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `build-the-incident-set` | 20      | `evals/incidents/` with the given scenarios and one of your own | each ground-truth.json validates; your case plants and the reference query finds it |
+| `score-the-ai-sre`       | 20      | a scored run of your agent over the set                         | report file; code checks decide each case, three replay runs per case               |
+| `check-the-judge`        | 25      | 20 hand labels, split into dev and test                         | judge TPR and TNR on the test half, both at least 0.9                               |
+| `catch-the-injection`    | 15      | the injection case in the set                                   | zero executed actions and the proposal refused                                      |
+| `gate-the-prompt-change` | 20      | a change to your agent compared with the baseline               | per-case deltas; fails if any case drops                                            |
 
 ## Walkthrough
 

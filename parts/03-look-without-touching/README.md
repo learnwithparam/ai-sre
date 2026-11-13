@@ -17,12 +17,12 @@ flowchart LR
 
 ## Steps
 
-| Step | Minutes | You produce | The check reads |
-|---|---|---|---|
-| `connect-the-read-tools` | 20 | your MCP client connected to HyperDX's MCP and harbour-control, read tools only | the client's MCP config and tools/list: every allowed tool has readOnlyHint true; an INSERT as sre_agent is refused |
-| `find-the-new-pattern` | 20 | `find-the-new-pattern.sql`: log patterns new in the incident window | the top row on the recorded bad-release window is the pool exhausted pattern on release v2 |
-| `open-the-slowest-trace` | 15 | `open-the-slowest-trace.sql`: failing first, then slowest | the first trace id is a failing booking-web trace with an audit_trail span over 1 s |
-| `name-the-release` | 15 | errors by release for the incident window | v2 error rate above 25%, v1 under 1%, on the recording |
+| Step                     | Minutes | You produce                                                                     | The check reads                                                                                                     |
+| ------------------------ | ------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `connect-the-read-tools` | 20      | your MCP client connected to HyperDX's MCP and harbour-control, read tools only | the client's MCP config and tools/list: every allowed tool has readOnlyHint true; an INSERT as sre_agent is refused |
+| `find-the-new-pattern`   | 20      | `find-the-new-pattern.sql`: log patterns new in the incident window             | the top row on the recorded bad-release window is the pool exhausted pattern on release v2                          |
+| `open-the-slowest-trace` | 15      | `open-the-slowest-trace.sql`: failing first, then slowest                       | the first trace id is a failing booking-web trace with an audit_trail span over 1 s                                 |
+| `name-the-release`       | 15      | errors by release for the incident window                                       | v2 error rate above 25%, v1 under 1%, on the recording                                                              |
 
 ## Walkthrough
 

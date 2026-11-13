@@ -12,7 +12,10 @@ export class Fares {
   version = "none";
   private seen = 0;
 
-  constructor(private path: string, private faultCode = "") {}
+  constructor(
+    private path: string,
+    private faultCode = "",
+  ) {}
 
   // Called on every request; rereads only when the file changed on disk.
   refresh(): void {
@@ -26,18 +29,28 @@ export class Fares {
       this.rows = [];
       this.version = file.version;
       const ref = this.faultCode ? ` ref=${this.faultCode}` : "";
-      log("error", `fare table rejected: ${file.rows.length} rows exceeds the limit of ${FARE_ROW_LIMIT} (config ${file.version})${ref}`, {
-        "config.name": "fares",
-        "config.version": file.version,
-      });
+      log(
+        "error",
+        `fare table rejected: ${file.rows.length} rows exceeds the limit of ${FARE_ROW_LIMIT} (config ${file.version})${ref}`,
+        {
+          "config.name": "fares",
+          "config.version": file.version,
+        },
+      );
       return;
     }
     this.rows = file.rows;
     this.version = file.version;
-    log("info", `fare table loaded: ${file.rows.length} rows (config ${file.version})`, { "config.version": file.version });
+    log("info", `fare table loaded: ${file.rows.length} rows (config ${file.version})`, {
+      "config.version": file.version,
+    });
   }
 
   price(from: string, to: string, vehicle: string, ticket = "adult"): number {
-    return this.rows.find((r) => r.from === from && r.to === to && r.vehicle === vehicle && r.ticket === ticket)?.pence ?? 0;
+    return (
+      this.rows.find(
+        (r) => r.from === from && r.to === to && r.vehicle === vehicle && r.ticket === ticket,
+      )?.pence ?? 0
+    );
   }
 }

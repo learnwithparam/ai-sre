@@ -1,7 +1,11 @@
 // The two pages a passenger sees. The footer names the release and fare table, so a rollback shows on screen.
 import type { Sailing } from "./store";
 
-const PLACES: Record<string, string> = { "port-maren": "Port Maren", gullrock: "Gullrock", "skerry-head": "Skerry Head" };
+const PLACES: Record<string, string> = {
+  "port-maren": "Port Maren",
+  gullrock: "Gullrock",
+  "skerry-head": "Skerry Head",
+};
 const place = (p: string) => PLACES[p] ?? p;
 
 const shell = (title: string, body: string, release: string, fares: string) => `<!doctype html>
@@ -31,12 +35,20 @@ const shell = (title: string, body: string, release: string, fares: string) => `
 
 export function bookingPage(sailings: Sailing[], release: string, fares: string): string {
   const rows = sailings
-    .map((s) => `<tr><td>${s.departs}</td><td>${place(s.route_from)} to ${place(s.route_to)}</td><td>${s.vessel}</td><td>${s.car_spaces}</td></tr>`)
+    .map(
+      (s) =>
+        `<tr><td>${s.departs}</td><td>${place(s.route_from)} to ${place(s.route_to)}</td><td>${s.vessel}</td><td>${s.car_spaces}</td></tr>`,
+    )
     .join("");
   const options = sailings
-    .map((s) => `<option value="${s.id}">${s.departs} ${place(s.route_from)} to ${place(s.route_to)}</option>`)
+    .map(
+      (s) =>
+        `<option value="${s.id}">${s.departs} ${place(s.route_from)} to ${place(s.route_to)}</option>`,
+    )
     .join("");
-  return shell("Book a sailing | Gullrock Ferries", `
+  return shell(
+    "Book a sailing | Gullrock Ferries",
+    `
 <h2>Sailings</h2>
 <table><thead><tr><th>Departs</th><th>Route</th><th>Vessel</th><th>Car spaces</th></tr></thead><tbody>${rows}</tbody></table>
 <form id="book">
@@ -61,11 +73,16 @@ document.getElementById("book").addEventListener("submit", async (e) => {
   out.className = body.ok ? "ok" : "bad";
   out.textContent = body.ok ? "Booked. Your reference is " + body.ref + " (" + (body.fare_pence / 100).toFixed(2) + " GBP)" : body.error;
 });
-</script>`, release, fares);
+</script>`,
+    release,
+    fares,
+  );
 }
 
 export function checkinPage(release: string, fares: string): string {
-  return shell("Check in | Gullrock Ferries", `
+  return shell(
+    "Check in | Gullrock Ferries",
+    `
 <form id="checkin">
   <h2>Check in at the quay</h2>
   <label>Booking reference <input name="ref" required placeholder="GR-XXXXXX"></label>
@@ -81,5 +98,8 @@ document.getElementById("checkin").addEventListener("submit", async (e) => {
   out.className = body.ok ? "ok" : "bad";
   out.textContent = body.ok ? "Checked in: " + body.ref + ". Join lane 3." : body.error;
 });
-</script>`, release, fares);
+</script>`,
+    release,
+    fares,
+  );
 }

@@ -19,14 +19,14 @@ stateDiagram-v2
 
 ## Steps
 
-| Step | Minutes | You produce | The check reads |
-|---|---|---|---|
-| `propose-one-change` | 15 | a propose_remediation call from your agent | one pending proposal for a stored finding, inside the action list |
-| `refuse-without-approval` | 10 | an attempt to run the change before approval | a remediation_refused row and the same booking-web image as before |
-| `approve-with-blast-radius` | 15 | your approval after reading evidence and blast radius | a remediation_approved row naming the approver, after the pending row |
-| `roll-back-the-release` | 15 | the approved rollback, run and verified | executed then verification_passed rows; the footer reads Release v1 |
-| `edit-the-wrong-fix` | 20 | for timetable-hang: reject the rollback, edit to a restart, approve | event order pending, rejected, pending, approved, executed; timetable-loader healthy |
-| `add-the-config-rollback` | 25 | rollback_config in the action list, with blast radius text and a test | policy test passes, an unknown file is refused, fare-file-push resolves through it |
+| Step                        | Minutes | You produce                                                           | The check reads                                                                      |
+| --------------------------- | ------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `propose-one-change`        | 15      | a propose_remediation call from your agent                            | one pending proposal for a stored finding, inside the action list                    |
+| `refuse-without-approval`   | 10      | an attempt to run the change before approval                          | a remediation_refused row and the same booking-web image as before                   |
+| `approve-with-blast-radius` | 15      | your approval after reading evidence and blast radius                 | a remediation_approved row naming the approver, after the pending row                |
+| `roll-back-the-release`     | 15      | the approved rollback, run and verified                               | executed then verification_passed rows; the footer reads Release v1                  |
+| `edit-the-wrong-fix`        | 20      | for timetable-hang: reject the rollback, edit to a restart, approve   | event order pending, rejected, pending, approved, executed; timetable-loader healthy |
+| `add-the-config-rollback`   | 25      | rollback_config in the action list, with blast radius text and a test | policy test passes, an unknown file is refused, fare-file-push resolves through it   |
 
 ## Walkthrough
 

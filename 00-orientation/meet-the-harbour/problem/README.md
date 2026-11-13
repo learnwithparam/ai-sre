@@ -34,11 +34,11 @@ Expect: `Done. All 4 rules pass.` and a `Progress:` line.
 
 ## If you get stuck
 
-| What you see | Fix |
-|---|---|
-| `FAIL the booking is a row in the bookings table` | Copy the reference exactly as the page showed it, such as `GR-7KQ2MD`. |
+| What you see                                                  | Fix                                                                                                                                |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `FAIL the booking is a row in the bookings table`             | Copy the reference exactly as the page showed it, such as `GR-7KQ2MD`.                                                             |
 | `FAIL the trace exists and is the POST /api/bookings request` | In HyperDX search for the reference, open the trace whose root span is `POST /api/bookings`, and copy the Trace ID, not a Span ID. |
-| `FAIL the finished loop ran` | Run the three demo commands in order; `bun run demo finish` waits for verification. |
+| `FAIL the finished loop ran`                                  | Run the three demo commands in order; `bun run demo finish` waits for verification.                                                |
 
 ## Words you will use
 

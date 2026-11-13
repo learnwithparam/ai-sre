@@ -5,8 +5,15 @@
   "change": { "kind": "none", "value": "" },
   "pattern": ["request received", "never completed"],
   "right_action": { "action": "restart_service", "target": "timetable-loader", "params": {} },
-  "wrong_action": { "action": "rollback_release", "target": "booking-web", "params": { "release": "v1" } },
+  "wrong_action": {
+    "action": "rollback_release",
+    "target": "booking-web",
+    "params": { "release": "v1" }
+  },
   "distractors": [
-    { "signal": "booking-web GET /timetable errors", "why": "booking-web only times out waiting for timetable-loader" }
+    {
+      "signal": "booking-web GET /timetable errors",
+      "why": "booking-web only times out waiting for timetable-loader"
+    }
   ]
 }

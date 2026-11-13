@@ -87,7 +87,9 @@ class ActionState:
 
 
 class Remediations:
-    def __init__(self, *, store: Store, telemetry: Telemetry, runner: Runner, clock: Callable = utcnow):
+    def __init__(
+        self, *, store: Store, telemetry: Telemetry, runner: Runner, clock: Callable = utcnow
+    ):
         self.store, self.telemetry, self.runner, self.clock = store, telemetry, runner, clock
         # One process runs the control plane; this lock makes a double click execute once.
         self._lock = threading.Lock()
@@ -126,9 +128,15 @@ class Remediations:
             self._check_finding(incident_id, payload)
         except Ungrounded as err:
             refused = {**payload, "reason": str(err)}
-            self.store.append(Event(self.clock(), incident_id, finding_id, "finding_refused", submitted_by, refused))
+            self.store.append(
+                Event(
+                    self.clock(), incident_id, finding_id, "finding_refused", submitted_by, refused
+                )
+            )
             raise
-        self.store.append(Event(self.clock(), incident_id, finding_id, "finding_submitted", submitted_by, payload))
+        self.store.append(
+            Event(self.clock(), incident_id, finding_id, "finding_submitted", submitted_by, payload)
+        )
         return self.finding(finding_id)
 
     def _check_finding(self, incident_id: str, p: dict[str, Any]) -> None:
@@ -145,9 +153,13 @@ class Remediations:
         service = p["service"]
         if kind == "release":
             p["change"] = {"kind": kind, "value": value.removeprefix(f"{service}.")}
-        self._ground(incident_id, service, p["change"]["value"] if kind == "release" else "", p["trace_ids"])
+        self._ground(
+            incident_id, service, p["change"]["value"] if kind == "release" else "", p["trace_ids"]
+        )
         if p["quote"] and not self.telemetry.log_seen(service, p["quote"]):
-            raise Ungrounded(f"no log line from {service} in the last {GROUNDING_HOURS} hours contains the quote")
+            raise Ungrounded(
+                f"no log line from {service} in the last {GROUNDING_HOURS} hours contains the quote"
+            )
 
     def _ground(self, incident_id: str, service: str, release: str, trace_ids: list[str]) -> None:
         """Evidence must exist, belong to the named service, and not predate the incident."""
@@ -159,7 +171,9 @@ class Remediations:
         seen = {t.trace_id: t for t in self.telemetry.trace_window(trace_ids)}
         missing = [t for t in trace_ids if t not in seen]
         if missing:
-            raise Ungrounded(f"these trace ids have no spans or logs in {window}: {', '.join(missing)}")
+            raise Ungrounded(
+                f"these trace ids have no spans or logs in {window}: {', '.join(missing)}"
+            )
         incident = self.store.incident(incident_id)
         too_old = [t for t in trace_ids if seen[t].first_seen < incident.opened_at - TRACE_LEAD]
         if too_old:
@@ -191,12 +205,22 @@ class Remediations:
         )
 
     def findings_for(self, incident_id: str) -> list[Finding]:
-        return [self.finding(e.action_id) for e in self.store.events(incident_id=incident_id, kind="finding_submitted")]
+        return [
+            self.finding(e.action_id)
+            for e in self.store.events(incident_id=incident_id, kind="finding_submitted")
+        ]
 
     # Remediations -------------------------------------------------------------------------------
 
     def propose(
-        self, *, incident_id: str, finding_id: str, action: str, target: str, params: dict[str, str], proposed_by: str
+        self,
+        *,
+        incident_id: str,
+        finding_id: str,
+        action: str,
+        target: str,
+        params: dict[str, str],
+        proposed_by: str,
     ) -> ActionState:
         try:
             finding = self.finding(finding_id)
@@ -204,9 +228,28 @@ class Remediations:
                 raise KeyError(finding_id)
             validate_action(action, target, params)
         except (KeyError, ValueError) as err:
-            reason = f"no stored finding {finding_id} for {incident_id}" if isinstance(err, KeyError) else str(err)
-            payload = {"finding_id": finding_id, "action": action, "target": target, "params": params, "reason": reason}
-            self.store.append(Event(self.clock(), incident_id, new_id("act"), "proposal_refused", proposed_by, payload))
+            reason = (
+                f"no stored finding {finding_id} for {incident_id}"
+                if isinstance(err, KeyError)
+                else str(err)
+            )
+            payload = {
+                "finding_id": finding_id,
+                "action": action,
+                "target": target,
+                "params": params,
+                "reason": reason,
+            }
+            self.store.append(
+                Event(
+                    self.clock(),
+                    incident_id,
+                    new_id("act"),
+                    "proposal_refused",
+                    proposed_by,
+                    payload,
+                )
+            )
             if isinstance(err, KeyError):
                 raise Ungrounded(reason) from err
             raise
@@ -217,7 +260,11 @@ class Remediations:
             return live[0]
         action_id = new_id("act")
         payload = {"finding_id": finding_id, "action": action, "target": target, "params": params}
-        self.store.append(Event(self.clock(), incident_id, action_id, "remediation_proposed", proposed_by, payload))
+        self.store.append(
+            Event(
+                self.clock(), incident_id, action_id, "remediation_proposed", proposed_by, payload
+            )
+        )
         return self.status(action_id)
 
     def status(self, action_id: str) -> ActionState:
@@ -270,26 +317,36 @@ class Remediations:
             current = self.status(action_id)
             if current.state not in allowed_from:
                 raise InvalidTransition(f"{action_id} is {current.state}; cannot record {kind}")
-            self.store.append(Event(self.clock(), current.incident_id, action_id, kind, actor, payload))
+            self.store.append(
+                Event(self.clock(), current.incident_id, action_id, kind, actor, payload)
+            )
         return self.status(action_id)
 
     def approve(self, action_id: str, *, approver: str) -> ActionState:
         return self._decide(action_id, "remediation_approved", approver, {}, {"pending"})
 
     def reject(self, action_id: str, *, approver: str, reason: str) -> ActionState:
-        return self._decide(action_id, "remediation_rejected", approver, {"reason": reason}, {"pending"})
+        return self._decide(
+            action_id, "remediation_rejected", approver, {"reason": reason}, {"pending"}
+        )
 
     def expire(self, action_id: str, *, reason: str) -> ActionState:
         """The outage it answered is over, so approving it now would change a healthy system."""
-        return self._decide(action_id, "remediation_expired", "harbour-control", {"reason": reason}, {"pending"})
+        return self._decide(
+            action_id, "remediation_expired", "harbour-control", {"reason": reason}, {"pending"}
+        )
 
-    def edit(self, action_id: str, *, editor: str, action: str, target: str, params: dict) -> ActionState:
+    def edit(
+        self, action_id: str, *, editor: str, action: str, target: str, params: dict
+    ) -> ActionState:
         validate_action(action, target, params)
         # An edit can come long after the proposal; the evidence it still rests on must still exist.
         current = self.status(action_id)
         self._ground(current.incident_id, current.service, current.release, current.trace_ids)
         payload = {"action": action, "target": target, "params": params}
-        return self._decide(action_id, "remediation_edited", editor, payload, {"pending", "rejected"})
+        return self._decide(
+            action_id, "remediation_edited", editor, payload, {"pending", "rejected"}
+        )
 
     def execute(self, action_id: str, *, executed_by: str) -> dict[str, Any]:
         with self._lock:
@@ -308,7 +365,14 @@ class Remediations:
             kind = "remediation_executed" if result.get("exit_code") == 0 else "remediation_failed"
             payload = {"action": current.action, "target": current.target, "params": current.params}
             self.store.append(
-                Event(self.clock(), current.incident_id, action_id, kind, executed_by, {**payload, "result": result})
+                Event(
+                    self.clock(),
+                    current.incident_id,
+                    action_id,
+                    kind,
+                    executed_by,
+                    {**payload, "result": result},
+                )
             )
             return result
 
@@ -316,7 +380,9 @@ class Remediations:
         current = self.status(action_id)
         kind = "verification_passed" if passed else "verification_failed"
         now = self.clock()
-        self.store.append(Event(now, current.incident_id, action_id, kind, "harbour-control", evidence))
+        self.store.append(
+            Event(now, current.incident_id, action_id, kind, "harbour-control", evidence)
+        )
         if passed:
             self.store.resolve_incident(
                 current.incident_id,

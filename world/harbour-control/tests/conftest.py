@@ -30,7 +30,10 @@ class FakeTelemetry:
         return release in self.services.get(service, set())
 
     def log_seen(self, service, text):
-        return text == "connection pool exhausted: 2 of 2 connections in use (audit_trail) ref=GR-TEST1"
+        return (
+            text
+            == "connection pool exhausted: 2 of 2 connections in use (audit_trail) ref=GR-TEST1"
+        )
 
 
 class FakeRunner:

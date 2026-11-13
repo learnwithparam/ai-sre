@@ -28,9 +28,9 @@ Expect: `Done. All 5 rules pass.` and a `Progress:` line.
 
 ## If you get stuck
 
-| What you see | Fix |
-|---|---|
-| `FAIL a span named checkin.validate is exported` | A span is exported only when it ends. Call `span.end()` in a `finally` block. |
+| What you see                                              | Fix                                                                                                                        |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `FAIL a span named checkin.validate is exported`          | A span is exported only when it ends. Call `span.end()` in a `finally` block.                                              |
 | `FAIL the span sits inside the POST /api/checkin request` | Use `tracer.startActiveSpan`, which starts from the active context. A span started from `ROOT_CONTEXT` begins a new trace. |
 
 ## Words you will use

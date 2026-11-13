@@ -14,26 +14,56 @@ async function session(dir: string) {
       await b.call("POST", "/api/checkin", { ref: booked.json?.ref });
       await b.flush();
       return { up: true, spans: [...b.spans] };
-    } finally { await b.stop(); }
+    } finally {
+      await b.stop();
+    }
   });
 }
 
 export default [
-  { says: "booking-web starts with your telemetry.ts", test: async (d) => (await session(d)).up, tryNext: "run bun world/booking-web/src/server.ts with BOOKING_HOOKS_DIR set to this folder and read the error it prints" },
-  { says: "spans reach the collector", test: async (d) => (await session(d)).spans.length >= 5, tryNext: "keep service.name in the resource; return resourceFromAttributes({...}) from bookingResource" },
+  {
+    says: "booking-web starts with your telemetry.ts",
+    test: async (d) => (await session(d)).up,
+    tryNext:
+      "run bun world/booking-web/src/server.ts with BOOKING_HOOKS_DIR set to this folder and read the error it prints",
+  },
+  {
+    says: "spans reach the collector",
+    test: async (d) => (await session(d)).spans.length >= 5,
+    tryNext:
+      "keep service.name in the resource; return resourceFromAttributes({...}) from bookingResource",
+  },
   {
     says: "every span carries the resource attribute service.version",
-    test: async (d) => { const s = (await session(d)).spans; return s.length > 0 && s.every((x) => typeof x.resource["service.version"] === "string" && x.resource["service.version"] !== ""); },
-    tryNext: "add the key service.version to the resource attributes in bookingResource, not to one span",
+    test: async (d) => {
+      const s = (await session(d)).spans;
+      return (
+        s.length > 0 &&
+        s.every(
+          (x) =>
+            typeof x.resource["service.version"] === "string" &&
+            x.resource["service.version"] !== "",
+        )
+      );
+    },
+    tryNext:
+      "add the key service.version to the resource attributes in bookingResource, not to one span",
   },
   {
     says: `service.version names the release that is running (${RELEASE} in this check)`,
-    test: async (d) => { const s = (await session(d)).spans; return s.length > 0 && s.every((x) => x.resource["service.version"] === RELEASE); },
-    tryNext: "read the release from env.BOOKING_RELEASE; a fixed value like v1 is wrong as soon as v2 ships",
+    test: async (d) => {
+      const s = (await session(d)).spans;
+      return s.length > 0 && s.every((x) => x.resource["service.version"] === RELEASE);
+    },
+    tryNext:
+      "read the release from env.BOOKING_RELEASE; a fixed value like v1 is wrong as soon as v2 ships",
   },
   {
     says: "service.name is still booking-web",
-    test: async (d) => { const s = (await session(d)).spans; return s.length > 0 && s.every((x) => x.resource["service.name"] === "booking-web"); },
-    tryNext: "keep \"service.name\": \"booking-web\" next to the new attribute",
+    test: async (d) => {
+      const s = (await session(d)).spans;
+      return s.length > 0 && s.every((x) => x.resource["service.name"] === "booking-web");
+    },
+    tryNext: 'keep "service.name": "booking-web" next to the new attribute',
   },
 ] satisfies Rule[];

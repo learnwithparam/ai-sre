@@ -27,7 +27,10 @@ class ClickHouseTelemetry:
         ]
 
     def releases(self, service: str) -> set[str]:
-        return {r["release"] for r in self.rows("service_releases", service=service, hours=GROUNDING_HOURS)}
+        return {
+            r["release"]
+            for r in self.rows("service_releases", service=service, hours=GROUNDING_HOURS)
+        }
 
     def service_seen(self, service: str) -> bool:
         return bool(self.releases(service))

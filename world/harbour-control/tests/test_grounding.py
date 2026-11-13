@@ -22,7 +22,9 @@ def submit(remediations, incident, known_trace):
         ruled_out=[],
         submitted_by="ai-sre",
     )
-    return lambda **overrides: remediations.submit_finding(incident_id=incident.id, **{**base, **overrides})
+    return lambda **overrides: remediations.submit_finding(
+        incident_id=incident.id, **{**base, **overrides}
+    )
 
 
 def test_a_made_up_trace_id_is_refused_and_recorded(submit, incident, store, known_trace):
@@ -39,7 +41,10 @@ def test_one_trace_is_not_enough(submit, known_trace):
 
 
 def test_an_old_trace_is_refused(submit, remediations, known_trace):
-    remediations.telemetry.traces[known_trace] = (NOW - timedelta(hours=3), frozenset({"booking-web"}))
+    remediations.telemetry.traces[known_trace] = (
+        NOW - timedelta(hours=3),
+        frozenset({"booking-web"}),
+    )
     with pytest.raises(Ungrounded, match="before this incident opened"):
         submit()
 

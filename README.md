@@ -67,16 +67,16 @@ flowchart LR
 
 Start in [00-orientation](00-orientation/README.md). Each part in `parts/` opens with a real problem and a diagram; each step has a challenge, a Done when list, and one command, `bun run verify <step-name>`, which prints what passed, what failed and what to try next. `bun run verify part <part-name>` checks a whole part. The rules every course repo follows are in [STANDARD.md](STANDARD.md), and [PARTS.md](PARTS.md) maps every part and step.
 
-| Part | What you do | Steps | Minutes |
-|---|---|---|---|
-| [Orientation](00-orientation/README.md) | Start the world, follow one booking, run the finished loop | 1 | 20 |
-| [See every signal](parts/01-see-every-signal/README.md) | Query the services, tag every span with its release, add a span, keep emails out | 4 | 70 |
-| [Know when it is broken](parts/02-know-when-it-is-broken/README.md) | Error rate, 3 sigma, burn rate, fewer pages | 4 | 70 |
-| [Look without touching](parts/03-look-without-touching/README.md) | Read-only MCP, find the new pattern, the slowest trace, the release | 4 | 70 |
-| [Say what broke and prove it](parts/04-say-what-broke/README.md) | A grounded finding, a refused guess, distractors ruled out | 3 | 55 |
-| [Ask before you act](parts/05-ask-before-you-act/README.md) | Propose, refuse, approve, roll back, edit the wrong fix, add a config rollback | 6 | 100 |
-| [Write it down without blame](parts/06-write-it-down/README.md) | Timeline from the audit log, the postmortem, action items | 3 | 50 |
-| [Prove the AI SRE is right](parts/07-prove-the-ai-sre-right/README.md) | Incident set, scorer, judge check, injection, prompt gate | 5 | 100 |
+| Part                                                                   | What you do                                                                      | Steps | Minutes |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ----- | ------- |
+| [Orientation](00-orientation/README.md)                                | Start the world, follow one booking, run the finished loop                       | 1     | 20      |
+| [See every signal](parts/01-see-every-signal/README.md)                | Query the services, tag every span with its release, add a span, keep emails out | 4     | 70      |
+| [Know when it is broken](parts/02-know-when-it-is-broken/README.md)    | Error rate, 3 sigma, burn rate, fewer pages                                      | 4     | 70      |
+| [Look without touching](parts/03-look-without-touching/README.md)      | Read-only MCP, find the new pattern, the slowest trace, the release              | 4     | 70      |
+| [Say what broke and prove it](parts/04-say-what-broke/README.md)       | A grounded finding, a refused guess, distractors ruled out                       | 3     | 55      |
+| [Ask before you act](parts/05-ask-before-you-act/README.md)            | Propose, refuse, approve, roll back, edit the wrong fix, add a config rollback   | 6     | 100     |
+| [Write it down without blame](parts/06-write-it-down/README.md)        | Timeline from the audit log, the postmortem, action items                        | 3     | 50      |
+| [Prove the AI SRE is right](parts/07-prove-the-ai-sre-right/README.md) | Incident set, scorer, judge check, injection, prompt gate                        | 5     | 100     |
 
 `schedules.toml` maps the parts onto one day, four evenings or four weeks.
 

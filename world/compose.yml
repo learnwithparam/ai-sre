@@ -24,7 +24,13 @@ services:
     healthcheck:
       # The collector opens 4318 only once a team exists, so health is ClickHouse and the UI;
       # `bun run world` creates the team and then waits for ingest itself.
-      test: ["CMD", "bash", "-c", "curl -sf http://localhost:8123/ping >/dev/null && curl -sf -o /dev/null http://localhost:8080"]
+      test:
+        [
+          "CMD",
+          "bash",
+          "-c",
+          "curl -sf http://localhost:8123/ping >/dev/null && curl -sf -o /dev/null http://localhost:8080",
+        ]
       interval: 5s
       timeout: 10s
       retries: 30
@@ -69,7 +75,13 @@ services:
       - ${BOOKING_HOOKS:-./booking-web/src/hooks}:/app/world/booking-web/hooks-live:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "bun", "-e", "const r = await fetch('http://localhost:8000/health'); process.exit(r.ok ? 0 : 1)"]
+      test:
+        [
+          "CMD",
+          "bun",
+          "-e",
+          "const r = await fetch('http://localhost:8000/health'); process.exit(r.ok ? 0 : 1)",
+        ]
       interval: 5s
       timeout: 10s
       retries: 20
@@ -141,7 +153,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/healthz', timeout=3)"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8090/healthz', timeout=3)",
+        ]
       interval: 5s
       timeout: 10s
       retries: 20

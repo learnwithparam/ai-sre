@@ -27,11 +27,11 @@ Expect: `Done. All 5 rules pass.` and a `Progress:` line.
 
 ## If you get stuck
 
-| What you see | Fix |
-|---|---|
-| `FAIL every span carries the resource attribute service.version` | The key is exactly `service.version`, a name OpenTelemetry defines. |
-| `FAIL service.version names the release that is running` | Read the value from `env.BOOKING_RELEASE`. The check runs a release you cannot guess. |
-| `FAIL booking-web starts with your telemetry.ts` | Run `BOOKING_HOOKS_DIR=$PWD bun ../../../../world/booking-web/src/server.ts` from this folder and read the error. |
+| What you see                                                     | Fix                                                                                                               |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `FAIL every span carries the resource attribute service.version` | The key is exactly `service.version`, a name OpenTelemetry defines.                                               |
+| `FAIL service.version names the release that is running`         | Read the value from `env.BOOKING_RELEASE`. The check runs a release you cannot guess.                             |
+| `FAIL booking-web starts with your telemetry.ts`                 | Run `BOOKING_HOOKS_DIR=$PWD bun ../../../../world/booking-web/src/server.ts` from this folder and read the error. |
 
 ## Words you will use
 

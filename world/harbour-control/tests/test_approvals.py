@@ -39,7 +39,11 @@ def test_edit_resets_to_pending_and_still_needs_approval(remediations, rollback,
         params={},
     )
     state = remediations.status(rollback.action_id)
-    assert (state.state, state.action, state.target) == ("pending", "restart_service", "booking-web")
+    assert (state.state, state.action, state.target) == (
+        "pending",
+        "restart_service",
+        "booking-web",
+    )
     with pytest.raises(ApprovalRequired):
         remediations.execute(rollback.action_id, executed_by="ai-sre")
     remediations.approve(rollback.action_id, approver="oncall@example.com")
@@ -67,7 +71,9 @@ def test_audit_records_every_step_with_actor_and_time(remediations, rollback, st
     assert events == sorted(events, key=lambda e: e.ts)
 
 
-def test_proposing_twice_returns_the_waiting_proposal(remediations, rollback, incident, store, finding):
+def test_proposing_twice_returns_the_waiting_proposal(
+    remediations, rollback, incident, store, finding
+):
     again = remediations.propose(
         incident_id=incident.id, finding_id=finding.finding_id, action="restart_service", target="booking-web",
         params={}, proposed_by="ai-sre",

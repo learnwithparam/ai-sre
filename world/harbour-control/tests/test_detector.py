@@ -41,7 +41,11 @@ def test_error_spike_opens_one_incident(store):
     d.tick()
     d.tick()
     (incident,) = store.incidents()
-    assert (incident.rule, incident.service, incident.state) == ("error_rate", "booking-web", "open")
+    assert (incident.rule, incident.service, incident.state) == (
+        "error_rate",
+        "booking-web",
+        "open",
+    )
     assert "34%" in incident.summary
 
 
@@ -86,7 +90,10 @@ def test_self_recovery_expires_pending_proposal(store, remediations, rollback, i
     signals = Signals()
     signals.current = 0.01
     d = Detector(
-        signals=signals, store=store, clock=lambda: NOW + timedelta(minutes=3), remediations=remediations
+        signals=signals,
+        store=store,
+        clock=lambda: NOW + timedelta(minutes=3),
+        remediations=remediations,
     )
     d.tick()
     assert store.incident(incident.id).state == "resolved"

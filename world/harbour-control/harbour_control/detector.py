@@ -51,7 +51,12 @@ class ClickHouseSignals:
 
 class Detector:
     def __init__(self, *, signals, store: Store, clock: Callable[[], datetime], remediations=None):
-        self.signals, self.store, self.clock, self.remediations = signals, store, clock, remediations
+        self.signals, self.store, self.clock, self.remediations = (
+            signals,
+            store,
+            clock,
+            remediations,
+        )
 
     def tick(self) -> None:
         self._check_error_rate("booking-web")
@@ -64,7 +69,9 @@ class Detector:
         sample = self.signals.error_rates(service)
         if sample.requests < MIN_REQUESTS or self.store.open_incident_for("error_rate", service):
             return
-        windows = self.store.incident_windows("error_rate", service, now=now, margin=INCIDENT_MARGIN)
+        windows = self.store.incident_windows(
+            "error_rate", service, now=now, margin=INCIDENT_MARGIN
+        )
         baseline = clean_baseline(sample.buckets, windows)
         verdict = three_sigma(baseline, sample.current, MIN_DELTA)
         if len(baseline) >= MIN_BASELINE_BUCKETS and verdict.anomalous:
@@ -102,7 +109,11 @@ class Detector:
                 f"'request completed'; the oldest has been open {stuck.oldest_s}s"
             ),
             opened_at=self.clock(),
-            details={"stuck": stuck.count, "oldest_s": stuck.oldest_s, "trace_ids": stuck.trace_ids},
+            details={
+                "stuck": stuck.count,
+                "oldest_s": stuck.oldest_s,
+                "trace_ids": stuck.trace_ids,
+            },
         )
 
     def _verify_executed(self) -> None:
@@ -133,7 +144,9 @@ class Detector:
                 healthy, evidence = self._healthy(incident)
                 timed_out = now - executed_at > timedelta(minutes=5)
                 if healthy or timed_out:
-                    self.remediations.record_verification(action.action_id, passed=healthy, evidence=evidence)
+                    self.remediations.record_verification(
+                        action.action_id, passed=healthy, evidence=evidence
+                    )
 
     def _healthy(self, incident) -> tuple[bool, dict]:
         if incident.rule == "error_rate":

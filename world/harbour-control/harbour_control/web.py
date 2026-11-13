@@ -7,13 +7,11 @@ here is recorded against the signed-in approver.
 import hashlib
 import hmac
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import quote
 
-from fastapi import Header
-from datetime import UTC, datetime
-
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, Form, Header, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
@@ -70,7 +68,12 @@ def create_app(
         public_url=settings.public_url,
     )
     mcp_app = mcp.http_app(path="/mcp")
-    app = FastAPI(title="harbour-control", lifespan=lifespan or mcp_app.lifespan, docs_url=None, redoc_url=None)
+    app = FastAPI(
+        title="harbour-control",
+        lifespan=lifespan or mcp_app.lifespan,
+        docs_url=None,
+        redoc_url=None,
+    )
     app.state.mcp_app = mcp_app
 
     def user(request: Request) -> str | None:
@@ -94,7 +97,9 @@ def create_app(
     @app.post("/login")
     def login(request: Request, email: str = Form(), password: str = Form(), next: str = Form("/")):
         # Both comparisons always run, so the response time does not reveal which one failed.
-        email_ok = hmac.compare_digest(email.lower().encode(), settings.approver_email.lower().encode())
+        email_ok = hmac.compare_digest(
+            email.lower().encode(), settings.approver_email.lower().encode()
+        )
         password_ok = hmac.compare_digest(password.encode(), settings.approver_password.encode())
         ok = email_ok & password_ok
         if not ok:
@@ -170,7 +175,9 @@ def create_app(
     @app.post("/actions/{action_id}/reject")
     def reject(request: Request, action_id: str, reason: str = Form("")):
         return decide(
-            request, action_id, lambda who: remediations.reject(action_id, approver=who, reason=reason)
+            request,
+            action_id,
+            lambda who: remediations.reject(action_id, approver=who, reason=reason),
         )
 
     @app.post("/actions/{action_id}/edit")
@@ -180,7 +187,9 @@ def create_app(
         return decide(
             request,
             action_id,
-            lambda who: remediations.edit(action_id, editor=who, action=action, target=target, params=params),
+            lambda who: remediations.edit(
+                action_id, editor=who, action=action, target=target, params=params
+            ),
         )
 
     @app.post("/api/incidents")
