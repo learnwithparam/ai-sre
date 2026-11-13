@@ -1,0 +1,14 @@
+{
+  "incident_id": "inc-76fcc556a183",
+  "service": "booking-web",
+  "change": {
+    "kind": "none",
+    "value": ""
+  },
+  "pattern": "card declined by payments gateway: do_not_honor for booking GR-XXXXXX",
+  "quote": "card declined by payments gateway: do_not_honor for booking GR-KY4PBW",
+  "trace_ids": ["b508ef3b7996a42d23200544cdd1173d", "73885f94b23159dfe8c58bbe25552402"],
+  "hypothesis": "The payments gateway declines more cards than usual, so bookings fail at the payment step.",
+  "ruled_out": [],
+  "finding_id": "fnd-c41e7194b0fa"
+}
