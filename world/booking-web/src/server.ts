@@ -72,15 +72,28 @@ async function readJsonBody(request: Request): Promise<Record<string, string>> {
   return body as Record<string, string>;
 }
 
+// The form fields a booking needs, with the words a passenger sees for each.
+const FIELD_LABELS = [
+  ["name", "name"],
+  ["email", "email"],
+  ["sailing_id", "sailing"],
+  ["vehicle", "vehicle"],
+  ["card", "card number"],
+];
+
 async function createBooking(request: Request): Promise<Response> {
   const body = await readJsonBody(request);
-  for (const field of ["name", "email", "sailing_id", "vehicle", "card"]) {
-    if (!body[field]) return json(400, { ok: false, error: `missing ${field}` });
+  for (const [field, label] of FIELD_LABELS) {
+    if (!body[field]) return json(400, { ok: false, error: `Enter your ${label}.` });
   }
   const span = trace.getActiveSpan();
   span?.setAttribute("passenger.email", body.email);
   const sailing = await store.sailing(Number(body.sailing_id));
-  if (!sailing) return json(404, { ok: false, error: "no such sailing" });
+  if (!sailing)
+    return json(404, {
+      ok: false,
+      error: "That sailing is not on the timetable. Pick another sailing.",
+    });
   const ref = newRef();
   span?.setAttribute("booking.ref", ref);
   fares.refresh();
@@ -90,7 +103,10 @@ async function createBooking(request: Request): Promise<Response> {
     log("error", `booking failed: no fare for ${journey} (fares ${fares.version})`, {
       "booking.ref": ref,
     });
-    return json(500, { ok: false, error: "we could not price this sailing, please try again" });
+    return json(500, {
+      ok: false,
+      error: "We could not price this sailing. Try again in a few minutes.",
+    });
   }
   if (String(body.card).endsWith("0002")) {
     log("warn", `card declined by payments gateway: do_not_honor for booking ${ref}`, {
@@ -157,7 +173,10 @@ async function timetable(url: URL): Promise<Response> {
       } catch (err) {
         span.setStatus({ code: SpanStatusCode.ERROR, message: (err as Error).message });
         log("error", `timetable-loader did not answer: ${(err as Error).message}`);
-        return json(504, { ok: false, error: "the timetable is not available right now" });
+        return json(504, {
+          ok: false,
+          error: "The timetable is not available right now. Try again in a few minutes.",
+        });
       } finally {
         span.end();
       }
@@ -249,7 +268,10 @@ const server = Bun.serve({
           span.setStatus({ code: SpanStatusCode.ERROR, message });
           span.setAttribute("http.response.status_code", 500);
           log("error", `${request.method} ${path} failed: ${message}`);
-          return json(500, { ok: false, error: "something went wrong, please try again" });
+          return json(500, {
+            ok: false,
+            error: "The booking did not go through. Try again in a few minutes.",
+          });
         } finally {
           span.end();
         }

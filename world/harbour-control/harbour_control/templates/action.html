@@ -28,7 +28,7 @@
       <table class="facts">
         <tr><th>Service</th><td class="mono">{{ a.service }}</td></tr>
         <tr><th>Faulty release</th><td class="mono">{{ a.release or "not named" }}</td></tr>
-        <tr><th>Tool call</th><td class="mono">{{ a.action }}</td></tr>
+        <tr><th>Tool call</th><td>{{ phrase(a.action) }} <span class="muted mono">{{ a.action }}</span></td></tr>
         <tr><th>Target</th><td class="mono">{{ a.target }}</td></tr>
         <tr><th>Parameters</th><td class="mono">{{ a.params or "none" }}</td></tr>
       </table>
@@ -52,7 +52,7 @@
       <h3>Approve</h3>
       <p class="muted">The AI SRE may then run exactly this action, once. Recovery is checked on a full
         minute of traffic afterwards.</p>
-      <p><button class="btn primary" type="submit">Approve</button></p>
+      <p><button class="btn primary" type="submit">Approve this change</button></p>
     </form>
     <form class="panel" method="post" action="/actions/{{ a.action_id }}/reject">
       <h3>Reject</h3>
@@ -61,7 +61,7 @@
         <textarea id="reason" name="reason" rows="3" required
                   placeholder="What is wrong with this proposal?"></textarea>
       </div>
-      <p><button class="btn danger" type="submit">Reject</button></p>
+      <p><button class="btn danger" type="submit">Reject this change</button></p>
     </form>
   </div>
 </div>

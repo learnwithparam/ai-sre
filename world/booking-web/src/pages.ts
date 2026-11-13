@@ -93,7 +93,7 @@ document.getElementById("book").addEventListener("submit", async (event) => {
     return;
   }
   const pounds = (body.fare_pence / 100).toFixed(2);
-  result.textContent = "Booked. Your reference is " + body.ref + " (" + pounds + " GBP)";
+  result.textContent = "Booked. Your reference is " + body.ref + ". You paid £" + pounds + ".";
 });
 </script>`,
     release,
