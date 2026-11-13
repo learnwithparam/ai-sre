@@ -1,0 +1,23 @@
+{
+  "incident_id": "inc-1d455aec3318",
+  "service": "booking-web",
+  "change": {
+    "kind": "none",
+    "value": ""
+  },
+  "pattern": "card declined by payments gateway: do_not_honor for booking GR-XXXXXX",
+  "quote": "card declined by payments gateway: do_not_honor for booking GR-RZU5RD",
+  "trace_ids": ["934b0de6c8948e21426879786686acc5", "be091fc6c920a5f1f78331f029ee7415"],
+  "hypothesis": "Nothing is broken: card declines run at their usual rate and the TLS errors stopped before the page.",
+  "ruled_out": [
+    {
+      "signal": "card declined by payments gateway",
+      "why": "x"
+    },
+    {
+      "signal": "TLS handshake failed with payments gateway",
+      "why": "x"
+    }
+  ],
+  "finding_id": "fnd-3a1c5e7b9d02"
+}

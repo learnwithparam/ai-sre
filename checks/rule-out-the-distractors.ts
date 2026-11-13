@@ -8,6 +8,7 @@ import {
   storedFinding,
 } from "../parts/04-say-what-broke/evidence";
 import type { Rule } from "../scripts/verify";
+import { hasReason } from "./lib/files";
 
 const FILE = "findings/noisy-morning.json";
 const PROBLEM_FOLDER = "parts/04-say-what-broke/03-rule-out-the-distractors/problem";
@@ -78,12 +79,12 @@ export default [
       "stopped, and add them to ruled_out",
   },
   {
-    says: "every ruled-out signal says why it is not the cause",
+    says: "every ruled-out signal says why it is not the cause, in four words or more",
     test: async (folder) => {
       const ruledOut = (await stored(folder))?.ruled_out ?? [];
-      return ruledOut.length > 0 && ruledOut.every((entry) => String(entry.why ?? "").trim());
+      return ruledOut.length > 0 && ruledOut.every((entry) => hasReason(String(entry.why ?? "")));
     },
-    tryNext: "give each ruled_out entry a why: one short reason taken from the telemetry",
+    tryNext: "give each ruled_out entry a why: one short sentence from the telemetry",
   },
   {
     says: "no change was proposed for this incident",

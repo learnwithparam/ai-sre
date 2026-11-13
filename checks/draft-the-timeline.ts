@@ -3,7 +3,7 @@
 import { incidentIdIn, POSTMORTEM, timelineLines } from "../parts/06-write-it-down/postmortem";
 import { type AuditRow, auditRows, clockOf, INCIDENT_ID } from "../parts/06-write-it-down/records";
 import type { Rule } from "../scripts/verify";
-import { read } from "./lib/files";
+import { hasReason, read } from "./lib/files";
 
 // The moments every timeline keeps, when the incident has them.
 const KEY_MOMENTS = [
@@ -79,6 +79,14 @@ export default [
     tryNext:
       "add a line for each of incident_opened, finding_submitted, remediation_approved, " +
       "remediation_executed and incident_resolved",
+  },
+  {
+    says: "every timeline line says what happened: four words or more after the colon",
+    test: (folder) => {
+      const found = lines(folder);
+      return found.length > 0 && found.every((line) => hasReason(line.text));
+    },
+    tryNext: "after each colon write a short sentence about what happened, not just the event name",
   },
   {
     says: "the lines are in time order",

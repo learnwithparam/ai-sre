@@ -78,7 +78,7 @@ First, write the timeline from those rows.
 bun run verify draft-the-timeline
 ```
 
-Expect: `Done. All 6 rules pass.` once every line matches a row.
+Expect: `Done. All 7 rules pass.` once every line matches a row.
 
 Next, write the rest of the postmortem.
 
