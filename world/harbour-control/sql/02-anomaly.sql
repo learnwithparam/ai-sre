@@ -19,7 +19,8 @@ ORDER BY bucket
 LIMIT 1000;
 
 -- name: analyze_service_anomalies
--- teaches: mean plus three standard deviations over a trailing baseline, compared with the last minute.
+-- teaches: mean plus three standard deviations over a trailing baseline,
+-- compared with the last minute.
 -- The floor (min_delta) stops a silent baseline from alerting on a single failed request.
 -- example: baseline_minutes=10 min_delta=0.05
 WITH buckets AS (
@@ -44,7 +45,8 @@ SELECT
     round(avgIf(p95_ms, bucket >= now() - INTERVAL 60 SECOND), 1) AS current_p95_ms,
     round(avgIf(p95_ms, bucket < now() - INTERVAL 60 SECOND), 1) AS baseline_p95_ms,
     sumIf(requests, bucket >= now() - INTERVAL 60 SECOND) AS current_requests,
-    current_error_rate > bound AND current_error_rate - baseline_mean >= {min_delta:Float64} AS anomalous
+    current_error_rate > bound
+        AND current_error_rate - baseline_mean >= {min_delta:Float64} AS anomalous
 FROM buckets
 GROUP BY service
 ORDER BY anomalous DESC, current_error_rate DESC
@@ -67,7 +69,9 @@ WITH buckets AS (
     GROUP BY bucket
 )
 SELECT
-    arraySort(groupArrayIf((bucket, errors / requests), bucket < now() - INTERVAL 60 SECOND)) AS baseline,
+    arraySort(
+        groupArrayIf((bucket, errors / requests), bucket < now() - INTERVAL 60 SECOND)
+    ) AS baseline,
     sumIf(errors, bucket >= now() - INTERVAL 60 SECOND) AS current_errors,
     sumIf(requests, bucket >= now() - INTERVAL 60 SECOND) AS current_requests
 FROM buckets
@@ -88,7 +92,8 @@ ORDER BY (ServiceName, minute)
 TTL minute + INTERVAL 30 DAY;
 
 -- name: create_service_minute_view
--- teaches: a materialized view runs on every insert into otel_traces, so rates are ready before anyone asks.
+-- teaches: a materialized view runs on every insert into otel_traces,
+-- so rates are ready before anyone asks.
 CREATE MATERIALIZED VIEW IF NOT EXISTS sre.service_minute_mv TO sre.service_minute AS
 SELECT
     ServiceName,

@@ -1,6 +1,7 @@
 -- Module 5: how fast is the error budget burning?
 -- A 99.5% SLO over 30 days leaves a budget of 0.5% failed requests. Burn rate is the observed
--- error rate divided by that budget: 1.0 spends the budget exactly on schedule, 14 empties it in two days.
+-- error rate divided by that budget: 1.0 spends the budget exactly on schedule,
+-- 14 empties it in two days.
 
 -- name: slo_burn
 -- teaches: burn rate over a short and a long window. Both high means a real, ongoing burn; only the
@@ -12,7 +13,9 @@ WITH
 SELECT
     ServiceName AS service,
     countIf(in_1h) AS requests_1h,
-    round(countIf(in_1h AND StatusCode = 'Error') / greatest(requests_1h, 1) / budget, 2) AS burn_1h,
+    round(
+        countIf(in_1h AND StatusCode = 'Error') / greatest(requests_1h, 1) / budget, 2
+    ) AS burn_1h,
     count() AS requests_6h,
     round(countIf(StatusCode = 'Error') / greatest(requests_6h, 1) / budget, 2) AS burn_6h
 FROM default.otel_traces

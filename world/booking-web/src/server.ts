@@ -1,5 +1,6 @@
 // booking-web: Gullrock Ferries' booking site. Book a sailing, pay, check in at the quay.
 import { context, propagation, SpanKind, SpanStatusCode, trace } from "@opentelemetry/api";
+import type { Server } from "bun";
 import { Fares } from "./fares";
 import { loadHooks, log, startTelemetry } from "./otel";
 import { bookingPage, checkinPage } from "./pages";
@@ -22,12 +23,13 @@ const TIMETABLE_URL = env.TIMETABLE_URL ?? "http://localhost:8001";
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 
-const newRef = () =>
-  "GR-" +
-  Array.from(
-    { length: 6 },
-    () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)],
-  ).join("");
+// Letters and digits that are hard to confuse when read aloud at the quay (no I, O, 0 or 1).
+const REF_CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function newRef(): string {
+  const randomCharacter = () => REF_CHARACTERS[Math.floor(Math.random() * 32)];
+  return `GR-${Array.from({ length: 6 }, randomCharacter).join("")}`;
+}
 
 // Release v2 added an audit trail that opens its own database connection for every booking and
 // holds it for a slow write. Only two such connections may be open at once.
@@ -37,10 +39,9 @@ async function auditTrail(ref: string): Promise<void> {
   const started = Date.now();
   while (auditInUse >= AUDIT_SLOTS) {
     if (Date.now() - started > 300) {
-      const ref2 = FAULT_CODE ? ` ref=${FAULT_CODE}` : "";
-      throw new Error(
-        `connection pool exhausted: ${AUDIT_SLOTS} of ${AUDIT_SLOTS} connections in use (audit_trail)${ref2}`,
-      );
+      const faultRef = FAULT_CODE ? ` ref=${FAULT_CODE}` : "";
+      const inUse = `${AUDIT_SLOTS} of ${AUDIT_SLOTS} connections in use`;
+      throw new Error(`connection pool exhausted: ${inUse} (audit_trail)${faultRef}`);
     }
     await Bun.sleep(20);
   }
@@ -51,11 +52,12 @@ async function auditTrail(ref: string): Promise<void> {
       "SELECT pg_sleep(1.5); INSERT INTO audit_trail ...",
       async () => {
         const { SQL } = await import("bun");
-        const conn = new SQL(env.DATABASE_URL!, { max: 1 }); // a fresh connection per booking: the defect
+        // A fresh connection per booking: this is the defect.
+        const connection = new SQL(env.DATABASE_URL ?? "", { max: 1 });
         try {
-          await conn`SELECT pg_sleep(1.5)`;
+          await connection`SELECT pg_sleep(1.5)`;
         } finally {
-          await conn.close();
+          await connection.close();
         }
       },
     );
@@ -65,8 +67,13 @@ async function auditTrail(ref: string): Promise<void> {
   void ref;
 }
 
-async function createBooking(req: Request): Promise<Response> {
-  const body = (await req.json().catch(() => ({}))) as Record<string, string>;
+async function readJsonBody(request: Request): Promise<Record<string, string>> {
+  const body = await request.json().catch(() => ({}));
+  return body as Record<string, string>;
+}
+
+async function createBooking(request: Request): Promise<Response> {
+  const body = await readJsonBody(request);
   for (const field of ["name", "email", "sailing_id", "vehicle", "card"]) {
     if (!body[field]) return json(400, { ok: false, error: `missing ${field}` });
   }
@@ -79,11 +86,10 @@ async function createBooking(req: Request): Promise<Response> {
   fares.refresh();
   const pence = fares.price(sailing.route_from, sailing.route_to, body.vehicle);
   if (pence === 0) {
-    log(
-      "error",
-      `booking failed: no fare for ${sailing.route_from} to ${sailing.route_to} ${body.vehicle} (fares ${fares.version})`,
-      { "booking.ref": ref },
-    );
+    const journey = `${sailing.route_from} to ${sailing.route_to} ${body.vehicle}`;
+    log("error", `booking failed: no fare for ${journey} (fares ${fares.version})`, {
+      "booking.ref": ref,
+    });
     return json(500, { ok: false, error: "we could not price this sailing, please try again" });
   }
   if (String(body.card).endsWith("0002")) {
@@ -93,6 +99,7 @@ async function createBooking(req: Request): Promise<Response> {
     return json(402, { ok: false, error: "your card was declined" });
   }
   if (RELEASE === "v2" && store.system === "postgresql") await auditTrail(ref);
+  // biome-ignore-start lint/style/useNamingConvention: these are database column names.
   const booking: Booking = {
     ref,
     sailing_id: sailing.id,
@@ -103,19 +110,18 @@ async function createBooking(req: Request): Promise<Response> {
     status: "confirmed",
     created_at: new Date().toISOString(),
   };
+  // biome-ignore-end lint/style/useNamingConvention: these are database column names.
   await store.insertBooking(booking);
-  log(
-    "info",
-    `booking confirmed ${ref} on the ${sailing.departs} ${sailing.route_from} to ${sailing.route_to} for ${booking.email}`,
-    {
-      "booking.ref": ref,
-    },
-  );
+  const sailingName = `${sailing.departs} ${sailing.route_from} to ${sailing.route_to}`;
+  log("info", `booking confirmed ${ref} on the ${sailingName} for ${booking.email}`, {
+    "booking.ref": ref,
+  });
+  // biome-ignore lint/style/useNamingConvention: the booking page reads this snake_case field.
   return json(200, { ok: true, ref, fare_pence: pence, departs: sailing.departs });
 }
 
-async function checkIn(req: Request): Promise<Response> {
-  const body = (await req.json().catch(() => ({}))) as Record<string, string>;
+async function checkIn(request: Request): Promise<Response> {
+  const body = await readJsonBody(request);
   const ref = String(body.ref ?? "")
     .trim()
     .toUpperCase();
@@ -133,6 +139,8 @@ async function checkIn(req: Request): Promise<Response> {
 async function timetable(url: URL): Promise<Response> {
   const route = url.searchParams.get("route") ?? "port-maren";
   const days = url.searchParams.get("days") ?? "1";
+  const query = `route=${encodeURIComponent(route)}&days=${encodeURIComponent(days)}`;
+  const timeout = Number(env.TIMETABLE_TIMEOUT_MS ?? 5000);
   return tracer.startActiveSpan(
     "GET timetable-loader /tides",
     { kind: SpanKind.CLIENT },
@@ -140,15 +148,12 @@ async function timetable(url: URL): Promise<Response> {
       const headers: Record<string, string> = {};
       propagation.inject(context.active(), headers);
       try {
-        const res = await fetch(
-          `${TIMETABLE_URL}/tides?route=${encodeURIComponent(route)}&days=${encodeURIComponent(days)}`,
-          {
-            headers,
-            signal: AbortSignal.timeout(Number(env.TIMETABLE_TIMEOUT_MS ?? 5000)),
-          },
-        );
-        span.setAttribute("http.response.status_code", res.status);
-        return json(res.status, await res.json());
+        const response = await fetch(`${TIMETABLE_URL}/tides?${query}`, {
+          headers,
+          signal: AbortSignal.timeout(timeout),
+        });
+        span.setAttribute("http.response.status_code", response.status);
+        return json(response.status, await response.json());
       } catch (err) {
         span.setStatus({ code: SpanStatusCode.ERROR, message: (err as Error).message });
         log("error", `timetable-loader did not answer: ${(err as Error).message}`);
@@ -160,84 +165,90 @@ async function timetable(url: URL): Promise<Response> {
   );
 }
 
-async function route(req: Request, url: URL): Promise<[string, () => Promise<Response>]> {
-  const m = req.method;
-  if (m === "GET" && url.pathname === "/")
-    return [
-      "/",
-      async () => {
-        fares.refresh();
-        return new Response(bookingPage(await store.sailings(), RELEASE, fares.version), {
-          headers: { "content-type": "text/html" },
-        });
-      },
-    ];
-  if (m === "GET" && url.pathname === "/checkin")
-    return [
-      "/checkin",
-      async () =>
-        new Response(checkinPage(RELEASE, fares.version), {
-          headers: { "content-type": "text/html" },
-        }),
-    ];
-  if (m === "POST" && url.pathname === "/api/bookings")
-    return ["/api/bookings", () => createBooking(req)];
-  if (m === "POST" && url.pathname === "/api/checkin") return ["/api/checkin", () => checkIn(req)];
-  if (m === "GET" && url.pathname === "/timetable") return ["/timetable", () => timetable(url)];
-  if (m === "GET" && url.pathname === "/health")
-    return [
-      "/health",
-      async () => {
-        await store.ping();
-        return json(200, { ok: true, release: RELEASE });
-      },
-    ];
-  if (m === "POST" && url.pathname === "/telemetry/flush")
-    return [
-      "/telemetry/flush",
-      async () => {
-        await telemetry.flush();
-        return json(200, { ok: true });
-      },
-    ];
+type Handler = () => Promise<Response>;
+
+const htmlHeaders = { "content-type": "text/html" };
+
+async function homePage(): Promise<Response> {
+  fares.refresh();
+  const page = bookingPage(await store.sailings(), RELEASE, fares.version);
+  return new Response(page, { headers: htmlHeaders });
+}
+
+async function checkinPageResponse(): Promise<Response> {
+  return new Response(checkinPage(RELEASE, fares.version), { headers: htmlHeaders });
+}
+
+async function health(): Promise<Response> {
+  await store.ping();
+  return json(200, { ok: true, release: RELEASE });
+}
+
+async function flushTelemetry(): Promise<Response> {
+  await telemetry.flush();
+  return json(200, { ok: true });
+}
+
+// Picks the handler for a request. The path it returns names the span, so unknown paths
+// keep their own name.
+async function route(request: Request, url: URL): Promise<[string, Handler]> {
+  const routes: Record<string, Handler> = {
+    "GET /": homePage,
+    "GET /checkin": checkinPageResponse,
+    "POST /api/bookings": () => createBooking(request),
+    "POST /api/checkin": () => checkIn(request),
+    "GET /timetable": () => timetable(url),
+    "GET /health": health,
+    "POST /telemetry/flush": flushTelemetry,
+  };
+  const handler = routes[`${request.method} ${url.pathname}`];
+  if (handler) return [url.pathname, handler];
   return [url.pathname, async () => json(404, { ok: false, error: "not found" })];
+}
+
+// One access log line per request, like a web server writes.
+function logAccess(request: Request, bunServer: Server, url: URL, path: string): void {
+  const userAgent = request.headers.get("user-agent") ?? "";
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  const clientAddress = forwardedFor ?? bunServer.requestIP(request)?.address ?? "";
+  const line = `${clientAddress} "${request.method} ${url.pathname}" "${userAgent}"`;
+  log("info", line, { "http.route": path });
 }
 
 const server = Bun.serve({
   port: Number(env.PORT ?? 8000),
   hostname: env.HOST ?? "0.0.0.0",
-  async fetch(req, srv) {
-    const url = new URL(req.url);
-    const [path, handler] = await route(req, url);
-    const parent = propagation.extract(context.active(), Object.fromEntries(req.headers));
+  async fetch(request, bunServer) {
+    const url = new URL(request.url);
+    const [path, handler] = await route(request, url);
+    const incomingHeaders = Object.fromEntries(request.headers);
+    const parent = propagation.extract(context.active(), incomingHeaders);
     return tracer.startActiveSpan(
-      `${req.method} ${path}`,
+      `${request.method} ${path}`,
       {
         kind: SpanKind.SERVER,
         attributes: {
-          "http.request.method": req.method,
+          "http.request.method": request.method,
           "http.route": path,
           "url.path": url.pathname,
         },
       },
       parent,
       async (span) => {
-        const ua = req.headers.get("user-agent") ?? "";
-        const ip = req.headers.get("x-forwarded-for") ?? srv.requestIP(req)?.address ?? "";
-        if (path !== "/health")
-          log("info", `${ip} "${req.method} ${url.pathname}" "${ua}"`, { "http.route": path });
+        if (path !== "/health") logAccess(request, bunServer, url, path);
         try {
-          const res = await handler();
-          span.setAttribute("http.response.status_code", res.status);
-          if (res.status >= 500)
-            span.setStatus({ code: SpanStatusCode.ERROR, message: `HTTP ${res.status}` });
-          return res;
+          const response = await handler();
+          span.setAttribute("http.response.status_code", response.status);
+          if (response.status >= 500) {
+            span.setStatus({ code: SpanStatusCode.ERROR, message: `HTTP ${response.status}` });
+          }
+          return response;
         } catch (err) {
           const message = (err as Error).message;
           span.recordException(err as Error);
           span.setStatus({ code: SpanStatusCode.ERROR, message });
           span.setAttribute("http.response.status_code", 500);
-          log("error", `${req.method} ${path} failed: ${message}`);
+          log("error", `${request.method} ${path} failed: ${message}`);
           return json(500, { ok: false, error: "something went wrong, please try again" });
         } finally {
           span.end();

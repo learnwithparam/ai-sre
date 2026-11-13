@@ -3,6 +3,7 @@
 import { SpanKind, SpanStatusCode, trace } from "@opentelemetry/api";
 import { SQL } from "bun";
 
+// biome-ignore-start lint/style/useNamingConvention: the field names are the database columns.
 export type Booking = {
   ref: string;
   sailing_id: number;
@@ -85,6 +86,8 @@ const SAILINGS: Omit<Sailing, "id">[] = [
   },
 ];
 
+// biome-ignore-end lint/style/useNamingConvention: the field names are the database columns.
+
 export class Store implements CheckinStore {
   readonly sql: SQL;
   readonly system: "postgresql" | "sqlite";
@@ -117,17 +120,17 @@ export class Store implements CheckinStore {
   }
 
   async migrate(): Promise<void> {
-    const id = this.system === "sqlite" ? "INTEGER PRIMARY KEY" : "SERIAL PRIMARY KEY";
+    const idColumn = this.system === "sqlite" ? "INTEGER PRIMARY KEY" : "SERIAL PRIMARY KEY";
     await this.sql.unsafe(`CREATE TABLE IF NOT EXISTS sailings (
-      id ${id}, route_from TEXT NOT NULL, route_to TEXT NOT NULL, departs TEXT NOT NULL,
+      id ${idColumn}, route_from TEXT NOT NULL, route_to TEXT NOT NULL, departs TEXT NOT NULL,
       vessel TEXT NOT NULL, car_spaces INTEGER NOT NULL)`);
     await this.sql.unsafe(`CREATE TABLE IF NOT EXISTS bookings (
       ref TEXT PRIMARY KEY, sailing_id INTEGER NOT NULL, name TEXT NOT NULL, email TEXT NOT NULL,
       vehicle TEXT NOT NULL, fare_pence INTEGER NOT NULL, status TEXT NOT NULL,
       created_at TEXT NOT NULL, checked_in_at TEXT)`);
-    const [{ n }] = await this.sql`SELECT count(*) AS n FROM sailings`;
-    if (Number(n) === 0)
-      for (const s of SAILINGS) await this.sql`INSERT INTO sailings ${this.sql(s)}`;
+    const [{ total }] = await this.sql`SELECT count(*) AS total FROM sailings`;
+    if (Number(total) > 0) return;
+    for (const sailing of SAILINGS) await this.sql`INSERT INTO sailings ${this.sql(sailing)}`;
   }
 
   sailings(): Promise<Sailing[]> {
@@ -147,11 +150,11 @@ export class Store implements CheckinStore {
     return rows[0] ?? null;
   }
 
-  async insertBooking(b: Booking): Promise<void> {
+  async insertBooking(booking: Booking): Promise<void> {
     await this.query(
       "INSERT bookings",
       "INSERT INTO bookings (...) VALUES (...)",
-      () => this.sql`INSERT INTO bookings ${this.sql(b)}`,
+      () => this.sql`INSERT INTO bookings ${this.sql(booking)}`,
     );
   }
 
@@ -165,13 +168,12 @@ export class Store implements CheckinStore {
   }
 
   async checkIn(ref: string): Promise<void> {
-    const at = new Date().toISOString();
+    const checkedInAt = new Date().toISOString();
     await this.query(
       "UPDATE bookings",
       "UPDATE bookings SET status = 'checked_in' WHERE ref = $1",
-      () =>
-        this
-          .sql`UPDATE bookings SET status = 'checked_in', checked_in_at = ${at} WHERE ref = ${ref}`,
+      () => this.sql`UPDATE bookings
+        SET status = 'checked_in', checked_in_at = ${checkedInAt} WHERE ref = ${ref}`,
     );
   }
 

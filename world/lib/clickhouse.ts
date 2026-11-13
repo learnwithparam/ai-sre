@@ -1,4 +1,5 @@
-// Query the live ClickHouse as the read-only sre_agent user, the same user the AI SRE reads through.
+// Query the live ClickHouse as the read-only sre_agent user,
+// the same user the AI SRE reads through.
 import { env } from "./env";
 
 export async function chQuery<T = Record<string, unknown>>(
@@ -6,34 +7,34 @@ export async function chQuery<T = Record<string, unknown>>(
   params: Record<string, string | number> = {},
   user = "sre_agent",
 ): Promise<T[]> {
-  const e = env();
-  const url = new URL(e.CLICKHOUSE_URL ?? "http://localhost:8123/");
+  const settings = env();
+  const url = new URL(settings.CLICKHOUSE_URL ?? "http://localhost:8123/");
   url.searchParams.set("default_format", "JSONEachRow");
-  for (const [k, v] of Object.entries(params)) url.searchParams.set(`param_${k}`, String(v));
+  for (const [name, value] of Object.entries(params)) {
+    url.searchParams.set(`param_${name}`, String(value));
+  }
   const password =
-    user === "sre_agent" ? e.CLICKHOUSE_READER_PASSWORD : e.CLICKHOUSE_WRITER_PASSWORD;
-  const res = await fetch(url, {
+    user === "sre_agent"
+      ? settings.CLICKHOUSE_READER_PASSWORD
+      : settings.CLICKHOUSE_WRITER_PASSWORD;
+  const response = await fetch(url, {
     method: "POST",
     body: sql,
     headers: { "X-ClickHouse-User": user, "X-ClickHouse-Key": password ?? "" },
     signal: AbortSignal.timeout(15_000),
   });
-  const text = await res.text();
-  if (!res.ok) throw new Error(text.split("\n")[0].slice(0, 300));
-  return text.trim()
-    ? text
-        .trim()
-        .split("\n")
-        .map((l) => JSON.parse(l))
-    : [];
+  const text = await response.text();
+  if (!response.ok) throw new Error(text.split("\n")[0].slice(0, 300));
+  const body = text.trim();
+  if (!body) return [];
+  return body.split("\n").map((row) => JSON.parse(row));
 }
 
 export async function chReachable(): Promise<boolean> {
+  const pingUrl = new URL("/ping", env().CLICKHOUSE_URL ?? "http://localhost:8123/");
   try {
-    const res = await fetch(new URL("/ping", env().CLICKHOUSE_URL ?? "http://localhost:8123/"), {
-      signal: AbortSignal.timeout(2000),
-    });
-    return res.ok;
+    const response = await fetch(pingUrl, { signal: AbortSignal.timeout(2000) });
+    return response.ok;
   } catch {
     return false;
   }

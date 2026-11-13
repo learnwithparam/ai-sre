@@ -1,10 +1,11 @@
 -- Module 1: the telemetry substrate.
--- Every query here is a named block. harbour-control loads the same blocks for its MCP tools, so the
--- SQL you write in the workshop is the SQL the agent runs. `-- example:` gives the values
+-- Every query here is a named block. harbour-control loads the same blocks for its MCP tools,
+-- so the SQL you write in the workshop is the SQL the agent runs. `-- example:` gives the values
 -- the world self test binds when it runs every block as the read-only sre_agent user.
 
 -- name: list_tables
--- teaches: ClickStack stores each signal in its own MergeTree table; parts and rows are cheap to inspect.
+-- teaches: ClickStack stores each signal in its own MergeTree table;
+-- parts and rows are cheap to inspect.
 SELECT
     table,
     sum(rows) AS rows,

@@ -1,4 +1,5 @@
-// Starts the span from ROOT_CONTEXT, so it begins a new trace instead of joining the check-in request.
+// Starts the span from ROOT_CONTEXT, so it begins a new trace
+// instead of joining the check-in request.
 import { ROOT_CONTEXT, trace } from "@opentelemetry/api";
 import type { CheckinStore } from "../store";
 

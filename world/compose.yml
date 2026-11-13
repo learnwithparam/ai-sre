@@ -1,5 +1,7 @@
-# Gullrock Ferries: the booking system, its telemetry, and harbour-control, the AI SRE's control plane.
-# Start it with `bun run world`; that script writes .env, builds both booking-web releases and waits for health.
+# Gullrock Ferries: the booking system, its telemetry,
+# and harbour-control, the AI SRE's control plane.
+# Start it with `bun run world`; that script writes .env,
+# builds both booking-web releases and waits for health.
 name: gullrock
 
 x-otlp: &otlp
@@ -101,7 +103,8 @@ services:
       <<: *otlp
       TIMETABLE_RELEASE: t3
     restart: unless-stopped
-    # Two hung requests leak about 20 MB a second each; the cap keeps a forgotten hang from eating the laptop.
+    # Two hung requests leak about 20 MB a second each;
+    # the cap keeps a forgotten hang from eating the laptop.
     deploy:
       resources:
         limits:
