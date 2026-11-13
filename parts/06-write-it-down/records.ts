@@ -42,10 +42,11 @@ async function readRows<T>(folder: string, sql: string): Promise<T[]> {
 }
 
 // Every audit row of one incident, oldest first. ts reads like 2026-11-12 22:17:52.577 (UTC).
+// Times are always printed in UTC, so the check reads the same on every laptop, whatever its clock.
 export async function auditRows(folder: string, incidentId: string): Promise<AuditRow[]> {
   if (!INCIDENT_ID.test(incidentId)) return [];
   const sql =
-    "SELECT toString(ts) AS ts, incident_id, action_id, kind, actor, payload " +
+    "SELECT toString(ts, 'UTC') AS ts, incident_id, action_id, kind, actor, payload " +
     `FROM ${tableFor(folder, "events")} WHERE incident_id = '${incidentId}' ORDER BY ts`;
   return readRows<AuditRow>(folder, sql);
 }
@@ -53,7 +54,7 @@ export async function auditRows(folder: string, incidentId: string): Promise<Aud
 // The newest incidents, so you can find the one you want to write up.
 export async function latestIncidents(folder: string, limit = 10): Promise<AuditRow[]> {
   const sql =
-    "SELECT toString(ts) AS ts, incident_id, action_id, kind, actor, payload " +
+    "SELECT toString(ts, 'UTC') AS ts, incident_id, action_id, kind, actor, payload " +
     `FROM ${tableFor(folder, "events")} WHERE kind = 'incident_opened' ` +
     `ORDER BY ts DESC LIMIT ${limit}`;
   return readRows<AuditRow>(folder, sql);
@@ -92,7 +93,7 @@ export async function impactWindow(folder: string, rows: AuditRow[]): Promise<Im
   if (!SAFE_NAME.test(change.service) || !SAFE_NAME.test(change.release)) return null;
   const openedAt = `toDateTime64('${opened.ts}', 3, 'UTC')`;
   const sql =
-    `SELECT toString(min(Timestamp)) AS first FROM ${tableFor(folder, "traces")} ` +
+    `SELECT toString(min(Timestamp), 'UTC') AS first FROM ${tableFor(folder, "traces")} ` +
     `WHERE ServiceName = '${change.service}' ` +
     `AND ResourceAttributes['service.version'] = '${change.release}' ` +
     `AND Timestamp >= ${openedAt} - INTERVAL 30 MINUTE AND Timestamp <= ${openedAt}`;
