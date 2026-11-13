@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "hyperdx": {
+      "type": "http",
+      "url": "http://localhost:8080/api/mcp",
+      "headers": {
+        "Authorization": "Bearer hdx_4f1d9c27b8e64a03a5d2"
+      }
+    },
+    "harbour": {
+      "type": "http",
+      "url": "http://localhost:8090/mcp",
+      "headers": {
+        "Authorization": "Bearer ${SRE_MCP_TOKEN}"
+      }
+    }
+  }
+}

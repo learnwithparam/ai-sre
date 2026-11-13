@@ -1,0 +1,162 @@
+[
+  {
+    "name": "clickstack_list_sources",
+    "readOnlyHint": true,
+    "description": "List all data sources (logs, metrics, traces) and database connections"
+  },
+  {
+    "name": "clickstack_describe_source",
+    "readOnlyHint": true,
+    "description": "CALL THIS BEFORE WRITING QUERIES — prevents unknown-column errors."
+  },
+  {
+    "name": "clickstack_describe_table",
+    "readOnlyHint": true,
+    "description": "Inspect ClickHouse tables that are NOT registered as sources. For a so"
+  },
+  {
+    "name": "clickstack_save_source",
+    "readOnlyHint": false,
+    "description": "Create a new data source (omit id) or update an existing one (provide "
+  },
+  {
+    "name": "clickstack_delete_source",
+    "readOnlyHint": false,
+    "description": "Permanently delete a data source by ID. Other sources may reference it"
+  },
+  {
+    "name": "clickstack_list_metrics",
+    "readOnlyHint": true,
+    "description": "DISCOVERY: Use this after clickstack_describe_source when you need mor"
+  },
+  {
+    "name": "clickstack_describe_metric",
+    "readOnlyHint": true,
+    "description": "DRILL-DOWN: Use after clickstack_list_metrics (or after a clickstack_d"
+  },
+  {
+    "name": "clickstack_get_alert",
+    "readOnlyHint": true,
+    "description": "Without an ID: list all alerts as a high-level summary (id, name, disp"
+  },
+  {
+    "name": "clickstack_get_webhook",
+    "readOnlyHint": true,
+    "description": "List available webhook destinations (id, name, service type). Use the "
+  },
+  {
+    "name": "clickstack_save_webhook",
+    "readOnlyHint": false,
+    "description": "Create a new webhook (omit id) or update an existing one (provide id)."
+  },
+  {
+    "name": "clickstack_delete_webhook",
+    "readOnlyHint": false,
+    "description": "Permanently delete a webhook by ID. Blocked while any alert still refe"
+  },
+  {
+    "name": "clickstack_save_alert",
+    "readOnlyHint": false,
+    "description": "Create a new alert (omit id) or update an existing one (provide id). A"
+  },
+  {
+    "name": "clickstack_get_dashboard",
+    "readOnlyHint": true,
+    "description": "Without an ID: list all dashboards (returns IDs, names, tags). With an"
+  },
+  {
+    "name": "clickstack_get_dashboard_tile",
+    "readOnlyHint": true,
+    "description": "Retrieve a single tile from a dashboard by tileId. Useful for inspecti"
+  },
+  {
+    "name": "clickstack_save_dashboard",
+    "readOnlyHint": false,
+    "description": "Create a new dashboard (omit id) or update an existing one (provide id"
+  },
+  {
+    "name": "clickstack_patch_dashboard",
+    "readOnlyHint": false,
+    "description": "Make targeted updates to a dashboard without resubmitting the full obj"
+  },
+  {
+    "name": "clickstack_delete_dashboard",
+    "readOnlyHint": false,
+    "description": "Permanently delete a dashboard by ID. Also removes any alerts attached"
+  },
+  {
+    "name": "clickstack_search_dashboards",
+    "readOnlyHint": true,
+    "description": "Search dashboards by name and/or tags. Returns matching dashboards wit"
+  },
+  {
+    "name": "clickstack_query_tile",
+    "readOnlyHint": true,
+    "description": "Execute the query for a specific tile on an existing dashboard. Useful"
+  },
+  {
+    "name": "clickstack_query_tiles",
+    "readOnlyHint": true,
+    "description": "Run the queries for many tiles of a dashboard in ONE call and return a"
+  },
+  {
+    "name": "clickstack_service_health",
+    "readOnlyHint": true,
+    "description": "One-call health report for every service on a trace source: throughput"
+  },
+  {
+    "name": "clickstack_timeseries",
+    "readOnlyHint": true,
+    "description": "Plot metrics over time as a line or stacked bar chart. Use this when y"
+  },
+  {
+    "name": "clickstack_table",
+    "readOnlyHint": true,
+    "description": "Compute aggregated metrics as a table, single number, pie chart, or ba"
+  },
+  {
+    "name": "clickstack_search",
+    "readOnlyHint": true,
+    "description": "Browse individual log/event/trace rows. Use this when you need to see "
+  },
+  {
+    "name": "clickstack_event_patterns",
+    "readOnlyHint": true,
+    "description": "Discover what kinds of messages, errors, or events exist. Samples rand"
+  },
+  {
+    "name": "clickstack_event_deltas",
+    "readOnlyHint": true,
+    "description": "Rank every attribute of two row groups (logs or trace spans) by how mu"
+  },
+  {
+    "name": "clickstack_emerging_signals",
+    "readOnlyHint": true,
+    "description": "Detect what is NEW or GONE between an earlier baseline window and a cu"
+  },
+  {
+    "name": "clickstack_sql",
+    "readOnlyHint": true,
+    "description": "Execute raw ClickHouse SQL. LAST-RESORT TOOL — do NOT reach for this f"
+  },
+  {
+    "name": "clickstack_get_saved_search",
+    "readOnlyHint": true,
+    "description": "Without an ID: list all saved searches as a high-level summary (id, na"
+  },
+  {
+    "name": "clickstack_save_saved_search",
+    "readOnlyHint": false,
+    "description": "Create a new saved search (omit id) or update an existing one (provide"
+  },
+  {
+    "name": "clickstack_trace_waterfall",
+    "readOnlyHint": true,
+    "description": "Fetch every span in ONE trace as a parent/child waterfall, pre-ordered"
+  },
+  {
+    "name": "clickstack_trace_top_time_consuming_operations",
+    "readOnlyHint": true,
+    "description": "Given a parent-span filter and a time window, rank the child operation"
+  }
+]
