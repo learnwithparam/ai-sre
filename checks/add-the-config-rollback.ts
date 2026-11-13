@@ -80,7 +80,9 @@ export default [
   {
     says: `your ${TESTS} passes on your policy`,
     test: (folder) => testsPass(join(folder, POLICY), join(folder, TESTS), OUR_TEST),
-    tryNext: `run your tests: copy both files into world/harbour-control and run uv run pytest`,
+    tryNext:
+      "your test fails on your own policy. Check that your test calls validate_action with " +
+      'the same names as ACTIONS: "rollback_config", "fares" and {"version": "previous"}',
   },
   {
     says: `your ${TESTS} fails on the policy you started from, so it tests the new action`,

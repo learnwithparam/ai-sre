@@ -58,7 +58,7 @@ You do four steps. Every check runs on two recorded mornings at Gullrock, so you
 The two recordings:
 
 - **bad-release**: release v2 of booking-web runs out of database connections, and about 1 booking in 5 fails. The AI SRE rolls it back near the end.
-- **noisy-morning**: nothing is broken. There are card declines, as on every morning, and a short TLS blip to the payments gateway that ended long before.
+- **noisy-morning**: nothing is broken. There are card declines, as on every morning, and a short TLS blip to the payments gateway that ended long before. TLS is the encryption on a network connection, and a blip is a short failure that fixes itself.
 
 ## Walkthrough
 

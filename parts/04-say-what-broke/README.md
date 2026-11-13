@@ -79,7 +79,7 @@ bun parts/04-say-what-broke/call-tool.ts search_logs '{"service": "booking-web",
 
 Expect: an incident with `"rule":"error_rate"`, then log lines that end in `ref=HX-` and six letters, each with a `trace_id`.
 
-Fill in `01-write-the-finding/problem/findings/bad-release.json` and send it.
+Fill in `parts/04-say-what-broke/01-write-the-finding/problem/findings/bad-release.json` and send it.
 
 ```bash
 bun parts/04-say-what-broke/call-tool.ts submit_finding parts/04-say-what-broke/01-write-the-finding/problem/findings/bad-release.json
@@ -93,7 +93,7 @@ bun run verify write-the-finding
 
 Expect: `Done. All 7 rules pass.`
 
-Now copy that file to `02-refuse-the-guess/problem/findings/guess.json`. Make up one trace id, remove the `finding_id`, and send it.
+Now copy that file to `parts/04-say-what-broke/02-refuse-the-guess/problem/findings/guess.json`. Make up one trace id, remove the `finding_id`, and send it.
 
 ```bash
 bun parts/04-say-what-broke/call-tool.ts submit_finding parts/04-say-what-broke/02-refuse-the-guess/problem/findings/guess.json
@@ -116,7 +116,7 @@ bun run world break noisy-morning
 
 Expect: `Healed: booking-web runs v1, fares-41 is live, timetable-loader restarted.` then `Paged on-call about card declines.`
 
-Fill in `03-rule-out-the-distractors/problem/findings/noisy-morning.json` with change `none` and both distractors, and send it.
+Fill in `parts/04-say-what-broke/03-rule-out-the-distractors/problem/findings/noisy-morning.json` with change `none` and both distractors, and send it.
 
 ```bash
 bun parts/04-say-what-broke/call-tool.ts submit_finding parts/04-say-what-broke/03-rule-out-the-distractors/problem/findings/noisy-morning.json
@@ -144,9 +144,9 @@ The problem: a confident wrong cause sends the team the wrong way for an hour.
 
 Hand in these files from your repo:
 
-- `01-write-the-finding/problem/findings/bad-release.json`, sent by your agent;
-- `02-refuse-the-guess/problem/findings/guess.json`, the refused guess;
-- `03-rule-out-the-distractors/problem/findings/noisy-morning.json`.
+- `parts/04-say-what-broke/01-write-the-finding/problem/findings/bad-release.json`, sent by your agent;
+- `parts/04-say-what-broke/02-refuse-the-guess/problem/findings/guess.json`, the refused guess;
+- `parts/04-say-what-broke/03-rule-out-the-distractors/problem/findings/noisy-morning.json`.
 
 The rubric. Each line is yes or no:
 

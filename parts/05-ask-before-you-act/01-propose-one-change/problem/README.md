@@ -31,7 +31,14 @@ harbour-control stored it as `pending` and gave back the `action_id`. Nothing ra
 
 1. Plant the fault: `bun run world break bad-release`. Wait for the incident in Harbour Control at http://localhost:8090.
 2. Fill in `finding.json` in this folder and send it, as in write-the-finding. Your own AI SRE can do this, or you can use `call-tool.ts`.
-3. Read the fixed list of actions. `get_incident` prints it as `allowed_actions`.
+3. Read the fixed list of actions. `get_incident` prints it as `allowed_actions`. Put your own incident id in place of `inc-...`:
+
+```bash
+bun parts/05-ask-before-you-act/call-tool.ts get_incident '{"incident_id": "inc-..."}'
+```
+
+Expect: one JSON reply with your incident, its findings and `allowed_actions`.
+
 4. Fill in `change.json`. Use the `finding_id` from step 2. Pick the one action that undoes the change your finding blames.
 5. Send it:
 

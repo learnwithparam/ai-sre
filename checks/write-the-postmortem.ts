@@ -138,11 +138,13 @@ export default [
     says: "Root causes names a cause in the system, never a person",
     test: async (folder) => {
       const rootCauses = section(text(folder), "Root causes");
-      return blamesNoOne(rootCauses, (await facts(folder)).rows);
+      // The starter's TODO line blames no one either, so it must be replaced by a real cause.
+      const isWritten = !rootCauses.includes("TODO") && rootCauses.split(/\s+/).length >= 8;
+      return isWritten && blamesNoOne(rootCauses, (await facts(folder)).rows);
     },
     tryNext:
-      "describe what in the system let this happen; take out names, emails and words like " +
-      "careless or should have",
+      "replace the TODO with a sentence or two on what in the system let this happen; " +
+      "take out names, emails and words like careless or should have",
   },
   {
     says: "Action items lists at least two things to change",

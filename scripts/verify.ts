@@ -209,6 +209,8 @@ async function verifyStep(stepName: string | undefined, which: string | undefine
   );
   if (!asSolution) {
     // Done is recomputed from the checks every time, never read from a saved flag.
+    // This runs every check, so it can take a minute. Say so, or it looks stuck.
+    console.log("Counting your progress on every step. This can take a minute...");
     const everyStep = await runEveryStep();
     console.log(`Progress: ${countPassing(everyStep)}/${everyStep.length} steps pass.`);
   }

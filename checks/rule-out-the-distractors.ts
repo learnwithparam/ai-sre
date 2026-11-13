@@ -10,7 +10,9 @@ import {
 import type { Rule } from "../scripts/verify";
 
 const FILE = "findings/noisy-morning.json";
-const SEND = `bun parts/04-say-what-broke/call-tool.ts submit_finding ${FILE}`;
+const PROBLEM_FOLDER = "parts/04-say-what-broke/03-rule-out-the-distractors/problem";
+const CALL_TOOL = "bun parts/04-say-what-broke/call-tool.ts";
+const SEND = `${CALL_TOOL} submit_finding ${PROBLEM_FOLDER}/${FILE}`;
 
 async function stored(folder: string): Promise<Finding | null> {
   const finding = readFinding(folder, FILE);
