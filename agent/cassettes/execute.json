@@ -1,0 +1,18 @@
+{
+  "name": "execute",
+  "note": "After a human approved: read the approval state, run the approved change once.",
+  "steps": [
+    { "tool": "list_incidents", "input": { "state": "open" } },
+    {
+      "tool": "get_incident",
+      "input": { "incident_id": { "$from": "list_incidents", "path": "incidents.0.id" } }
+    },
+    {
+      "tool": "execute_remediation",
+      "input": { "action_id": { "$from": "get_incident", "path": "remediations.0.action_id" } }
+    },
+    {
+      "text": "The approved change ran. harbour-control verifies recovery on a full minute of fresh traffic before it resolves the incident."
+    }
+  ]
+}

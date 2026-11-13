@@ -1,0 +1,8 @@
+node_modules
+.git
+.env
+world/.state
+parts
+00-orientation
+images
+evals

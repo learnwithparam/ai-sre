@@ -1,0 +1,18 @@
+{
+  "scenario": "fare-file-push",
+  "summary": "A fare table push (fares-42) holds every row twice. booking-web refuses a table over 256 rows, every price reads as zero, and bookings fail.",
+  "service": "booking-web",
+  "change": { "kind": "config", "value": "fares-42" },
+  "pattern": ["fare table rejected", "exceeds the limit"],
+  "right_action": {
+    "action": "rollback_config",
+    "target": "fares",
+    "params": { "version": "previous" }
+  },
+  "distractors": [
+    {
+      "signal": "booking-web release",
+      "why": "the release did not change; v1 served bookings before and after the push"
+    }
+  ]
+}

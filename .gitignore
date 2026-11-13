@@ -1,2 +1,8 @@
 verify-report.json
 node_modules
+.env
+world/.state/
+evals/runs/
+__pycache__/
+.venv/
+.pytest_cache/
