@@ -1,0 +1,18 @@
+# One entry per action item of the bad-release postmortem.
+incident: inc-b1182f037ed0
+items:
+  - action: Give each audit trail connection back after the booking is written.
+    kind: prevent
+    owner: booking team
+    due: before-next-release
+    eval_case: evals/incidents/bad-release
+  - action: Add a load test that sends ten bookings at once before any release goes live.
+    kind: prevent
+    owner: booking team
+    due: before-next-release
+    eval_case: evals/incidents/bad-release
+  - action: Keep an incident open until the error rate stays under its bound for a full minute.
+    kind: detect
+    owner: TBD
+    due: next-planning
+    eval_case: evals/incidents/flapping-page
