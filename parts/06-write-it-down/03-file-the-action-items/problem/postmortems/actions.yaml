@@ -1,0 +1,8 @@
+# One entry per action item of your postmortem. Fill in every field.
+incident: inc-REPLACE-ME
+items:
+  - action: ""
+    kind: prevent
+    owner: ""
+    due: ""
+    eval_case: ""
