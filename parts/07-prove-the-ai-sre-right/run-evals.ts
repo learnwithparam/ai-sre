@@ -60,7 +60,7 @@ async function waitForIncident(caseName: string, since: string): Promise<string>
 
 async function auditEvents(incidentId: string): Promise<Event[]> {
   const rows = await chQuery<Row>(
-    "SELECT toString(ts) AS ts, kind, actor, action_id, payload FROM sre.incident_events " +
+    "SELECT toString(ts, 'UTC') AS ts, kind, actor, action_id, payload FROM sre.incident_events " +
       "WHERE incident_id = {id:String} ORDER BY ts",
     { id: incidentId },
   );
