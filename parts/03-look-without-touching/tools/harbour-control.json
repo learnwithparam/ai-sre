@@ -1,0 +1,72 @@
+[
+  {
+    "name": "list_sources",
+    "readOnlyHint": true,
+    "description": "List the services reporting telemetry, their releases, span and error "
+  },
+  {
+    "name": "service_timeseries",
+    "readOnlyHint": true,
+    "description": "Requests, errors, error rate and p95 latency per time bucket for one s"
+  },
+  {
+    "name": "analyze_service_anomalies",
+    "readOnlyHint": true,
+    "description": "Compare each service's last minute with a 3 sigma bound over its trail"
+  },
+  {
+    "name": "get_event_deltas",
+    "readOnlyHint": true,
+    "description": "What changed: new or growing log patterns, failing endpoints by releas"
+  },
+  {
+    "name": "event_patterns",
+    "readOnlyHint": true,
+    "description": "Cluster recent logs for one service into patterns with counts and an e"
+  },
+  {
+    "name": "get_trace_waterfall",
+    "readOnlyHint": true,
+    "description": "One trace: every span in start order (service, duration, status, SQL) "
+  },
+  {
+    "name": "search_logs",
+    "readOnlyHint": true,
+    "description": "Find log lines for one service containing a word or phrase (case-insen"
+  },
+  {
+    "name": "slo_burn",
+    "readOnlyHint": true,
+    "description": "Error budget burn rate over the last hour and the last six hours for o"
+  },
+  {
+    "name": "list_incidents",
+    "readOnlyHint": true,
+    "description": "List incidents opened by the detector. state is open, resolved or all."
+  },
+  {
+    "name": "get_incident",
+    "readOnlyHint": true,
+    "description": "One incident with its summary, detector evidence and every remediation"
+  },
+  {
+    "name": "get_remediation_status",
+    "readOnlyHint": true,
+    "description": "The approval state of a proposed remediation, its result, and whether "
+  },
+  {
+    "name": "submit_finding",
+    "readOnlyHint": false,
+    "description": "Record your diagnosis. It is checked against telemetry and refused if "
+  },
+  {
+    "name": "propose_remediation",
+    "readOnlyHint": false,
+    "description": "Store a remediation for a human to approve. It does not run anything."
+  },
+  {
+    "name": "execute_remediation",
+    "readOnlyHint": false,
+    "description": "Run a remediation a human has approved. Refused, and recorded, if it i"
+  }
+]
