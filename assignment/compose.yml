@@ -1,0 +1,11 @@
+# The one container this assignment needs: ClickStack, the same pinned image the course world runs.
+# Optional: the check runs without it. Start it only to look at your spans in the HyperDX UI.
+name: gullrock-assignment
+
+services:
+  clickstack:
+    image: clickhouse/clickstack-all-in-one:2.44.0
+    ports:
+      - 127.0.0.1:8080:8080
+      - 127.0.0.1:4318:4318
+      - 127.0.0.1:8123:8123

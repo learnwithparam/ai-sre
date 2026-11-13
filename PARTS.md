@@ -109,3 +109,13 @@ Prove the AI SRE is right. 5 steps, 100 minutes, skeleton: README only.
 - `ask-before-you-act`: the finished policy already has `rollback_config`; the step's starter must be a policy without it, run through `bun run world try`-style mounting or the harbour-control unit tests (`cd world/harbour-control && uv run pytest`).
 - `write-it-down` and `ask-before-you-act` have no verified company number yet: every host with one (sre.google, aws.amazon.com, blog.cloudflare.com, engineering.fb.com, grafana.com, arxiv.org) was blocked on the build date.
 - `prove-the-ai-sre-right`: the contract for headless runs is `evals/agent.toml` naming a command, as the brief says; ground truth layout follows ClickStack's hdx-eval scenarios.
+
+## `parts/08-do-it-with-the-tools-teams-run`
+
+Do it with the tools teams run. 1 step, 20 minutes, optional in the room and expected as homework.
+
+| Step                    | Minutes | The learner produces | The check reads                                                          |
+| ----------------------- | ------- | -------------------- | ------------------------------------------------------------------------ |
+| `trace-the-model-calls` | 20      | `genai.ts`           | the spans of one pretend incident, then a ClickStack-style query on them |
+
+The homework copy lives in `assignment/`: its starter `genai.ts`, `check.ts`, `compose.yml` and `result.json` output. The reference solution is the step's `solution/`.
