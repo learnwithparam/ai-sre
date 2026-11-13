@@ -1,0 +1,4 @@
+{
+  "note": "Log lines for your case. minute 0 is when the incident starts; negative minutes are the quiet time before it.",
+  "logs": []
+}

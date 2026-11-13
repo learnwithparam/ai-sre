@@ -1,0 +1,6 @@
+# The command that runs your AI SRE on one incident. run-evals.ts sets INCIDENT_ID and SCENARIO.
+[baseline]
+command = "bun parts/07-prove-the-ai-sre-right/reference-agent.ts"
+
+[challenger]
+command = ""

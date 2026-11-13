@@ -1,0 +1,70 @@
+{
+  "name": "noisy-morning",
+  "note": "Reference AI SRE on noisy-morning: nothing changed; rule out the declines and the old TLS blip; propose nothing.",
+  "steps": [
+    {
+      "tool": "list_incidents",
+      "input": {
+        "state": "open"
+      }
+    },
+    {
+      "tool": "get_incident",
+      "input": {
+        "incident_id": {
+          "$from": "list_incidents",
+          "path": "incidents.0.id"
+        }
+      }
+    },
+    {
+      "tool": "analyze_service_anomalies",
+      "input": {
+        "baseline_minutes": 30
+      }
+    },
+    {
+      "tool": "search_logs",
+      "input": {
+        "service": "booking-web",
+        "text": "card declined",
+        "minutes": 60
+      }
+    },
+    {
+      "tool": "submit_finding",
+      "input": {
+        "incident_id": {
+          "$from": "get_incident",
+          "path": "incident.id"
+        },
+        "service": "booking-web",
+        "change": {
+          "kind": "none",
+          "value": ""
+        },
+        "pattern": "card declined by payments gateway (usual rate)",
+        "quote": "",
+        "trace_ids": {
+          "$from": "search_logs",
+          "path": "logs.*.trace_id",
+          "take": 3
+        },
+        "hypothesis": "Nothing is broken: card declines run at their usual rate and the TLS blip to the payments gateway ended before the page.",
+        "ruled_out": [
+          {
+            "signal": "card declined by payments gateway",
+            "why": "the decline rate matches the baseline"
+          },
+          {
+            "signal": "TLS handshake failed with payments gateway",
+            "why": "it stopped 30 minutes ago, before the page"
+          }
+        ]
+      }
+    },
+    {
+      "text": "No change is needed. Card declines run at their usual rate, and the TLS errors stopped about 30 minutes before the page."
+    }
+  ]
+}

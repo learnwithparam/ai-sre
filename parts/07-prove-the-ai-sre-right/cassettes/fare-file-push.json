@@ -1,0 +1,89 @@
+{
+  "name": "fare-file-push",
+  "note": "Reference AI SRE on fare-file-push: a config push, not the code; propose rollback_config.",
+  "steps": [
+    {
+      "tool": "list_incidents",
+      "input": {
+        "state": "open"
+      }
+    },
+    {
+      "tool": "get_incident",
+      "input": {
+        "incident_id": {
+          "$from": "list_incidents",
+          "path": "incidents.0.id"
+        }
+      }
+    },
+    {
+      "tool": "get_event_deltas",
+      "input": {
+        "service": "booking-web",
+        "incident_minutes": 5
+      }
+    },
+    {
+      "tool": "search_logs",
+      "input": {
+        "service": "booking-web",
+        "text": "fare table rejected",
+        "minutes": 10
+      }
+    },
+    {
+      "tool": "submit_finding",
+      "input": {
+        "incident_id": {
+          "$from": "get_incident",
+          "path": "incident.id"
+        },
+        "service": "booking-web",
+        "change": {
+          "kind": "config",
+          "value": "fares-42"
+        },
+        "pattern": "fare table rejected: N rows exceeds the limit of 256",
+        "quote": {
+          "$from": "search_logs",
+          "path": "logs.*.body",
+          "match": "fare table rejected.*"
+        },
+        "trace_ids": {
+          "$from": "search_logs",
+          "path": "logs.*.trace_id",
+          "take": 3
+        },
+        "hypothesis": "A config push of fare table fares-42 went past booking-web's row limit, so fares read as zero and bookings fail.",
+        "ruled_out": [
+          {
+            "signal": "booking-web release",
+            "why": "v1 served bookings before and after the push"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "propose_remediation",
+      "input": {
+        "incident_id": {
+          "$from": "get_incident",
+          "path": "incident.id"
+        },
+        "finding_id": {
+          "$from": "submit_finding",
+          "path": "finding_id"
+        },
+        "action": "rollback_config",
+        "target": "fares",
+        "params": {
+          "version": "previous"
+        }
+      }
+    },
+    {
+      "text": "The fares-42 push doubled the fare table past its limit, so booking-web priced every seat at zero. I proposed rolling the fare table back to the previous version; it waits for approval."
+    }
+  ]
+}

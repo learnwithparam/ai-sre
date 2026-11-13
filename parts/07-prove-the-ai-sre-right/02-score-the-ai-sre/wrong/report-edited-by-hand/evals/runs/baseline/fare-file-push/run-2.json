@@ -1,0 +1,95 @@
+{
+  "case": "fare-file-push",
+  "incident_id": "inc-7d9e8b28fb16",
+  "code": "HX-B3N8PV",
+  "events": [
+    {
+      "ts": "2026-11-12 23:20:00.120",
+      "kind": "incident_opened",
+      "actor": "detector",
+      "action_id": "",
+      "payload": {
+        "service": "booking-web",
+        "summary": "paged"
+      }
+    },
+    {
+      "ts": "2026-11-12 23:20:09.410",
+      "kind": "finding_submitted",
+      "actor": "ai-sre",
+      "action_id": "fnd-e4a27bc939c9",
+      "payload": {
+        "service": "booking-web",
+        "change": {
+          "kind": "config",
+          "value": "fares-42"
+        },
+        "pattern": "fare table rejected, exceeds the limit",
+        "quote": "fare table rejected: 512 rows exceeds the limit of 256 (config fares-42) ref=HX-B3N8PV",
+        "trace_ids": ["0000000000000000000000000001d6f7", "00000000000000000000000000037010"],
+        "hypothesis": "A config push of fare table fares-42 went past booking-web's row limit, so fares read as zero and bookings fail.",
+        "ruled_out": [
+          {
+            "signal": "booking-web release",
+            "why": "the release did not change; v1 served bookings before and after the push"
+          }
+        ]
+      }
+    },
+    {
+      "ts": "2026-11-12 23:20:09.460",
+      "kind": "remediation_proposed",
+      "actor": "ai-sre",
+      "action_id": "act-d71f0a4ad8b8",
+      "payload": {
+        "finding_id": "fnd-e4a27bc939c9",
+        "action": "rollback_config",
+        "target": "fares",
+        "params": {
+          "version": "previous"
+        }
+      }
+    },
+    {
+      "ts": "2026-11-12 23:20:21.002",
+      "kind": "remediation_approved",
+      "actor": "oncall@gullrock.test",
+      "action_id": "act-d71f0a4ad8b8",
+      "payload": {}
+    },
+    {
+      "ts": "2026-11-12 23:20:30.551",
+      "kind": "remediation_executed",
+      "actor": "ai-sre",
+      "action_id": "act-d71f0a4ad8b8",
+      "payload": {
+        "action": "rollback_config",
+        "target": "fares",
+        "params": {
+          "version": "previous"
+        },
+        "result": {
+          "exit_code": 0
+        }
+      }
+    },
+    {
+      "ts": "2026-11-12 23:21:31.870",
+      "kind": "verification_passed",
+      "actor": "harbour-control",
+      "action_id": "act-d71f0a4ad8b8",
+      "payload": {
+        "error_rate": 0.0
+      }
+    },
+    {
+      "ts": "2026-11-12 23:21:31.870",
+      "kind": "incident_resolved",
+      "actor": "harbour-control",
+      "action_id": "",
+      "payload": {
+        "note": "Recovery confirmed on a full minute of traffic after the approved change"
+      }
+    }
+  ]
+}

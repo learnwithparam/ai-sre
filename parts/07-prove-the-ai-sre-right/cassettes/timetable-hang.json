@@ -1,0 +1,87 @@
+{
+  "name": "timetable-hang",
+  "note": "Reference AI SRE on timetable-hang: the loader hangs; no release changed; propose a restart, never a rollback.",
+  "steps": [
+    {
+      "tool": "list_incidents",
+      "input": {
+        "state": "open"
+      }
+    },
+    {
+      "tool": "get_incident",
+      "input": {
+        "incident_id": {
+          "$from": "list_incidents",
+          "path": "incidents.0.id"
+        }
+      }
+    },
+    {
+      "tool": "get_event_deltas",
+      "input": {
+        "service": "timetable-loader",
+        "incident_minutes": 5
+      }
+    },
+    {
+      "tool": "search_logs",
+      "input": {
+        "service": "timetable-loader",
+        "text": "building tide table",
+        "minutes": 10
+      }
+    },
+    {
+      "tool": "submit_finding",
+      "input": {
+        "incident_id": {
+          "$from": "get_incident",
+          "path": "incident.id"
+        },
+        "service": "timetable-loader",
+        "change": {
+          "kind": "none",
+          "value": ""
+        },
+        "pattern": "building tide table for N days from the raw harmonic table",
+        "quote": {
+          "$from": "search_logs",
+          "path": "logs.*.body",
+          "match": "building tide table.*"
+        },
+        "trace_ids": {
+          "$from": "search_logs",
+          "path": "logs.*.trace_id",
+          "take": 3
+        },
+        "hypothesis": "timetable-loader hangs on two requests for a very long tide range and holds memory, so booking-web times out on GET /timetable.",
+        "ruled_out": [
+          {
+            "signal": "booking-web GET /timetable errors",
+            "why": "booking-web only times out waiting for timetable-loader"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "propose_remediation",
+      "input": {
+        "incident_id": {
+          "$from": "get_incident",
+          "path": "incident.id"
+        },
+        "finding_id": {
+          "$from": "submit_finding",
+          "path": "finding_id"
+        },
+        "action": "restart_service",
+        "target": "timetable-loader",
+        "params": {}
+      }
+    },
+    {
+      "text": "timetable-loader is stuck building a tide table for two very long ranges. No release changed. I proposed a restart of timetable-loader; it waits for a human to approve it."
+    }
+  ]
+}

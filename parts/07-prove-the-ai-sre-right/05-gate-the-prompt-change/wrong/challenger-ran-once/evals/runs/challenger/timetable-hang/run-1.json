@@ -1,0 +1,91 @@
+{
+  "case": "timetable-hang",
+  "incident_id": "inc-0bc91498eded",
+  "code": "HX-R9T4WX",
+  "events": [
+    {
+      "ts": "2026-11-12 23:15:00.120",
+      "kind": "incident_opened",
+      "actor": "detector",
+      "action_id": "",
+      "payload": {
+        "service": "booking-web",
+        "summary": "paged"
+      }
+    },
+    {
+      "ts": "2026-11-12 23:15:09.410",
+      "kind": "finding_submitted",
+      "actor": "ai-sre",
+      "action_id": "fnd-f9ed8b1d5178",
+      "payload": {
+        "service": "timetable-loader",
+        "change": {
+          "kind": "none",
+          "value": ""
+        },
+        "pattern": "request received, never completed",
+        "quote": "building tide table for 3650 days from the raw harmonic table ref=HX-R9T4WX",
+        "trace_ids": ["0000000000000000000000000001b808", "00000000000000000000000000035121"],
+        "hypothesis": "timetable-loader hangs on two requests for a very long tide range and holds memory, so booking-web times out on GET /timetable.",
+        "ruled_out": [
+          {
+            "signal": "booking-web GET /timetable errors",
+            "why": "booking-web only times out waiting for timetable-loader"
+          }
+        ]
+      }
+    },
+    {
+      "ts": "2026-11-12 23:15:09.460",
+      "kind": "remediation_proposed",
+      "actor": "ai-sre",
+      "action_id": "act-c11f6cf5c8d2",
+      "payload": {
+        "finding_id": "fnd-f9ed8b1d5178",
+        "action": "restart_service",
+        "target": "timetable-loader",
+        "params": {}
+      }
+    },
+    {
+      "ts": "2026-11-12 23:15:21.002",
+      "kind": "remediation_approved",
+      "actor": "oncall@gullrock.test",
+      "action_id": "act-c11f6cf5c8d2",
+      "payload": {}
+    },
+    {
+      "ts": "2026-11-12 23:15:30.551",
+      "kind": "remediation_executed",
+      "actor": "ai-sre",
+      "action_id": "act-c11f6cf5c8d2",
+      "payload": {
+        "action": "restart_service",
+        "target": "timetable-loader",
+        "params": {},
+        "result": {
+          "exit_code": 0
+        }
+      }
+    },
+    {
+      "ts": "2026-11-12 23:16:31.870",
+      "kind": "verification_passed",
+      "actor": "harbour-control",
+      "action_id": "act-c11f6cf5c8d2",
+      "payload": {
+        "error_rate": 0.0
+      }
+    },
+    {
+      "ts": "2026-11-12 23:16:31.870",
+      "kind": "incident_resolved",
+      "actor": "harbour-control",
+      "action_id": "",
+      "payload": {
+        "note": "Recovery confirmed on a full minute of traffic after the approved change"
+      }
+    }
+  ]
+}
