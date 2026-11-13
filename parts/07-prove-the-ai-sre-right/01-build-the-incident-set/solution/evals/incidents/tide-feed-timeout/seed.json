@@ -1,0 +1,173 @@
+{
+  "note": "Log lines for this case. minute 0 is when the incident starts; negative minutes are the quiet time before it.",
+  "logs": [
+    {
+      "minute": -20,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": -20,
+      "service": "booking-web",
+      "severity": "warn",
+      "body": "card declined by payments gateway: do_not_honor"
+    },
+    {
+      "minute": -18,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": -16,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": -16,
+      "service": "booking-web",
+      "severity": "warn",
+      "body": "card declined by payments gateway: do_not_honor"
+    },
+    {
+      "minute": -14,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": -12,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": -12,
+      "service": "booking-web",
+      "severity": "warn",
+      "body": "card declined by payments gateway: do_not_honor"
+    },
+    {
+      "minute": -10,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": -8,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": -8,
+      "service": "booking-web",
+      "severity": "warn",
+      "body": "card declined by payments gateway: do_not_honor"
+    },
+    {
+      "minute": -6,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": -4,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": -4,
+      "service": "booking-web",
+      "severity": "warn",
+      "body": "card declined by payments gateway: do_not_honor"
+    },
+    {
+      "minute": -2,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": 0,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": 0,
+      "service": "booking-web",
+      "severity": "warn",
+      "body": "card declined by payments gateway: do_not_honor"
+    },
+    {
+      "minute": 2,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": 4,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": 4,
+      "service": "booking-web",
+      "severity": "warn",
+      "body": "card declined by payments gateway: do_not_honor"
+    },
+    {
+      "minute": 6,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": 8,
+      "service": "timetable-loader",
+      "severity": "info",
+      "body": "request received: GET /tides gullrock"
+    },
+    {
+      "minute": 8,
+      "service": "booking-web",
+      "severity": "warn",
+      "body": "card declined by payments gateway: do_not_honor"
+    },
+    {
+      "minute": 0,
+      "service": "timetable-loader",
+      "severity": "error",
+      "body": "tide feed timed out after 5000 ms"
+    },
+    {
+      "minute": 2,
+      "service": "timetable-loader",
+      "severity": "error",
+      "body": "tide feed timed out after 5000 ms"
+    },
+    {
+      "minute": 4,
+      "service": "timetable-loader",
+      "severity": "error",
+      "body": "tide feed timed out after 5000 ms"
+    },
+    {
+      "minute": 6,
+      "service": "timetable-loader",
+      "severity": "error",
+      "body": "tide feed timed out after 5000 ms"
+    },
+    {
+      "minute": 8,
+      "service": "timetable-loader",
+      "severity": "error",
+      "body": "tide feed timed out after 5000 ms"
+    }
+  ]
+}

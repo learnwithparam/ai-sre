@@ -1,0 +1,95 @@
+{
+  "case": "noisy-morning",
+  "incident_id": "inc-2007de6a3b44",
+  "code": "",
+  "events": [
+    {
+      "ts": "2026-11-12 23:15:00.120",
+      "kind": "incident_opened",
+      "actor": "ops desk",
+      "action_id": "",
+      "payload": {
+        "service": "booking-web",
+        "summary": "paged"
+      }
+    },
+    {
+      "ts": "2026-11-12 23:15:09.410",
+      "kind": "finding_submitted",
+      "actor": "ai-sre",
+      "action_id": "fnd-f4d7dfa1d1ce",
+      "payload": {
+        "service": "booking-web",
+        "change": {
+          "kind": "config",
+          "value": "payments-tls"
+        },
+        "pattern": "nothing new in the incident window",
+        "quote": "",
+        "trace_ids": ["0000000000000000000000000001b808", "00000000000000000000000000035121"],
+        "hypothesis": "The TLS handshake failures with the payments gateway are breaking card payments right now.",
+        "ruled_out": [
+          {
+            "signal": "card declined by payments gateway",
+            "why": "the decline rate matches the baseline"
+          },
+          {
+            "signal": "TLS handshake failed with payments gateway",
+            "why": "it stopped 30 minutes ago, before the page"
+          }
+        ]
+      }
+    },
+    {
+      "ts": "2026-11-12 23:15:09.460",
+      "kind": "remediation_proposed",
+      "actor": "ai-sre",
+      "action_id": "act-74ec3f8b812e",
+      "payload": {
+        "finding_id": "fnd-f4d7dfa1d1ce",
+        "action": "restart_service",
+        "target": "booking-web",
+        "params": {}
+      }
+    },
+    {
+      "ts": "2026-11-12 23:15:21.002",
+      "kind": "remediation_approved",
+      "actor": "oncall@gullrock.test",
+      "action_id": "act-74ec3f8b812e",
+      "payload": {}
+    },
+    {
+      "ts": "2026-11-12 23:15:30.551",
+      "kind": "remediation_executed",
+      "actor": "ai-sre",
+      "action_id": "act-74ec3f8b812e",
+      "payload": {
+        "action": "restart_service",
+        "target": "booking-web",
+        "params": {},
+        "result": {
+          "exit_code": 0
+        }
+      }
+    },
+    {
+      "ts": "2026-11-12 23:16:31.870",
+      "kind": "verification_passed",
+      "actor": "harbour-control",
+      "action_id": "act-74ec3f8b812e",
+      "payload": {
+        "error_rate": 0.0
+      }
+    },
+    {
+      "ts": "2026-11-12 23:16:31.870",
+      "kind": "incident_resolved",
+      "actor": "harbour-control",
+      "action_id": "",
+      "payload": {
+        "note": "Recovery confirmed on a full minute of traffic after the approved change"
+      }
+    }
+  ]
+}

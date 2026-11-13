@@ -1,0 +1,21 @@
+{
+  "scenario": "tide-feed-timeout",
+  "summary": "The tide feed that timetable-loader reads stops answering. Each tide request waits for it and times out, so the booking page shows no sailing times.",
+  "service": "timetable-loader",
+  "change": {
+    "kind": "none",
+    "value": ""
+  },
+  "pattern": ["tide feed timed out"],
+  "right_action": {
+    "action": "restart_service",
+    "target": "timetable-loader",
+    "params": {}
+  },
+  "distractors": [
+    {
+      "signal": "card declined by payments gateway",
+      "why": "about 1 in 30 cards is declined at every hour; the rate did not change"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "scenario": "bad-release",
+  "summary": "Release v2 of booking-web opens a new database connection for every booking's audit trail. Only two may be open, so about a third of bookings fail.",
+  "service": "booking-web",
+  "change": {
+    "kind": "release",
+    "value": "v2"
+  },
+  "pattern": ["connection pool exhausted", "audit_trail"],
+  "right_action": {
+    "action": "rollback_release",
+    "target": "booking-web",
+    "params": {
+      "release": "v1"
+    }
+  },
+  "distractors": [
+    {
+      "signal": "card declined by payments gateway",
+      "why": "about 1 in 30 cards is declined at every hour; the rate did not change"
+    }
+  ]
+}

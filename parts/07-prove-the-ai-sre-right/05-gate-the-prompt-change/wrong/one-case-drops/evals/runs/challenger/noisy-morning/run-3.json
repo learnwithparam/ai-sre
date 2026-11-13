@@ -1,0 +1,44 @@
+{
+  "case": "noisy-morning",
+  "incident_id": "inc-4276fa756654",
+  "code": "",
+  "events": [
+    {
+      "ts": "2026-11-12 23:25:00.120",
+      "kind": "incident_opened",
+      "actor": "ops desk",
+      "action_id": "",
+      "payload": {
+        "service": "booking-web",
+        "summary": "paged"
+      }
+    },
+    {
+      "ts": "2026-11-12 23:25:09.410",
+      "kind": "finding_submitted",
+      "actor": "ai-sre",
+      "action_id": "fnd-c1874d272ca1",
+      "payload": {
+        "service": "booking-web",
+        "change": {
+          "kind": "none",
+          "value": ""
+        },
+        "pattern": "nothing new in the incident window",
+        "quote": "",
+        "trace_ids": ["0000000000000000000000000001f5e6", "00000000000000000000000000038eff"],
+        "hypothesis": "Nothing is broken: card declines run at their usual rate and the TLS blip to the payments gateway ended before the page.",
+        "ruled_out": [
+          {
+            "signal": "card declined by payments gateway",
+            "why": "the decline rate matches the baseline"
+          },
+          {
+            "signal": "TLS handshake failed with payments gateway",
+            "why": "it stopped 30 minutes ago, before the page"
+          }
+        ]
+      }
+    }
+  ]
+}

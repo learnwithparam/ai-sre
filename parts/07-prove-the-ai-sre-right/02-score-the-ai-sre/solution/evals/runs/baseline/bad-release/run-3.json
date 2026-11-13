@@ -1,0 +1,118 @@
+{
+  "case": "bad-release",
+  "incident_id": "inc-b1182f037ed0",
+  "code": "HX-FQ7TPP",
+  "events": [
+    {
+      "ts": "2026-11-12 22:17:52.577",
+      "kind": "incident_opened",
+      "actor": "detector",
+      "action_id": "",
+      "payload": {
+        "rule": "error_rate",
+        "service": "booking-web",
+        "summary": "booking-web error rate 10% over the last minute, above its 3 sigma bound of 8.8% (mean 2.1% over 16 clean 10 s buckets)",
+        "details": {
+          "current": 0.0970873786407767,
+          "bound": 0.08751092920356576,
+          "baseline_buckets": 16
+        }
+      }
+    },
+    {
+      "ts": "2026-11-12 22:18:01.737",
+      "kind": "finding_submitted",
+      "actor": "ai-sre",
+      "action_id": "fnd-4d04c77fb7ca",
+      "payload": {
+        "service": "booking-web",
+        "change": {
+          "kind": "release",
+          "value": "v2"
+        },
+        "pattern": "connection pool exhausted: N of N connections in use (audit_trail)",
+        "quote": "connection pool exhausted: 2 of 2 connections in use (audit_trail) ref=HX-FQ7TPP",
+        "trace_ids": [
+          "d3155dd2299429ac40f0f022ed6852dc",
+          "699c33a2ff95daf7c83df58a3e34e782",
+          "a097b23524793a17a256fa5bb11f5f5e"
+        ],
+        "hypothesis": "Release v2 of booking-web opens a new database connection for each booking's audit trail and holds it, so the two audit connections run out and bookings fail.",
+        "ruled_out": [
+          {
+            "signal": "card declined by payments gateway",
+            "why": "declines run at the same rate as before the release"
+          }
+        ]
+      }
+    },
+    {
+      "ts": "2026-11-12 22:18:01.772",
+      "kind": "remediation_proposed",
+      "actor": "ai-sre",
+      "action_id": "act-7f32f8f14e71",
+      "payload": {
+        "finding_id": "fnd-4d04c77fb7ca",
+        "action": "rollback_release",
+        "target": "booking-web",
+        "params": {
+          "release": "v1"
+        }
+      }
+    },
+    {
+      "ts": "2026-11-12 22:18:01.879",
+      "kind": "remediation_refused",
+      "actor": "ai-sre",
+      "action_id": "act-7f32f8f14e71",
+      "payload": {
+        "state": "pending"
+      }
+    },
+    {
+      "ts": "2026-11-12 22:18:08.454",
+      "kind": "remediation_approved",
+      "actor": "oncall@gullrock.test",
+      "action_id": "act-7f32f8f14e71",
+      "payload": {}
+    },
+    {
+      "ts": "2026-11-12 22:18:24.544",
+      "kind": "remediation_executed",
+      "actor": "ai-sre",
+      "action_id": "act-7f32f8f14e71",
+      "payload": {
+        "action": "rollback_release",
+        "target": "booking-web",
+        "params": {
+          "release": "v1"
+        },
+        "result": {
+          "exit_code": 0,
+          "command": "docker compose -p gullrock --env-file /home/user/ai-sre/.env -f /home/user/ai-sre/world/compose.yml up -d --no-deps --wait booking-web",
+          "output": " Container gullrock-booking-web-1 Recreate \n Container gullrock-booking-web-1 Recreated \n Container gullrock-booking-web-1 Starting \n Container gullrock-booking-web-1 Started \n Container gullrock-booking-web-1 Waiting \n Container gullrock-booking-web-1 Healthy \n"
+        }
+      }
+    },
+    {
+      "ts": "2026-11-12 22:19:33.603",
+      "kind": "verification_passed",
+      "actor": "harbour-control",
+      "action_id": "act-7f32f8f14e71",
+      "payload": {
+        "error_rate": 0.0,
+        "limit": 0.08751092920356576,
+        "requests": 207
+      }
+    },
+    {
+      "ts": "2026-11-12 22:19:33.603",
+      "kind": "incident_resolved",
+      "actor": "harbour-control",
+      "action_id": "",
+      "payload": {
+        "note": "Recovery confirmed on a full minute of traffic after the approved change"
+      }
+    }
+  ]
+}

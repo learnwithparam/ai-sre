@@ -1,0 +1,95 @@
+{
+  "case": "timetable-hang",
+  "incident_id": "inc-92eb57fa3037",
+  "code": "HX-B3N8PV",
+  "events": [
+    {
+      "ts": "2026-11-12 23:20:00.120",
+      "kind": "incident_opened",
+      "actor": "detector",
+      "action_id": "",
+      "payload": {
+        "service": "booking-web",
+        "summary": "paged"
+      }
+    },
+    {
+      "ts": "2026-11-12 23:20:09.410",
+      "kind": "finding_submitted",
+      "actor": "ai-sre",
+      "action_id": "fnd-dde43d8b7c81",
+      "payload": {
+        "service": "timetable-loader",
+        "change": {
+          "kind": "none",
+          "value": ""
+        },
+        "pattern": "request received, never completed",
+        "quote": "building tide table for 3650 days from the raw harmonic table ref=HX-B3N8PV",
+        "trace_ids": ["0000000000000000000000000001d6f7", "00000000000000000000000000037010"],
+        "hypothesis": "timetable-loader hangs on two requests for a very long tide range and holds memory, so booking-web times out on GET /timetable.",
+        "ruled_out": [
+          {
+            "signal": "booking-web GET /timetable errors",
+            "why": "booking-web only times out waiting for timetable-loader"
+          }
+        ]
+      }
+    },
+    {
+      "ts": "2026-11-12 23:20:09.460",
+      "kind": "remediation_proposed",
+      "actor": "ai-sre",
+      "action_id": "act-4051332abd34",
+      "payload": {
+        "finding_id": "fnd-dde43d8b7c81",
+        "action": "rollback_release",
+        "target": "booking-web",
+        "params": {
+          "release": "v1"
+        }
+      }
+    },
+    {
+      "ts": "2026-11-12 23:20:21.002",
+      "kind": "remediation_approved",
+      "actor": "oncall@gullrock.test",
+      "action_id": "act-4051332abd34",
+      "payload": {}
+    },
+    {
+      "ts": "2026-11-12 23:20:30.551",
+      "kind": "remediation_executed",
+      "actor": "ai-sre",
+      "action_id": "act-4051332abd34",
+      "payload": {
+        "action": "rollback_release",
+        "target": "booking-web",
+        "params": {
+          "release": "v1"
+        },
+        "result": {
+          "exit_code": 0
+        }
+      }
+    },
+    {
+      "ts": "2026-11-12 23:21:31.870",
+      "kind": "verification_passed",
+      "actor": "harbour-control",
+      "action_id": "act-4051332abd34",
+      "payload": {
+        "error_rate": 0.0
+      }
+    },
+    {
+      "ts": "2026-11-12 23:21:31.870",
+      "kind": "incident_resolved",
+      "actor": "harbour-control",
+      "action_id": "",
+      "payload": {
+        "note": "Recovery confirmed on a full minute of traffic after the approved change"
+      }
+    }
+  ]
+}

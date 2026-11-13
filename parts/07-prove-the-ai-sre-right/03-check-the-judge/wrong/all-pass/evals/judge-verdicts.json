@@ -1,0 +1,25 @@
+{
+  "provider": "replay",
+  "verdicts": {
+    "h01": "PASS",
+    "h02": "FAIL",
+    "h03": "FAIL",
+    "h04": "PASS",
+    "h05": "FAIL",
+    "h06": "PASS",
+    "h07": "FAIL",
+    "h08": "PASS",
+    "h09": "FAIL",
+    "h10": "FAIL",
+    "h11": "PASS",
+    "h12": "FAIL",
+    "h13": "PASS",
+    "h14": "FAIL",
+    "h15": "PASS",
+    "h16": "FAIL",
+    "h17": "PASS",
+    "h18": "FAIL",
+    "h19": "PASS",
+    "h20": "PASS"
+  }
+}

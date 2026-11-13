@@ -1,0 +1,21 @@
+id,case,split,sentence
+h01,bad-release,dev,Release v2 of booking-web opens a new database connection for each booking's audit trail and never returns it, so the two audit connections run out and bookings fail.
+h02,bad-release,dev,Bookings fail because the payments gateway declines cards.
+h03,bad-release,dev,booking-web is having errors.
+h04,bad-release,test,The v2 release of booking-web exhausts the audit_trail connection pool, so about a third of bookings fail.
+h05,bad-release,test,Postgres is down, so booking-web cannot write bookings.
+h06,timetable-hang,dev,timetable-loader hangs on two requests for a very long tide range and holds memory, so booking-web times out on GET /timetable.
+h07,timetable-hang,dev,Release v2 of booking-web broke the timetable page.
+h08,timetable-hang,test,timetable-loader stopped answering after two huge tide range requests, and booking-web's timetable calls time out waiting for it.
+h09,timetable-hang,test,Something is slow in the timetable.
+h10,timetable-hang,test,booking-web returns errors on GET /timetable, so booking-web is the cause.
+h11,fare-file-push,dev,The fares-42 push holds every row twice, booking-web rejects the table for exceeding 256 rows, and every price reads as zero.
+h12,fare-file-push,dev,Release v2 of booking-web broke pricing.
+h13,fare-file-push,test,A config push of fare table fares-42 went past booking-web's row limit, so fares read as zero and bookings fail.
+h14,fare-file-push,test,Prices are wrong.
+h15,noisy-morning,dev,Nothing is broken: card declines run at their usual rate and the TLS blip to the payments gateway ended before the page.
+h16,noisy-morning,dev,The TLS handshake failures with the payments gateway are breaking card payments right now.
+h17,noisy-morning,test,No change is needed; the decline rate matches the baseline and the TLS errors stopped 30 minutes ago.
+h18,noisy-morning,test,Card declines are up, so the payments gateway needs a restart.
+h19,bad-release,dev,Release v2 of booking-web is bad.
+h20,fare-file-push,test,booking-web's release did not change; the fare table fares-42 doubled past the 256 row limit, so booking-web refused it and priced every seat at zero.

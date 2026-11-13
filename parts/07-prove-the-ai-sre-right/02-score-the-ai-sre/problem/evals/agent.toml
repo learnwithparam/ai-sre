@@ -1,0 +1,3 @@
+# The command that runs your AI SRE on one incident. run-evals.ts sets INCIDENT_ID and SCENARIO.
+[baseline]
+command = ""

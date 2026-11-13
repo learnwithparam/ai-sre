@@ -1,0 +1,12 @@
+{
+  "scenario": "my-case",
+  "summary": "",
+  "service": "",
+  "change": {
+    "kind": "none",
+    "value": ""
+  },
+  "pattern": [],
+  "right_action": null,
+  "distractors": []
+}
