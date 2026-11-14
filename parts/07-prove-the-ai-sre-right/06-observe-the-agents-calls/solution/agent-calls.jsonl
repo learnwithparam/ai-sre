@@ -1,0 +1,6 @@
+{"tool":"query_logs","kind":"read","ok":true,"ms":420,"approved":null}
+{"tool":"query_traces","kind":"read","ok":true,"ms":1900,"approved":null}
+{"tool":"query_logs","kind":"read","ok":false,"ms":300,"approved":null}
+{"tool":"submit_finding","kind":"write","ok":true,"ms":210,"approved":null}
+{"tool":"execute_remediation","kind":"write","ok":false,"ms":50,"approved":false}
+{"tool":"execute_remediation","kind":"write","ok":true,"ms":800,"approved":true}

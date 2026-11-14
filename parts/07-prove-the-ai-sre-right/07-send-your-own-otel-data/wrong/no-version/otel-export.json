@@ -1,0 +1,41 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "tiny-shop"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "eee19b7ec3c1b174",
+              "name": "GET /checkin",
+              "attributes": [
+                {
+                  "key": "booking.ref",
+                  "value": {
+                    "stringValue": "BK-1042"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "eee19b7ec3c1b175",
+              "parentSpanId": "eee19b7ec3c1b174",
+              "name": "SELECT bookings"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

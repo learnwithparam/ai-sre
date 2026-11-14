@@ -1,0 +1,41 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "unknown_service:node"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "eee19b7ec3c1b174",
+              "name": "GET",
+              "attributes": [
+                {
+                  "key": "user.email",
+                  "value": {
+                    "stringValue": "ana@example.com"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "eee19b7ec3c1b175",
+              "parentSpanId": "eee19b7ec3c1b174",
+              "name": "SELECT bookings"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
