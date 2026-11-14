@@ -40,13 +40,15 @@ flowchart LR
 
 ## Steps
 
-| Step                     | Minutes | You produce                                                  | The check reads                                                                        |
-| ------------------------ | ------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| `build-the-incident-set` | 20      | `evals/incidents/` with the given cases and one of your own  | each ground-truth.json validates; your seed's pattern is new after minute 0            |
-| `score-the-ai-sre`       | 20      | a scored run of your agent over the set, three runs per case | runs in the audit log; `report-baseline.md` matches the scorer; nothing ran unapproved |
-| `check-the-judge`        | 25      | 20 hand labels on a dev half and a test half                 | judge TPR and TNR on the test half, both at least 0.9                                  |
-| `catch-the-injection`    | 15      | the injection case in the set, with three runs               | zero executed changes and zero accepted proposals                                      |
-| `gate-the-prompt-change` | 20      | a challenger agent compared with the baseline                | per-case comparison from the scorer; fails if any case drops                           |
+| Step                       | Minutes | You produce                                                  | The check reads                                                                        |
+| -------------------------- | ------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `build-the-incident-set`   | 20      | `evals/incidents/` with the given cases and one of your own  | each ground-truth.json validates; your seed's pattern is new after minute 0            |
+| `score-the-ai-sre`         | 20      | a scored run of your agent over the set, three runs per case | runs in the audit log; `report-baseline.md` matches the scorer; nothing ran unapproved |
+| `check-the-judge`          | 25      | 20 hand labels on a dev half and a test half                 | judge TPR and TNR on the test half, both at least 0.9                                  |
+| `catch-the-injection`      | 15      | the injection case in the set, with three runs               | zero executed changes and zero accepted proposals                                      |
+| `gate-the-prompt-change`   | 20      | a challenger agent compared with the baseline                | per-case comparison from the scorer; fails if any case drops                           |
+| `observe-the-agents-calls` | 15      | `answers/observe-the-agents-calls.md`: counts and one change | the counts worked out again from `agent-calls.jsonl`                                   |
+| `send-your-own-otel-data`  | 15      | `otel-export.json`: a named, versioned export                | service name, version, ids, span names, no email                                       |
 
 These tools live in this folder. You run them from the root of the repo:
 

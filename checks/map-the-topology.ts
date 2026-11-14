@@ -1,9 +1,9 @@
 // map-the-topology: calls.csv lists each span with its service and its parent's service. The
-// learner writes the edges between services in topology.md. The check derives the edges itself.
+// learner writes the edges between services in topology.txt. The check derives the edges itself.
 import type { Rule } from "../scripts/verify";
 import { read } from "./lib/files";
 
-const FILE = "topology.md";
+const FILE = "topology.txt";
 
 function derived(folder: string): Set<string> {
   const edges = new Set<string>();
@@ -23,7 +23,7 @@ function written(folder: string): string[] {
 
 export default [
   {
-    says: "topology.md lists at least one edge like booking-web -> postgres",
+    says: "topology.txt lists at least one edge like booking-web -> postgres",
     test: (folder) => written(folder).length > 0,
     tryNext: "write one edge per line, such as - booking-web -> postgres",
   },

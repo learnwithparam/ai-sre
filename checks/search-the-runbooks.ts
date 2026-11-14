@@ -12,7 +12,8 @@ function sections(text: string, prefix: RegExp): Section[] {
   const found: Section[] = [];
   for (const part of text.split(/^## /m).slice(1)) {
     const [title, ...rest] = part.split("\n");
-    if (prefix.test(title)) found.push({ title: title.trim(), body: rest.join("\n") });
+    const body = rest.join("\n");
+    if (prefix.test(title)) found.push({ title: title.trim(), body });
   }
   return found;
 }
@@ -25,8 +26,9 @@ const words = (text: string) =>
 
 function best(found: Section[], symptom: string): Section | undefined {
   const want = new Set(words(symptom));
-  const score = (section: Section) => words(`${section.title} ${section.body}`).filter((w) => want.has(w)).length;
-  return [...found].sort((a, b) => score(b) - score(a))[0];
+  const score = (section: Section) =>
+    words(`${section.title} ${section.body}`).filter((word) => want.has(word)).length;
+  return [...found].sort((left, right) => score(right) - score(left))[0];
 }
 
 const runbooks = (folder: string) => sections(read(folder, "runbooks.md"), /^Runbook:/);
@@ -37,7 +39,8 @@ export default [
   {
     says: "the answer shows the search you ran, with grep or rg",
     test: (folder) => /\b(grep|rg)\b/.test(field(read(folder, ANSWER), "Search")),
-    tryNext: 'write a line such as Search: grep -i "connection slots" runbooks.md past-incidents.md',
+    tryNext:
+      'write a line such as Search: grep -i "connection slots" runbooks.md past-incidents.md',
   },
   {
     says: "the named runbook is the one that matches the symptom",
@@ -46,7 +49,8 @@ export default [
       const right = best(runbooks(folder), symptom(folder));
       return Boolean(right) && named === right?.title.replace(/^Runbook:\s*/, "").toLowerCase();
     },
-    tryNext: "copy the title after Runbook: from the ## heading of the runbook that names your symptom",
+    tryNext:
+      "copy the title after Runbook: from the ## heading of the runbook that names your symptom",
   },
   {
     says: "the past incident is in past-incidents.md and has the same cause",

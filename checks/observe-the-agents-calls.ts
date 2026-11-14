@@ -19,18 +19,20 @@ const answer = (folder: string, label: string) => field(read(folder, ANSWER), la
 export default [
   {
     says: "Calls is the number of lines in agent-calls.jsonl",
-    test: (folder) => Number(answer(folder, "Calls")) === calls(folder).length && calls(folder).length > 0,
+    test: (folder) =>
+      Number(answer(folder, "Calls")) === calls(folder).length && calls(folder).length > 0,
     tryNext: "count the lines of agent-calls.jsonl, for example with wc -l",
   },
   {
     says: "Failed calls is the number of calls with ok false",
-    test: (folder) => answer(folder, "Failed calls") === String(calls(folder).filter((c) => !c.ok).length),
+    test: (folder) =>
+      answer(folder, "Failed calls") === String(calls(folder).filter((call) => !call.ok).length),
     tryNext: 'count the lines that contain "ok":false',
   },
   {
     says: "Slowest tool is the tool of the call with the most milliseconds",
     test: (folder) => {
-      const slow = [...calls(folder)].sort((a, b) => b.ms - a.ms)[0];
+      const slow = [...calls(folder)].sort((left, right) => right.ms - left.ms)[0];
       return Boolean(slow) && answer(folder, "Slowest tool") === slow.tool;
     },
     tryNext: "look for the largest ms value and copy the tool name on that line",
@@ -38,7 +40,9 @@ export default [
   {
     says: "Writes without approval counts write calls that were not approved",
     test: (folder) => {
-      const loose = calls(folder).filter((c) => c.kind === "write" && c.approved !== true).length;
+      const loose = calls(folder).filter(
+        (call) => call.kind === "write" && call.approved !== true,
+      ).length;
       return answer(folder, "Writes without approval") === String(loose);
     },
     tryNext: 'count the lines with "kind":"write" where approved is not true',

@@ -44,12 +44,13 @@ flowchart LR
 
 You do four steps. Each one adds one piece to the picture above.
 
-| Step                   | Minutes | You produce                                 | The check reads                                                         |
-| ---------------------- | ------- | ------------------------------------------- | ----------------------------------------------------------------------- |
-| `list-the-services`    | 15      | `list-the-services.sql`                     | your query's rows against the reference rows, live or recorded          |
-| `tag-the-release`      | 20      | `telemetry.ts` with `service.version`       | every span booking-web exports under a release name you cannot guess    |
-| `add-the-checkin-span` | 20      | `checkin.ts` with a `checkin.validate` span | the check-in trace: span name, `booking.ref`, parent span               |
-| `hide-the-email`       | 15      | `redact.ts`                                 | every exported span attribute and log line, scanned for email addresses |
+| Step                   | Minutes | You produce                                 | The check reads                                                           |
+| ---------------------- | ------- | ------------------------------------------- | ------------------------------------------------------------------------- |
+| `list-the-services`    | 15      | `list-the-services.sql`                     | your query's rows against the reference rows, live or recorded            |
+| `tag-the-release`      | 20      | `telemetry.ts` with `service.version`       | every span booking-web exports under a release name you cannot guess      |
+| `add-the-checkin-span` | 20      | `checkin.ts` with a `checkin.validate` span | the check-in trace: span name, `booking.ref`, parent span                 |
+| `hide-the-email`       | 15      | `redact.ts`                                 | every exported span attribute and log line, scanned for email addresses   |
+| `map-the-topology`     | 15      | `topology.txt`: the edges between services  | every edge derived from `calls.csv`, none invented, and the entry service |
 
 ## Walkthrough
 

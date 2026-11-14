@@ -48,11 +48,12 @@ flowchart LR
 
 ## Steps
 
-| Step                       | Minutes | You produce                                                              | The check reads                                                                                                |
-| -------------------------- | ------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| `write-the-finding`        | 20      | `findings/bad-release.json` written by your agent through submit_finding | the stored finding: planted service and change, the planted verification code in the quote, trace ids grounded |
-| `refuse-the-guess`         | 15      | a finding with one made-up trace id, sent on purpose                     | a finding_refused row in sre.incident_events with the reason                                                   |
-| `rule-out-the-distractors` | 20      | the agent's finding for noisy-morning                                    | change kind none, and the card declines and the old TLS blip named in ruled_out                                |
+| Step                       | Minutes | You produce                                                                     | The check reads                                                                                                |
+| -------------------------- | ------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `write-the-finding`        | 20      | `findings/bad-release.json` written by your agent through submit_finding        | the stored finding: planted service and change, the planted verification code in the quote, trace ids grounded |
+| `refuse-the-guess`         | 15      | a finding with one made-up trace id, sent on purpose                            | a finding_refused row in sre.incident_events with the reason                                                   |
+| `search-the-runbooks`      | 15      | `answers/search-the-runbooks.md`: the runbook and past incident for one symptom | the best match found again in `runbooks.md` and `past-incidents.md`                                            |
+| `rule-out-the-distractors` | 20      | the agent's finding for noisy-morning                                           | change kind none, and the card declines and the old TLS blip named in ruled_out                                |
 
 Every check reads what harbour-control stored, never what a model said. Your files only hold the ids, so the check can find the rows.
 

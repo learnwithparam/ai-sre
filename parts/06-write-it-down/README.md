@@ -40,11 +40,12 @@ flowchart LR
 
 ## Steps
 
-| Step                    | Minutes | You produce                                              | The check reads                                                                            |
-| ----------------------- | ------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `draft-the-timeline`    | 15      | `postmortems/bad-release.md` timeline from the audit log | every timestamp matches an audit row, and nothing in it lacks a row                        |
-| `write-the-postmortem`  | 25      | the full postmortem                                      | required sections, Impact numbers from traces and Postgres, no person named in Root causes |
-| `file-the-action-items` | 10      | `postmortems/actions.yaml`                               | each item has an owner, a due marker and a link to the eval case it adds                   |
+| Step                       | Minutes | You produce                                                     | The check reads                                                                            |
+| -------------------------- | ------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `run-the-incident-command` | 15      | `incident/command.md`: three roles, a state note, timed updates | three people, a status, and updates in time order                                          |
+| `draft-the-timeline`       | 15      | `postmortems/bad-release.md` timeline from the audit log        | every timestamp matches an audit row, and nothing in it lacks a row                        |
+| `write-the-postmortem`     | 25      | the full postmortem                                             | required sections, Impact numbers from traces and Postgres, no person named in Root causes |
+| `file-the-action-items`    | 10      | `postmortems/actions.yaml`                                      | each item has an owner, a due marker and a link to the eval case it adds                   |
 
 ## Walkthrough
 

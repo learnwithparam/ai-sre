@@ -33,9 +33,10 @@ Shared names matter too. Langfuse, Arize Phoenix and ClickStack all read the Ope
 
 ## Steps
 
-| Step                    | Minutes | You produce | The check reads                                                 |
-| ----------------------- | ------- | ----------- | --------------------------------------------------------------- |
-| `trace-the-model-calls` | 20      | `genai.ts`  | the spans of one pretend incident, and a ClickStack-style query |
+| Step                        | Minutes | You produce                                  | The check reads                                                 |
+| --------------------------- | ------- | -------------------------------------------- | --------------------------------------------------------------- |
+| `trace-the-model-calls`     | 20      | `genai.ts`                                   | the spans of one pretend incident, and a ClickStack-style query |
+| `do-it-on-your-own-service` | 20      | `incident-review.md` about a service you run | the shape, two kinds of evidence, and no course names           |
 
 ## Walkthrough
 

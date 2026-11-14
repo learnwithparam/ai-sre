@@ -75,7 +75,9 @@ export default [
   {
     says: "one update says what is not known yet",
     test: (folder) =>
-      updates(folder).some((update) => /not (yet )?(known|sure)|do not know|unknown/i.test(update.text)),
+      updates(folder).some((update) =>
+        /not (yet )?(known|sure)|do not know|unknown/i.test(update.text),
+      ),
     tryNext: "say plainly what you do not know yet, such as We do not know the cause yet",
   },
 ] satisfies Rule[];

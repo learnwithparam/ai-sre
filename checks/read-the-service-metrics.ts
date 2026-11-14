@@ -8,11 +8,13 @@ const BAD = 0.05;
 
 type Row = { minute: string; service: string; requests: number; errors: number };
 
+const splitCells = (line: string) => line.split(",").map((cell) => cell.trim());
+
 function rows(folder: string): Row[] {
   return read(folder, "metrics.csv")
     .split("\n")
     .slice(1)
-    .map((line) => line.split(",").map((cell) => cell.trim()))
+    .map(splitCells)
     .filter((cells) => cells.length >= 4 && cells[0])
     .map(([minute, service, requests, errors]) => ({
       minute,
@@ -33,12 +35,12 @@ function truth(folder: string) {
     const errors = recent.reduce((total, row) => total + row.errors, 0);
     rates.set(service, requests ? errors / requests : 0);
   }
-  const worst = [...rates.entries()].sort((a, b) => b[1] - a[1])[0];
-  const first = all
+  const worst = [...rates.entries()].sort((first, second) => second[1] - first[1])[0];
+  const firstBad = all
     .filter((row) => row.service === worst?.[0] && row.errors / row.requests > BAD)
     .map((row) => row.minute)
     .sort()[0];
-  return { service: worst?.[0] ?? "", rate: (worst?.[1] ?? 0) * 100, first: first ?? "" };
+  return { service: worst?.[0] ?? "", rate: (worst?.[1] ?? 0) * 100, first: firstBad ?? "" };
 }
 
 const text = (folder: string) => read(folder, ANSWER);
@@ -61,7 +63,8 @@ export default [
   {
     says: "the first bad minute is the first one where that service's errors pass five percent",
     test: (folder) => field(text(folder), "First bad minute") === truth(folder).first,
-    tryNext: "scan that service's rows from the top; copy the minute where errors/requests passes 0.05",
+    tryNext:
+      "scan that service's rows from the top; copy the minute where errors/requests passes 0.05",
   },
   {
     says: "the Reading line says in four words or more what you would look at next",
