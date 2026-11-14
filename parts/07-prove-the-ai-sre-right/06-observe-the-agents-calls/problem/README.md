@@ -50,10 +50,10 @@ Look at the last run of your own agent. Count the same four things. Good looks l
 
 ## If you get stuck
 
-| What you see                        | Fix                                                                          |
-| ----------------------------------- | ---------------------------------------------------------------------------- |
+| What you see                        | Fix                                                                  |
+| ----------------------------------- | -------------------------------------------------------------------- |
 | `FAIL Writes without approval`      | Count a write only when `ok` is `true` and `approved` is not `true`. |
-| `FAIL Calls is the number of lines` | Write only the number, with no other words.                                  |
+| `FAIL Calls is the number of lines` | Write only the number, with no other words.                          |
 
 ## Words you will use
 

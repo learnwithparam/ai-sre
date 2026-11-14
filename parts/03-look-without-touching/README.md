@@ -57,7 +57,7 @@ You do four steps. The first one needs the world running. The other three run on
 | `find-the-new-pattern`     | 20      | `find-the-new-pattern.sql`: log patterns new in the incident window          | the top row, one minute after the first failure: the pool error, new, on release `v2` |
 | `open-the-slowest-trace`   | 15      | `open-the-slowest-trace.sql`: every span of the slowest booking              | the trace id, its spans, and an `INSERT audit_trail` over 1 s                         |
 | `name-the-release`         | 15      | `name-the-release.sql`: booking errors by release                            | `v2` fails more than 20% of bookings, `v1` under 1%, on the recording                 |
-| `read-the-service-metrics` | 15      | `answers/read-the-service-metrics.md`: worst service, rate, first bad minute | the numbers worked out again from `metrics.csv` (by hand, not with the read tools)                                     |
+| `read-the-service-metrics` | 15      | `answers/read-the-service-metrics.md`: worst service, rate, first bad minute | the numbers worked out again from `metrics.csv` (by hand, not with the read tools)    |
 
 ## Walkthrough
 

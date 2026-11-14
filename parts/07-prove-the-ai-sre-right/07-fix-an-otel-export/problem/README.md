@@ -41,11 +41,11 @@ This step fixes a file we give you, so it cannot prove the data is yours. To use
 
 ## If you get stuck
 
-| What you see                          | Fix                                                                |
-| ------------------------------------- | ------------------------------------------------------------------ |
-| `FAIL service.name is set`            | Change the `service.name` value in the file. It must not start with `unknown_service`. |
-| `FAIL service.version is set`         | Add a second resource attribute with the key `service.version`. Copy the shape of the name.  |
-| `FAIL at least one span has a parent` | Keep the child span's `parentSpanId`. It must match the `spanId` of the span above it.     |
+| What you see                          | Fix                                                                                         |
+| ------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `FAIL service.name is set`            | Change the `service.name` value in the file. It must not start with `unknown_service`.      |
+| `FAIL service.version is set`         | Add a second resource attribute with the key `service.version`. Copy the shape of the name. |
+| `FAIL at least one span has a parent` | Keep the child span's `parentSpanId`. It must match the `spanId` of the span above it.      |
 
 ## Words you will use
 

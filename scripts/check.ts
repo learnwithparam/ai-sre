@@ -3,8 +3,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import {
   allSteps,
-  findStep,
   exampleFilesProblems,
+  findStep,
   type Part,
   partShapeProblems,
   parts,
@@ -311,7 +311,10 @@ function checkRoomMinutes(schedulePath: string, format: string, roomSteps: strin
   const stated = Number(section.match(/About (\d+) minutes in the room/)?.[1]);
   const total = roomSteps.reduce((sum, name) => sum + (findStep(name)?.meta.minutes ?? 0), 0);
   if (stated !== total) {
-    report(schedulePath, `${format}: the note says ${stated} minutes in the room but room_steps add up to ${total}`);
+    report(
+      schedulePath,
+      `${format}: the note says ${stated} minutes in the room but room_steps add up to ${total}`,
+    );
   }
 }
 

@@ -4,8 +4,8 @@
 // evidence is real; the share step does that when a teammate opens each line.
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import type { Rule } from "../scripts/verify";
 import rules from "../checks/do-it-on-your-own-service";
+import type { Rule } from "../scripts/verify";
 
 const folder = process.argv[2];
 if (!folder || !existsSync(join(folder, "incident-review.md"))) {
