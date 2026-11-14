@@ -2,7 +2,7 @@
 # Only this file holds time. A step not done in a session is take-home work with the same verify command.
 
 [one-day]
-# About 365 minutes in the room, the rest take-home with the same checks.
+# About 295 minutes in the room, the rest take-home with the same checks.
 room_steps = ["meet-the-harbour", "list-the-services", "tag-the-release", "chart-the-error-rate", "flag-the-anomaly",
   "connect-the-read-tools", "find-the-new-pattern", "open-the-slowest-trace", "write-the-finding", "refuse-the-guess",
   "propose-one-change", "refuse-without-approval", "approve-with-blast-radius", "roll-back-the-release",

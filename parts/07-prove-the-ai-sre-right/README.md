@@ -48,7 +48,7 @@ flowchart LR
 | `catch-the-injection`      | 15      | the injection case in the set, with three runs               | zero executed changes and zero accepted proposals                                      |
 | `gate-the-prompt-change`   | 20      | a challenger agent compared with the baseline                | per-case comparison from the scorer; fails if any case drops                           |
 | `observe-the-agents-calls` | 15      | `answers/observe-the-agents-calls.md`: counts and one change | the counts worked out again from `agent-calls.jsonl`                                   |
-| `send-your-own-otel-data`  | 15      | `otel-export.json`: a named, versioned export                | service name, version, ids, span names, no email                                       |
+| `fix-an-otel-export`  | 15      | `otel-export.json`: a named, versioned export                | service name, version, ids, span names, no email                                       |
 
 These tools live in this folder. You run them from the root of the repo:
 

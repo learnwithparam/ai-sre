@@ -13,7 +13,7 @@ flowchart LR
 
 ## Watch it done
 
-Each line of `agent-calls.jsonl` is one call. It has the tool, whether it reads or writes, whether it worked, how long it took, and whether a person approved it. A write that is not approved is the line to worry about.
+`agent-calls.jsonl` is a sample log shaped like the one your own agent writes. Each line is one call. It has the tool, whether it reads or writes, whether it worked, how long it took, and whether a person approved it. A write that ran with no approval is the line to worry about. Saving a finding is a report, not a write.
 
 ## Your challenge
 
@@ -25,11 +25,11 @@ Open `answers/observe-the-agents-calls.md` in this folder.
 wc -l agent-calls.jsonl
 ```
 
-Expect: `6 agent-calls.jsonl`.
+Expect: `7 agent-calls.jsonl`.
 
 2. Count the calls that failed, and write the number after `Failed calls:`.
 3. Find the slowest call and write its tool after `Slowest tool:`.
-4. Count the write calls that were not approved, and write the number after "Writes without approval:".
+4. Count the write calls that ran with no approval, and write the number after `Writes without approval:`. A write the gate refused did not run, so it does not count.
 5. Write one change you would make after `Action:`.
 
 ```bash
@@ -52,7 +52,7 @@ Look at the last run of your own agent. Count the same four things. Good looks l
 
 | What you see                        | Fix                                                                          |
 | ----------------------------------- | ---------------------------------------------------------------------------- |
-| `FAIL Writes without approval`      | Count a write when `approved` is `false` or `null`. Only `true` is approved. |
+| `FAIL Writes without approval`      | Count a write only when `ok` is `true` and `approved` is not `true`. |
 | `FAIL Calls is the number of lines` | Write only the number, with no other words.                                  |
 
 ## Words you will use

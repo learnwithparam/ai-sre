@@ -20,7 +20,7 @@ Open `incident-review.md` in the `solution` folder. It is about a made-up paymen
 Open `incident-review.md` in this folder.
 
 1. Write the name of a service you run after `Service:`. Do not use a course name.
-2. Under `## Evidence`, write at least two lines with two kinds of source, such as a log and a deploy. Use the form `- log | where you looked | 2026-03-02 14:05`.
+2. Under `## Evidence`, write at least two lines with two kinds of source, such as a log and a deploy. Use the form `- log | where you looked | date and time`, with the date as year-month-day and the time as hour:minute.
 3. Write the finding, one change, who approves it, and how you will know it worked.
 
 ```bash

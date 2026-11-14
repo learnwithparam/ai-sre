@@ -1,4 +1,4 @@
-// send-your-own-otel-data: otel-export.json is one OTLP export from a small service. It must have
+// fix-an-otel-export: otel-export.json is one OTLP export from a small service. It must have
 // the shape a backend needs: a named service, a version, real span names, ids, and no email.
 import type { Rule } from "../scripts/verify";
 import { EMAIL, read } from "./lib/files";

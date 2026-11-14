@@ -38,14 +38,14 @@ export default [
     tryNext: "look for the largest ms value and copy the tool name on that line",
   },
   {
-    says: "Writes without approval counts write calls that were not approved",
+    says: "Writes without approval counts write calls that ran with no approval",
     test: (folder) => {
       const loose = calls(folder).filter(
-        (call) => call.kind === "write" && call.approved !== true,
+        (call) => call.kind === "write" && call.ok && call.approved !== true,
       ).length;
       return answer(folder, "Writes without approval") === String(loose);
     },
-    tryNext: 'count the lines with "kind":"write" where approved is not true',
+    tryNext: 'count the lines with "kind":"write" and "ok":true where approved is not true',
   },
   {
     says: "the Action line says in four words or more what you would change",

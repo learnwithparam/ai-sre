@@ -1,5 +1,6 @@
 // do-it-on-your-own-service: the capstone. incident-review.md is about the learner's own service.
-// The check proves the shape, and that each piece of evidence points at something real to look up.
+// The check proves shape only: a named service, evidence lines with a source, a place and a time,
+// and one change with its approver. It cannot prove the evidence is real; a teammate does that.
 // It never reads the course world, and it rejects a review that reuses the course's names.
 import type { Rule } from "../scripts/verify";
 import { field, hasReason, read } from "./lib/files";
@@ -35,7 +36,7 @@ export default [
   {
     says: "the Evidence section has at least two lines with a source, a place and a time",
     test: (folder) => evidence(folder).length >= 2,
-    tryNext: "write lines like - log | payments pod logs, search timeout | 2026-03-02 14:05",
+    tryNext: "write lines like - log | payments pod logs, search timeout | YYYY-MM-DD HH:MM",
   },
   {
     says: `each piece of evidence names a source: ${SOURCES.join(", ")}`,

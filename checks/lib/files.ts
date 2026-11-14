@@ -11,7 +11,7 @@ export function read(folder: string, fileName: string): string {
 
 // "Label: value" lines, as the answers files use.
 export function field(text: string, label: string): string {
-  const labelLine = new RegExp(`^\\s*${label}\\s*:\\s*(.+)$`, "mi");
+  const labelLine = new RegExp(`^[ \\t]*${label}[ \\t]*:[ \\t]*(.+)$`, "mi");
   const found = text.match(labelLine);
   if (!found) return "";
   const value = found[1].trim();

@@ -3,6 +3,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import {
   allSteps,
+  findStep,
   exampleFilesProblems,
   type Part,
   partShapeProblems,
@@ -262,7 +263,10 @@ function checkTroubleshootingTable() {
 }
 
 // 6. Every schedule covers every part, and the minutes add up.
-type Schedule = Record<string, { sessions: { parts: string[]; minutes: number }[] }>;
+type Schedule = Record<
+  string,
+  { room_steps?: string[]; sessions: { parts: string[]; minutes: number }[] }
+>;
 
 function minutesPerPart(allParts: Part[]): Record<string, number> {
   const minutes: Record<string, number> = {};
@@ -300,6 +304,17 @@ function checkSessionMinutes(
   }
 }
 
+// The "About N minutes in the room" note must equal the sum of the room_steps minutes.
+function checkRoomMinutes(schedulePath: string, format: string, roomSteps: string[]) {
+  const text = readText(schedulePath);
+  const section = text.split(new RegExp(`^\\[${format}\\]`, "m"))[1]?.split(/^\[/m)[0] ?? "";
+  const stated = Number(section.match(/About (\d+) minutes in the room/)?.[1]);
+  const total = roomSteps.reduce((sum, name) => sum + (findStep(name)?.meta.minutes ?? 0), 0);
+  if (stated !== total) {
+    report(schedulePath, `${format}: the note says ${stated} minutes in the room but room_steps add up to ${total}`);
+  }
+}
+
 function checkSchedules(allParts: Part[]) {
   const schedulePath = join(ROOT, "schedules.toml");
   if (!existsSync(schedulePath)) return report(ROOT, "missing schedules.toml");
@@ -308,6 +323,7 @@ function checkSchedules(allParts: Part[]) {
     const listed = definition.sessions.flatMap((session) => session.parts);
     checkScheduleCoversParts(schedulePath, format, listed, allParts);
     checkSessionMinutes(schedulePath, format, definition.sessions, allParts);
+    if (definition.room_steps) checkRoomMinutes(schedulePath, format, definition.room_steps);
   }
 }
 

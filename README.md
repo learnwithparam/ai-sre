@@ -80,7 +80,7 @@ flowchart LR
     PX[passengers] --> BW[booking-web: book, pay, check in]
     BW --> PG[(Postgres: sailings, bookings)]
     BW --> TL[timetable-loader]
-    BW -.->|traces and logs| CS[(ClickStack 2.44.0: ClickHouse, HyperDX, MCP)]
+    BW -.->|traces and logs| CS[(ClickStack: ClickHouse, HyperDX, MCP)]
     TL -.-> CS
     CS --> HC[harbour-control: detector, findings, approvals, runner, audit log]
   end
@@ -99,7 +99,7 @@ Start in [00-orientation](00-orientation/README.md). Each part in `parts/` opens
 
 Each step also has one command: `bun run verify <step-name>`. It prints what passed, what failed and what to try next. For example, `bun run verify meet-the-harbour` ends with `Done. All 4 rules pass.` when your work is right. To check a whole part, run `bun run verify part <part-name>`.
 
-[STANDARD.md](STANDARD.md) lists the rules every course repo follows. [PARTS.md](PARTS.md) maps every part and step.
+[STANDARD.md](STANDARD.md) lists the rules every course repo follows.
 
 | Part                                                                                      | What you do                                                                      | Steps | Minutes |
 | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ----- | ------- |

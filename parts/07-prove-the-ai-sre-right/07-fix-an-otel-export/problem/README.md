@@ -1,4 +1,4 @@
-# Send your own OTel data
+# Fix an OTel export
 
 ## The problem
 
@@ -24,14 +24,14 @@ Open `otel-export.json` in this folder.
 4. Remove the email attribute.
 
 ```bash
-bun run verify send-your-own-otel-data
+bun run verify fix-an-otel-export
 ```
 
 Expect: `Done. All 7 rules pass.` and a `Progress:` line.
 
 ## Do it on your work
 
-Point a small service of your own at a collector, make one request, and save the export in this file. Good looks like this: the backend shows your service name, your release, and one trace with a parent and a child.
+This step fixes a file we give you, so it cannot prove the data is yours. To use it on your own service, set `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` for it, make one request that calls a second service or a database, and save what it exports. Run the same seven rules on your file by copying it over `otel-export.json`. Good looks like this: the backend shows your service name, your release, and one trace with a parent and a child.
 
 ## Done when
 
@@ -43,8 +43,9 @@ Point a small service of your own at a collector, make one request, and save the
 
 | What you see                          | Fix                                                                |
 | ------------------------------------- | ------------------------------------------------------------------ |
-| `FAIL service.name is set`            | Set the `OTEL_SERVICE_NAME` variable before you start the service. |
-| `FAIL at least one span has a parent` | Make a request that calls a database or another service.           |
+| `FAIL service.name is set`            | Change the `service.name` value in the file. It must not start with `unknown_service`. |
+| `FAIL service.version is set`         | Add a second resource attribute with the key `service.version`. Copy the shape of the name.  |
+| `FAIL at least one span has a parent` | Keep the child span's `parentSpanId`. It must match the `spanId` of the span above it.     |
 
 ## Words you will use
 

@@ -21,7 +21,7 @@ Open `answers/read-the-service-metrics.md` in this folder.
 
 1. Read `metrics.csv`. It has a row per minute and service.
 2. Find the error rate of each service over the last five minutes.
-3. Write the worst service and its rate as a percent, such as `Error rate: 11%`.
+3. Write the worst service and its rate as a percent, in the form `Error rate: 7%`.
 4. Find the first minute where that service has more than five errors in a hundred requests.
 5. Write one sentence after `Reading:` about what you would look at next.
 

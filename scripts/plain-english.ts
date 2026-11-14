@@ -21,7 +21,7 @@ const SKIPPED_FOLDERS = new Set([
 ]);
 
 // Pages for the people who build the course, not for learners.
-const AUTHOR_PAGES = new Set(["STANDARD.md", "SPEC.md", "PARTS.md"]);
+const AUTHOR_PAGES = new Set(["STANDARD.md", "SPEC.md"]);
 
 // Words that make a reader reach for a dictionary, and the everyday word to use instead.
 const SIMPLER_WORDS: Record<string, string> = {
