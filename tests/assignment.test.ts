@@ -6,7 +6,7 @@ import { rules } from "../checks/trace-the-model-calls";
 const ROOT = join(import.meta.dir, "..");
 const SOLUTION = join(
   ROOT,
-  "parts/08-do-it-with-the-tools-teams-run/01-trace-the-model-calls/solution",
+  "parts/08-trace-model-calls-with-clickstack/01-trace-the-model-calls/solution",
 );
 
 async function passing(folder: string): Promise<boolean[]> {

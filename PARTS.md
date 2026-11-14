@@ -110,9 +110,9 @@ Prove the AI SRE is right. 5 steps, 100 minutes, skeleton: README only.
 - `write-it-down` and `ask-before-you-act` have no verified company number yet: every host with one (sre.google, aws.amazon.com, blog.cloudflare.com, engineering.fb.com, grafana.com, arxiv.org) was blocked on the build date.
 - `prove-the-ai-sre-right`: the contract for headless runs is `evals/agent.toml` naming a command, as the brief says; ground truth layout follows ClickStack's hdx-eval scenarios.
 
-## `parts/08-do-it-with-the-tools-teams-run`
+## `parts/08-trace-model-calls-with-clickstack`
 
-Do it with the tools teams run. 1 step, 20 minutes, optional in the room and expected as homework.
+Trace model calls with ClickStack. 1 step, 20 minutes, optional in the room and expected as homework.
 
 | Step                    | Minutes | The learner produces | The check reads                                                          |
 | ----------------------- | ------- | -------------------- | ------------------------------------------------------------------------ |

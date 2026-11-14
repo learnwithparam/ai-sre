@@ -6,7 +6,7 @@ This is optional in the live session and expected as homework. You work alongsid
 
 Make your AI SRE observable with the same stack it observes. Fill in `assignment/genai.ts`, the span helper, so each model call becomes an OpenTelemetry GenAI span.
 
-Read `parts/08-do-it-with-the-tools-teams-run/README.md` first. It names every attribute.
+Read `parts/08-trace-model-calls-with-clickstack/README.md` first. It names every attribute.
 
 ```mermaid
 flowchart LR

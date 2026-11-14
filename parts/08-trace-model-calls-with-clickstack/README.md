@@ -1,4 +1,4 @@
-# Do it with the tools teams run
+# Trace model calls with ClickStack
 
 ## The problem
 
@@ -66,10 +66,10 @@ Expect: `All Done-when lines pass. Wrote assignment/result.json.` once `assignme
 Run the whole part.
 
 ```bash
-bun run verify part do-it-with-the-tools-teams-run
+bun run verify part trace-model-calls-with-clickstack
 ```
 
-Expect: `Part do-it-with-the-tools-teams-run is done: 1/1 steps pass.`
+Expect: `Part trace-model-calls-with-clickstack is done: 1/1 steps pass.`
 
 ## Options
 
