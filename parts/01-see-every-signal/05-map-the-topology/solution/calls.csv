@@ -1,0 +1,7 @@
+parent,child,span
+booking-web,booking-web,GET /checkin
+booking-web,postgres,SELECT bookings
+booking-web,timetable,GET /departures
+booking-web,booking-web,render page
+timetable,postgres,SELECT departures
+booking-web,postgres,INSERT audit_trail

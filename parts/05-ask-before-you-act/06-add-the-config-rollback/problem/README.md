@@ -2,17 +2,11 @@
 
 ## The problem
 
-Not every outage comes from new code. Some come from a config push: a file that every server reads at once. If the file is bad, everything breaks together.
+Some outages come from a config push, not new code. Every server reads that file at once. In fare-file-push, a bad fare table breaks booking. The fix is to put back the previous table, but no action does that yet. You add one.
 
-In fare-file-push, someone pushes fare table `fares-42`. It holds every row twice. booking-web refuses a table over 256 rows, every price reads as zero, and bookings fail.
+## Watch it done
 
-The fix is to put back the previous fare table. But the fixed list of actions in your `policy.py` has no action for that. You add it. A new action is a new power for the AI SRE, so it needs three things:
-
-- the narrowest rule that works: it may only put back the previous table, never a file the agent names;
-- blast radius text, so the approver sees who is affected;
-- a test that proves both.
-
-For example, without the rule, a proposal for `rollback_config` is refused:
+Without the new rule, a `rollback_config` proposal is refused:
 
 ```text
 proposal refused: action 'rollback_config' is not allowed; allowed: ['restart_service', 'rollback_release']
@@ -25,12 +19,20 @@ flowchart LR
   V -->|fares-41, ../../.env, another target| NO[proposal_refused]
 ```
 
-## Your challenge
+## Your turn
 
-1. Open `policy.py` in this folder. It is harbour-control's policy without `rollback_config`.
+In fare-file-push, someone pushes fare table `fares-42`. It holds every row twice. booking-web refuses a table over 256 rows, so every price reads as zero.
+
+A new action gives the AI SRE a new power. It needs three things:
+
+- the narrowest rule: it may only put back the previous table, never a file the agent names;
+- blast radius text, so the approver sees who is affected;
+- a test that proves both.
+
+1. Open `policy.py`. It is harbour-control's policy without `rollback_config`.
 2. Add `rollback_config` to `ACTIONS`, with one target, `fares`, and one parameter, `version`. The only allowed value is `previous`.
 3. Add `fares` to `TARGETS`, and a `rollback_config` entry to `BLAST_RADIUS`. Say what changes for passengers and what is lost.
-4. Write tests in `test_rollback_config.py` that call `validate_action`. Test what it allows and what it refuses.
+4. Write tests in `test_rollback_config.py` that call `validate_action`. Test what it allows and refuses.
 5. Run harbour-control with your policy, and resolve the fault through it:
 
 ```bash
@@ -41,11 +43,15 @@ bun run world break fare-file-push
 Expect: `harbour-control is running your policy.py.` and then `Pushed fare table fares-42 to booking-web.`
 
 6. Send a finding (change kind `config`, value `fares-42`) and propose `rollback_config` on `fares` with `{"version": "previous"}`. Approve it and run it.
-7. Write `Incident id: inc-...` in `incident.md` in this folder.
+7. Write `Incident id: inc-...` in `incident.md`.
+
+## Do it on your work
+
+Find one config file that every server in your service reads. Write one safe rule to roll it back: only the previous version. Good looks like: a test that refuses any other version.
 
 ## Done when
 
-- Your policy allows `rollback_config fares previous`, and refuses a named file, a path and any other target.
+- Your policy allows `rollback_config fares` `previous`, and refuses a named file, a path and any other target.
 - `BLAST_RADIUS` and `TARGETS` describe the new action.
 - Your tests pass on your policy and fail on the starter policy. Every harbour-control test passes.
 - The fare-file-push incident resolved through `rollback_config`.
@@ -55,6 +61,10 @@ bun run verify add-the-config-rollback
 ```
 
 Expect: `Done. All 9 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The sample answers are in `solution/policy.py`, `solution/test_rollback_config.py` and `solution/incident.md`.
 
 ## If you get stuck
 
@@ -73,6 +83,5 @@ The rule must be narrow. For example, the wrong answer `any-version-allowed` als
 
 ## Words you will use
 
-- **Config push**: a change to a file that services read, with no new code.
 - **Policy**: the fixed list of actions, targets and params that harbour-control may run.
 - **Narrow rule**: a rule that allows only the one value that is needed.

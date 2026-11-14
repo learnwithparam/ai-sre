@@ -2,11 +2,11 @@
 
 ## The problem
 
-Your AI SRE got the bad release right once. Does that mean it is good? No. One right answer can be luck. You trust an on-call engineer because of their record on many faults, and the same goes for an AI SRE.
+Your AI SRE got the bad release right once. One right answer can be luck. So you add incidents where you already know the true cause. For example, the timetable-hang case says timetable-loader is the cause, not booking-web.
 
-So you collect incidents where you already know the true cause. Each one is an **eval case**: a folder with a `ground-truth.json` that says what really broke, which action fixes it, and which signals only look like the cause. Those signals are **distractors**, or red herrings.
+## Watch it done
 
-For example, this is part of `evals/incidents/timetable-hang/ground-truth.json`:
+The finished set holds the four given cases and one case of yours. Each case folder has a `ground-truth.json`. Part of one looks like this:
 
 ```json
 "service": "timetable-loader",
@@ -15,7 +15,7 @@ For example, this is part of `evals/incidents/timetable-hang/ground-truth.json`:
 "distractors": [{ "signal": "booking-web GET /timetable errors", "why": "booking-web only times out waiting" }]
 ```
 
-booking-web shows the errors, but timetable-loader is the cause. An agent that blames booking-web fails this case.
+booking-web shows the errors. timetable-loader is the cause. An agent that blames booking-web fails this case.
 
 ```mermaid
 flowchart LR
@@ -24,17 +24,21 @@ flowchart LR
   Y -->|reference rule: pattern new after minute 0| C{check}
 ```
 
-## Your challenge
+## Your turn
 
-`evals/incidents/` in this folder already holds the four given cases: `bad-release`, `timetable-hang`, `fare-file-push` and `noisy-morning`. Add one case of your own.
+An **eval case** is one recorded incident with a known right answer. Its `ground-truth.json` says what broke and which action fixes it. A **distractor** is a signal that looks like the cause but is not. It shows up before the incident too. The **seed** is the log lines that make up a case.
+
+The folder `evals/incidents/` already holds four given cases: `bad-release`, `timetable-hang`, `fare-file-push` and `noisy-morning`. You add one case of your own.
+
+The check runs a reference rule on your seed. A fault is a log pattern that is new after minute 0. Your pattern must appear in at least three lines of your service from minute 0 on. It must appear in no line before. Your distractor must appear both before and after minute 0.
 
 1. Rename `evals/incidents/my-case` to a name for your incident, such as `tide-feed-timeout`.
 2. Fill in `ground-truth.json`: `scenario` (the folder name), `summary`, `service`, `change`, `pattern`, `right_action` and at least one distractor. `right_action` is `null` or an action from harbour-control's action list.
 3. Fill in `seed.json` with the log lines of your incident. Each line has a `minute`, a `service`, a `severity` and a `body`. Minute 0 is when the incident starts. Negative minutes are the quiet time before it.
 
-The check runs the reference rule on your seed: a fault is a log pattern that is new after minute 0. Your pattern must appear in at least three lines of your service from minute 0 on, and in no line before. Your distractor must appear both before and after minute 0, so it looks like a cause but is not new.
+## Do it on your work
 
-An idea: one of your action items from the part "Write it down without blame" names an eval case. Build that one.
+Take one action item from the part "Write it down without blame". Pick the one that names an eval case, and build that case. Good looks like this: the seed has lines before and after minute 0, and the reference rule finds your pattern.
 
 ## Done when
 
@@ -48,6 +52,10 @@ bun run verify build-the-incident-set
 
 Expect: `Done. All 5 rules pass.` and a `Progress:` line.
 
+## Solution
+
+The finished set is in `solution/evals/incidents/`. It has the four given cases and one case of its own, `tide-feed-timeout`.
+
 ## If you get stuck
 
 | What you see                               | Fix                                                                                      |
@@ -55,10 +63,3 @@ Expect: `Done. All 5 rules pass.` and a `Progress:` line.
 | `FAIL one case of your own`                | `scenario` must equal the folder name, and `service` is booking-web or timetable-loader. |
 | `FAIL the reference rule finds your fault` | Your pattern words also appear before minute 0. Pick words that only the fault writes.   |
 | `FAIL your case has a distractor`          | Add lines with the distractor's signal on both sides of minute 0.                        |
-
-## Words you will use
-
-- **Eval case**: one recorded incident with a known right answer.
-- **Ground truth**: the right answer of a case, written by a person who knows it.
-- **Distractor**: a signal that looks like the cause but is not. It is there before the incident too.
-- **Seed**: the log lines that make up a case.

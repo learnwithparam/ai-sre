@@ -2,13 +2,11 @@
 
 ## The problem
 
-Your baseline scorecard showed a weak spot. For example, the reference agent passed timetable-hang in only 2 of 3 runs. Once it proposed a rollback of booking-web, but no release had changed.
+The reference agent passed timetable-hang in only 2 of 3 runs. A prompt change can fix that case and break another one. For example, a fix could make the agent too shy to roll back the bad release.
 
-So you change the agent's prompt. A prompt change can fix one case and quietly break another. A fix for timetable-hang could make the agent too shy to roll back the bad release.
+## Watch it done
 
-So every change is a **challenger**. It runs on the same cases as the **baseline**, three times each, and it is accepted only if no case gets worse. That is a **gate**: a test the change must pass before it ships.
-
-For example, a good comparison looks like this:
+A good comparison looks like this. Each row is one case, and the change column shows the difference in passing runs:
 
 ```text
 | incident       | baseline | challenger | change |
@@ -26,12 +24,16 @@ flowchart LR
   D -->|yes| NO[keep the baseline]
 ```
 
-## Your challenge
+## Your turn
+
+Every change is a **challenger**. It runs on the same cases as the **baseline**, three times each. It is accepted only if no case gets worse. That test is a **gate**: a check a change must pass before it ships.
+
+In replay mode the model's replies are recorded, so a prompt change does not change them. To see a real change, set a live provider in `.env`.
 
 1. Copy `evals/runs/baseline/` and `evals/incidents/` from `score-the-ai-sre` into this folder.
 2. Write your changed prompt in `evals/challenger-prompt.md`. For example, tell the agent to check that a release changed before it proposes a rollback.
 3. In `evals/agent.toml`, set the `[challenger]` command. For the reference agent, it is the baseline command plus `--prompt evals/challenger-prompt.md`. Or change your own agent's prompt or tools.
-4. Run the challenger, then compare:
+4. Run the challenger, then compare.
 
 ```bash
 bun parts/07-prove-the-ai-sre-right/run-evals.ts gate-the-prompt-change challenger
@@ -45,7 +47,9 @@ bun parts/07-prove-the-ai-sre-right/score.ts gate-the-prompt-change compare
 
 Expect: the table above, then `Wrote evals/compare.md.`
 
-In replay mode the model's replies are recorded, so a prompt change does not change them. To see a real change, set a live provider in `.env`.
+## Do it on your work
+
+Change the prompt of your own agent. Run the challenger three times on each case, the same as the baseline. Good looks like this: no case gets worse in `evals/compare.md`.
 
 ## Done when
 
@@ -58,6 +62,10 @@ bun run verify gate-the-prompt-change
 ```
 
 Expect: `Done. All 5 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The finished challenger prompt and comparison are in `solution/evals/`. See `solution/evals/challenger-prompt.md` and `solution/evals/compare.md`.
 
 ## If you get stuck
 

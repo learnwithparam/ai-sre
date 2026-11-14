@@ -32,7 +32,7 @@ flowchart LR
 ## What you need
 
 - Docker with at least 4 GB of memory. 8 GB is better.
-- Bun 1.4.4, from bun.sh.
+- Bun, from bun.sh.
 - uv, from docs.astral.sh/uv. uv runs Python. Part 5 uses it to test your Python code.
 - A bash shell. On macOS and Linux you have one. On Windows, use WSL (Windows Subsystem for Linux). The commands do not work in PowerShell.
 - No model key. Every command here runs in replay mode. Replay mode plays back a recorded AI SRE against your live world.
@@ -78,7 +78,7 @@ Trace id: b2fc93d8894696a202c4d28649297fe6
 
 Your reference and Trace ID are different. The step page, [meet-the-harbour](meet-the-harbour/problem/README.md), shows each screen.
 
-Next you watch the finished AI SRE handle the `bad-release` fault. In that fault, release v2 of booking-web makes about 1 in 5 bookings fail.
+Next you watch the finished AI SRE handle the `bad-release` fault. In that fault, release `v2` of booking-web makes about 1 in 5 bookings fail.
 
 ```bash
 bun run demo bad-release

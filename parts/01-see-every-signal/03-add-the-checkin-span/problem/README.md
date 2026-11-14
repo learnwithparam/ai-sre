@@ -2,13 +2,11 @@
 
 ## The problem
 
-Cars wait in a line on the quay at Port Maren. Staff check each booking in before the car can board.
+Cars queue on the quay at Port Maren. Staff check each booking in. On the recorded bad-release morning, one check took 554343 nanoseconds. The trace showed the request and its SQL, but not the decision.
 
-When check-in is slow, the trace shows the request and its SQL. It does not show the step that decides if a booking may board. Nobody can see which booking was checked, or how long the decision took.
+## Watch it done
 
-You fix this with a manual span. A manual span is a span that your own code starts and ends.
-
-For example, once your span is in place, the telemetry holds rows like these, from the recorded bad-release morning. The duration is in nanoseconds, so 554343 is about half a millisecond.
+A manual span is a span your own code starts and ends. Once it is in place, the telemetry holds rows like these. The duration is in nanoseconds, so 554343 is about half a millisecond.
 
 ```text
 SpanName           booking.ref   Duration
@@ -18,19 +16,22 @@ checkin.validate   GR-MBMWF4      1525816
 
 ![The check-in waterfall in HyperDX with checkin.validate inside POST /api/checkin](../images/expected.png)
 
-## Your challenge
+## Your turn
 
-Open `checkin.ts` in this folder. Do three things in `validateCheckin`:
+Open `checkin.ts` in this folder.
 
-1. Put its work inside a span named `checkin.validate`.
+1. In `validateCheckin`, put its work inside a span named `checkin.validate`.
 2. Give the span the attribute `booking.ref`, set to the booking reference.
-3. Make sure the span ends.
+3. Make sure the span ends, on every path. A span is sent only when it ends.
+4. Keep the return values as they are. Return `null` when the booking may check in. Return a sentence when it may not.
+5. The span must be a child of the `POST /api/checkin` request span. Then it shows inside the same trace.
+6. Run `bun run world try add-the-checkin-span` to see your version live.
 
-The span must be a child of the `POST /api/checkin` request span. Then it shows inside the same trace.
+   Expect: the new span appears inside the check-in waterfall in HyperDX.
 
-Keep the return values as they are. Return `null` when the booking may check in. Return a sentence when it may not.
+## Do it on your work
 
-`bun run world try add-the-checkin-span` runs your version live.
+Add one manual span around one slow step in a service you run. Name it for the decision it makes. Good looks like this: the span shows in the same trace as its request, with the id you chose.
 
 ## Done when
 
@@ -43,6 +44,10 @@ bun run verify add-the-checkin-span
 ```
 
 Expect: `Done. All 5 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The finished file is in `solution/checkin.ts`.
 
 ## If you get stuck
 

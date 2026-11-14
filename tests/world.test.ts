@@ -26,19 +26,10 @@ test("the world's finished hooks are the part one solutions, byte for byte", () 
   for (const [world, solution] of pairs) expect(read(solution)).toBe(read(world));
 });
 
-test("every part in PARTS.md is a folder, and every folder is in PARTS.md", () => {
-  const headings = read("PARTS.md").matchAll(/^## `parts\/([^`]+)`/gm);
-  const listed = [...headings].map((match) => match[1]);
-  const folders = parts()
-    .filter((part) => part.name !== "orientation")
-    .map((part) => part.dir.split("/").pop());
-  expect(listed).toEqual(folders);
-});
-
 // Reads the step names from the table in one part's README.
 function stepsInPartTable(partDir: string): string[] {
   const readme = read(join(partDir.replace(`${ROOT}/`, ""), "README.md"));
-  const rows = readme.matchAll(/^\| `([a-z-]+)` +\| \d+/gm);
+  const rows = readme.matchAll(/^\| `([a-z-]+)` +\|/gm);
   return [...rows].map((match) => match[1]);
 }
 

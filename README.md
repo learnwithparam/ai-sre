@@ -10,13 +10,13 @@ Your AI SRE does five things:
 - It waits until a named human approves that change.
 - It gets a score on past incidents, so you know if you can trust it.
 
-For example, in the `bad-release` incident, release v2 of booking-web breaks about 1 in 5 bookings. Your AI SRE finds this log line:
+For example, in the `bad-release` incident, release `v2` of booking-web breaks about 1 in 5 bookings. Your AI SRE finds this log line:
 
 ```text
 connection pool exhausted: 2 of 2 connections in use (audit_trail)
 ```
 
-It blames release v2, not the card declines that happen every hour anyway. Then it proposes one change, `rollback_release` to v1, and waits for you.
+It blames release `v2`, not the card declines that happen every hour anyway. Then it proposes one change, `rollback_release` to `v1`, and waits for you.
 
 **Who it is for.** This course is for three kinds of people:
 
@@ -30,7 +30,7 @@ All three of you follow the same path to the end.
 
 ## Run the finished system first
 
-You need Docker with 4 GB of memory or more, Bun 1.4.4, uv and a bash shell. On Windows, use WSL. You do not need a model key. Replay mode plays back a recorded AI SRE against your own live world. The trace ids and the log line it cites must exist in the data from your run. Part 4 lists what that check does not prove.
+You need Docker with 4 GB of memory or more, Bun, uv and a bash shell. On Windows, use WSL. You do not need a model key. Replay mode plays back a recorded AI SRE against your own live world. The trace ids and the log line it cites must exist in the data from your run. Part 4 lists what that check does not prove.
 
 ```bash
 bun install
@@ -80,7 +80,7 @@ flowchart LR
     PX[passengers] --> BW[booking-web: book, pay, check in]
     BW --> PG[(Postgres: sailings, bookings)]
     BW --> TL[timetable-loader]
-    BW -.->|traces and logs| CS[(ClickStack 2.44.0: ClickHouse, HyperDX, MCP)]
+    BW -.->|traces and logs| CS[(ClickStack: ClickHouse, HyperDX, MCP)]
     TL -.-> CS
     CS --> HC[harbour-control: detector, findings, approvals, runner, audit log]
   end
@@ -99,7 +99,7 @@ Start in [00-orientation](00-orientation/README.md). Each part in `parts/` opens
 
 Each step also has one command: `bun run verify <step-name>`. It prints what passed, what failed and what to try next. For example, `bun run verify meet-the-harbour` ends with `Done. All 4 rules pass.` when your work is right. To check a whole part, run `bun run verify part <part-name>`.
 
-[STANDARD.md](STANDARD.md) lists the rules every course repo follows. [PARTS.md](PARTS.md) maps every part and step.
+[STANDARD.md](STANDARD.md) lists the rules every course repo follows.
 
 | Part                                                                                      | What you do                                                                      | Steps | Minutes |
 | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ----- | ------- |
@@ -142,5 +142,5 @@ The setting `LLM_PROVIDER` in `.env` picks where the model runs. The choices are
 ## Read before you start
 
 1. Alex Palcuie (Anthropic), talk on Claude for SRE incidents, QCon London: https://infoq.com/presentations/claude-sre-incidents. It shows why a confident cause is not a proven cause.
-2. Cloudflare, the 18 November 2025 outage postmortem: https://blog.cloudflare.com/18-november-2025-outage/. It follows one real incident from start to end, in a ClickHouse world.
+2. Cloudflare, the big outage postmortem: https://blog.cloudflare.com/18-november-2025-outage/. It follows one real incident from start to end, in a ClickHouse world.
 3. Benjamin Barton (Datadog), how Datadog evaluates its SRE agent: https://datadoghq.com/blog/engineering/bits-ai-eval-platform. It shows where this course ends: an AI SRE with a score.

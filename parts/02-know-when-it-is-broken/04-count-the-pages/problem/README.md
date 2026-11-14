@@ -2,29 +2,27 @@
 
 ## The problem
 
-Gullrock already has an alert. It pages when booking-web writes 3 or more warning or error lines in one minute. It sounds careful. But card declines are warning lines, and they happen every hour. So the old alert wakes people for nothing, and they learn to ignore it.
+The old alert pages when booking-web writes 3 or more warning or error lines in one minute. Card declines are warning lines. Show the team the numbers before you ask them to switch.
 
-You have written a better rule. Before you ask the team to switch, show them the numbers: how many pages the old alert sends, and how many your rule sends, on the same recorded mornings.
+For example, the old alert pages 11 times on the noisy morning, when nothing is broken.
 
-A **page** is one alert that calls a person. An alert that stays on for five checks in a row is still one page. It starts when the alert turns on, and it ends when the alert turns off.
+## Watch it done
 
-For example, this is the old alert replayed through both recorded mornings. Each character is one check, 30 seconds apart:
+The old alert and your rule replay through both mornings. Each character is one check, 30 seconds apart:
 
 ```text
 bad-release     PPPPPPPPPPPPPPPPPPP.
 noisy-morning   P...PPPPPPPP.......PPP..PP....PP...PP..PPP.PPP.......PPPPPP.......P.PPPPPPPPP.
 ```
 
-On the noisy morning, nothing is broken, and the old alert still turns on again and again. The first long run is the TLS blip. Most of the others are card declines.
+The first long run on the quiet morning is the TLS blip. Most of the others are card declines.
 
 ![Your rule and the old alert, replayed through both mornings](../images/expected.png)
 
-## Your challenge
+## Your turn
 
-In this folder:
-
-1. Paste your whole `burn-the-budget.sql` into `my-rule.sql`.
-2. Replay the old alert, then your rule. Run these from the root of the repo:
+1. In this folder, paste your whole `burn-the-budget.sql` into `my-rule.sql`.
+2. Replay the old alert. Run this from the root of the repo:
 
 ```bash
 bun parts/02-know-when-it-is-broken/replay-rule.ts parts/02-know-when-it-is-broken/04-count-the-pages/problem/old-alert.sql
@@ -32,16 +30,22 @@ bun parts/02-know-when-it-is-broken/replay-rule.ts parts/02-know-when-it-is-brok
 
 Expect: two timelines, one for `bad-release` and one for `noisy-morning`.
 
+3. Replay your rule:
+
 ```bash
 bun parts/02-know-when-it-is-broken/replay-rule.ts parts/02-know-when-it-is-broken/04-count-the-pages/problem/my-rule.sql
 ```
 
 Expect: one run of `P` on the `bad-release` line, and only dots on the `noisy-morning` line.
 
-3. Count the pages in each replay: one page for each run of `P`. Add up both lines.
-4. Write the two totals in `count-the-pages.md`, after `Pages before:` and `Pages after:`.
+4. Count the pages in each replay. A page is one alert that calls a person. It starts when the alert turns on, and it ends when the alert turns off. So one run of `P` is one page, and five checks in a row are still one page. Add up both lines.
+5. Write the two totals in `count-the-pages.md`, after `Pages before:` and `Pages after:`.
 
 Do not change `old-alert.sql`. You measure it; you do not fix it.
+
+## Do it on your work
+
+Pick the alert your team uses now. Count its pages over a recent quiet stretch of your own data. Then count the pages of your rule on the same data. Good looks like: a short note with two numbers and one reason.
 
 ## Done when
 
@@ -57,14 +61,13 @@ Expect: `Done. All 6 rules pass.` and a `Progress:` line.
 
 The check replays both rules itself and counts the pages. So your two numbers must match what really happened.
 
+## Solution
+
+The finished files are in `solution/`: `count-the-pages.md`, `my-rule.sql` and `old-alert.sql`.
+
 ## If you get stuck
 
-The most common mistake is to count every `P`. A `P` is one check, not one page. The check prints:
-
-```text
-  FAIL  Pages before is the number of pages the old alert sends in both recordings
-        Try next: replay old-alert.sql, then add up the pages of both lines; a run of P next to each other is one page, not one page per P
-```
+The most common mistake is to count every `P`. A `P` is one check, not one page.
 
 | What you see                                       | Fix                                                                |
 | -------------------------------------------------- | ------------------------------------------------------------------ |

@@ -2,20 +2,7 @@
 
 ## The problem
 
-You have a timeline. Now the team needs the whole story: what it cost, why it happened, and what changes next.
-
-Two things often go wrong in a postmortem. First, the numbers are guesses: "about 150 bookings failed". Second, it names a person as the cause: "the approver did not test it". A guess can be wrong. A name makes people hide what they did next time. So a good postmortem is **blameless**: it names causes in the system, and it takes every number from data.
-
-For example, this is the Impact section of the recorded bad-release incident. Every number comes from a record:
-
-```text
-Impact started: 22:10:35      the first span of release v2 (traces)
-Impact ended: 22:18:24        the remediation_executed row (audit log)
-Failed bookings: 131          POST /api/bookings spans with an error (traces)
-Bookings confirmed: 513       rows in the bookings table (Postgres)
-```
-
-Look at the start time. The page came at 22:17:52, but the impact started more than seven minutes earlier, when v2 went live. The impact starts at the change, not at the page.
+You have a timeline. Now the team needs the whole story. Two things often go wrong. The numbers become guesses, and a name becomes the cause. So a good postmortem is blameless. It takes every number from data. For example, the impact started at 22:10:35, more than seven minutes before the page.
 
 ```mermaid
 flowchart LR
@@ -28,7 +15,20 @@ flowchart LR
   G --> M
 ```
 
-## Your challenge
+## Watch it done
+
+This is the Impact section of the recorded bad-release incident. Every number comes from a record:
+
+```text
+Impact started: 22:10:35      the first span of release v2 (traces)
+Impact ended: 22:18:24        the remediation_executed row (audit log)
+Failed bookings: 131          POST /api/bookings spans with an error (traces)
+Bookings confirmed: 513       rows in the bookings table (Postgres)
+```
+
+The page came at 22:17:52. The impact started earlier, when the new release went live. So the impact starts at the change, not at the page.
+
+## Your turn
 
 Open `postmortems/bad-release.md` in this folder. Fill in every section of the starter.
 
@@ -39,13 +39,17 @@ Open `postmortems/bad-release.md` in this folder. Fill in every section of the s
 bun parts/06-write-it-down/audit-log.ts inc-b1182f037ed0
 ```
 
-Expect: an `Impact window:` line, then `Failed bookings: 131` and `Bookings confirmed: 513` for the recorded incident.
+Expect: an `Impact window:` line, then "Failed bookings: 131" and "Bookings confirmed: 513" for the recorded incident.
 
 3. Write `Impact started:`, `Impact ended:`, `Failed bookings:` and `Bookings confirmed:` with those values.
 4. Under Trigger, name the service and the release. Under Root causes, say what in the system let it happen.
 5. Write what went well, what went wrong, and at least two action items.
 
 Your AI SRE can draft the sections from the finding and the rows. You check every sentence.
+
+## Do it on your work
+
+Use your own incident from your team's records, not the recording. Get the Impact numbers from the traces and the bookings table. Good looks like this: the window starts at the first bad span, and both counts match the records.
 
 ## Done when
 
@@ -61,6 +65,10 @@ bun run verify write-the-postmortem
 
 Expect: `Done. All 8 rules pass.` and a `Progress:` line.
 
+## Solution
+
+The finished file is in `solution/postmortems/bad-release.md`.
+
 ## If you get stuck
 
 | What you see                                   | Fix                                                                                            |
@@ -75,5 +83,5 @@ No world on your machine? Write `bad-release` in `recorded-world.txt` in this fo
 
 - **Blameless**: a postmortem that names causes in the system, never a person to blame.
 - **Impact**: what the incident cost the business. Here, the bookings that failed.
-- **Trigger**: the change that set the incident off. It is not always the root cause.
+- **Trigger**: the change that set the incident off.
 - **Root cause**: the weakness in the system that let the trigger do harm.

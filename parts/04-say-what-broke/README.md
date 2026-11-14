@@ -1,26 +1,34 @@
 # Say what broke and prove it
 
+## After this part you can
+
+Make the AI SRE back each claim with proof that a script can check. You can also spot a guess and a false signal.
+
+## You leave with
+
+Three finding files that harbour-control stored. A refused guess. A list of the signals you ruled out.
+
 ## The problem
 
-A wrong cause, said with confidence, sends the team the wrong way. So every claim of the AI SRE must point at evidence. The evidence must be something a script can look up.
+A wrong cause, said with confidence, sends the team the wrong way. So every claim must point at evidence. A script must be able to look that evidence up.
 
-The AI SRE writes its claim as a finding. A finding names the broken service, the change that caused it, and the proof. The proof has three parts:
+The AI SRE writes each claim as a finding. A finding names the broken service, the change that caused it, and the proof. The proof has three parts:
 
 - trace ids that exist in the incident window, the time when the incident happened;
 - a log line, quoted word for word;
 - the release or config that changed.
 
-harbour-control checks every finding before it stores it. This is called grounding: each piece of evidence must exist in the data. If a piece is made up, harbour-control refuses the finding and says why. For example, it refuses a finding with only one trace id and gives this reason: `cite at least two trace ids that a tool returned`.
+harbour-control checks every finding before it stores it. This check is called grounding. Each piece of evidence must exist in the data. If a piece is made up, harbour-control refuses the finding and says why. For example, it refuses a finding with only one trace id and says: "cite at least two trace ids that a tool returned".
 
 Grounding has limits. Read them, so you do not trust it too much:
 
-- A trace id must exist, touch the named service, and start no more than 15 minutes before the incident opened. It does not have to be a failing trace. A healthy trace passes.
-- The quote is checked only when it is not empty. An empty quote skips the check. The noisy-morning step relies on this, because nothing is broken and there is nothing to quote.
+- A trace id must exist, touch the named service, and start inside the incident window. It does not have to fail. A healthy trace passes.
+- The quote is checked only when it is not empty. An empty quote skips the check. The noisy-morning step relies on this, because nothing is broken and nothing needs quoting.
 - Grounding proves that the evidence exists. It does not prove that the cause is right. A person still reads the evidence before approving.
 
 Then a grader compares the finding with the fault that the course planted. The grader is code, not an AI.
 
-For example, this is a real finding from the recorded bad-release morning, shortened:
+Here is a real finding from the recorded bad-release morning, shortened:
 
 ```text
 service:    booking-web
@@ -30,11 +38,11 @@ trace_ids:  d3155dd2299429ac40f0f022ed6852dc, 699c33a2ff95daf7c83df58a3e34e782, 
 hypothesis: Release v2 of booking-web opens a new database connection for each booking's audit trail and holds it, so the two audit connections run out and bookings fail.
 ```
 
-It matches the planted fault in `world/scenarios/bad-release.json`: service booking-web, change kind release, value v2.
+It matches the planted fault in `world/scenarios/bad-release.json`. The service is booking-web. The change kind is release, with the value `v2`.
 
-Some signals look like a cause, but are not. They are distractors. For example, card declines happen in every scenario, at their usual rate. A good finding names them as ruled out.
+Some signals look like a cause, but are not. These are distractors. For example, card declines happen in every scenario, at their usual rate. A good finding names them as ruled out.
 
-Why it matters: IBM Research and Artificial Analysis published a test called ITBench-AA. It has 59 SRE tasks. Every model they tested scores below 50%. The source is IBM's own README at https://github.com/IBM/ITBench, read on the build date. So a finding from any model needs a check that does not trust the model.
+Why it matters: IBM Research and Artificial Analysis published a test called ITBench-AA. It has 59 SRE tasks. Every model they tested scores below 50%. The source is IBM's own README at https://github.com/IBM/ITBench. So a finding from any model needs a check that does not trust the model.
 
 This picture shows the path of a finding:
 
@@ -48,11 +56,12 @@ flowchart LR
 
 ## Steps
 
-| Step                       | Minutes | You produce                                                              | The check reads                                                                                                |
-| -------------------------- | ------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| `write-the-finding`        | 20      | `findings/bad-release.json` written by your agent through submit_finding | the stored finding: planted service and change, the planted verification code in the quote, trace ids grounded |
-| `refuse-the-guess`         | 15      | a finding with one made-up trace id, sent on purpose                     | a finding_refused row in sre.incident_events with the reason                                                   |
-| `rule-out-the-distractors` | 20      | the agent's finding for noisy-morning                                    | change kind none, and the card declines and the old TLS blip named in ruled_out                                |
+| Step                       | Minutes | You produce                                                                     | The check reads                                                                                                |
+| -------------------------- | ------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `write-the-finding`        | 20      | `findings/bad-release.json` written by your agent through submit_finding        | the stored finding: planted service and change, the planted verification code in the quote, trace ids grounded |
+| `refuse-the-guess`         | 15      | a finding with one made-up trace id, sent on purpose                            | a finding_refused row in sre.incident_events with the reason                                                   |
+| `search-the-runbooks`      | 15      | `answers/search-the-runbooks.md`: the runbook and past incident for one symptom | the best match found again in `runbooks.md` and `past-incidents.md`                                            |
+| `rule-out-the-distractors` | 20      | the agent's finding for noisy-morning                                           | change kind none, and the card declines and the old TLS blip named in ruled_out                                |
 
 Every check reads what harbour-control stored, never what a model said. Your files only hold the ids, so the check can find the rows.
 
@@ -68,7 +77,7 @@ bun run world
 
 Expect: `The world is up: every service is healthy.`
 
-Plant the bad release. Harbour Control at http://localhost:8090 opens an incident after about a minute.
+Plant the bad release. Harbour Control at http://localhost:8090 opens an incident after a short wait.
 
 ```bash
 bun run world break bad-release
@@ -91,7 +100,7 @@ Fill in `parts/04-say-what-broke/01-write-the-finding/problem/findings/bad-relea
 bun parts/04-say-what-broke/call-tool.ts submit_finding parts/04-say-what-broke/01-write-the-finding/problem/findings/bad-release.json
 ```
 
-Expect: `Wrote finding_id fnd-` and twelve characters `into` your file.
+Expect: `Wrote finding_id` `fnd-` and twelve characters `into` your file.
 
 ```bash
 bun run verify write-the-finding
@@ -105,7 +114,7 @@ Now copy that file to `parts/04-say-what-broke/02-refuse-the-guess/problem/findi
 bun parts/04-say-what-broke/call-tool.ts submit_finding parts/04-say-what-broke/02-refuse-the-guess/problem/findings/guess.json
 ```
 
-Expect: `REFUSED  submit_finding: finding refused: these trace ids have no spans or logs in the last 6 hours:` and your made-up id.
+Expect: `REFUSED ` `submit_finding: finding` `refused: these` `trace ids` `have no` `spans or` `logs in` `the last` `6 hours:` and your made-up id.
 
 ```bash
 bun run verify refuse-the-guess
@@ -128,7 +137,7 @@ Fill in `parts/04-say-what-broke/03-rule-out-the-distractors/problem/findings/no
 bun parts/04-say-what-broke/call-tool.ts submit_finding parts/04-say-what-broke/03-rule-out-the-distractors/problem/findings/noisy-morning.json
 ```
 
-Expect: `Wrote finding_id fnd-` and twelve characters `into` your file.
+Expect: `Wrote finding_id` `fnd-` and twelve characters `into` your file.
 
 ```bash
 bun run verify rule-out-the-distractors
@@ -143,6 +152,16 @@ bun run verify part say-what-broke
 ```
 
 Expect: `Part say-what-broke is done: 3/3 steps pass.`
+
+## Watch and read
+
+| Kind | Title                 | Author       | Why                                                               | Link                             |
+| ---- | --------------------- | ------------ | ----------------------------------------------------------------- | -------------------------------- |
+| read | ITBench, IBM's README | IBM Research | The source of the 59-task SRE test and its low scores for models. | <https://github.com/IBM/ITBench> |
+
+## Project
+
+Pick one page from your own work, such as an alert that fired last week. Work on a copy of its notes or logs. Write a finding for it. Name the service, the change, two trace ids and one quoted log line. Then list one signal you ruled out and say why. Keep the finding in a new folder. Do not send it to anyone yet.
 
 ## Assignment
 

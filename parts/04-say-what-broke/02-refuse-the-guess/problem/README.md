@@ -2,13 +2,13 @@
 
 ## The problem
 
-A model can write a trace id that looks real but is not. It has 32 letters and digits, like every other trace id. A person reading the finding cannot tell. The team trusts it, and the hour is lost.
+A model can write a trace id that looks real but is not. It has 32 letters and digits, like every real trace id. A person cannot tell by looking. So harbour-control checks every trace id before it stores a finding.
 
-So harbour-control does not trust any trace id. Before it stores a finding, it looks up every trace id in ClickHouse. If one id has no spans and no logs, it refuses the whole finding. It also writes the refusal into the audit log, with the reason. The audit log is the table `sre.incident_events`: one row for each thing that happened in an incident.
+## Watch it done
 
-In this step you make the guess yourself, on purpose, and watch the stop work.
+Before it stores a finding, harbour-control looks up each trace id in ClickHouse. If one id has no spans and no logs, it refuses the whole finding. It also writes the refusal into the audit log, the table `sre.incident_events`, with the reason.
 
-For example, the sample solution sent a finding with two real trace ids and this made-up one: `4f2a9c1d7e3b5a6f8c0d1e2f3a4b5c6d`. harbour-control answered:
+The sample solution sent a finding with two real trace ids and one made-up id, `4f2a9c1d7e3b5a6f8c0d1e2f3a4b5c6d`. harbour-control answered:
 
 ```text
 REFUSED  submit_finding: finding refused: these trace ids have no spans or logs in the last 6 hours: 4f2a9c1d7e3b5a6f8c0d1e2f3a4b5c6d
@@ -16,7 +16,7 @@ REFUSED  submit_finding: finding refused: these trace ids have no spans or logs 
 
 ![The refusal, as call-tool.ts prints it](../images/expected.png)
 
-## Your challenge
+## Your turn
 
 1. Start from a real finding. Copy your file from write-the-finding into `findings/guess.json` in this folder. If you skipped that step, run `bun run demo bad-release`. Then fill the file as write-the-finding shows, with trace ids from `search_logs`.
 2. Change exactly one trace id to 32 characters that you make up. Use only `0-9` and `a-f`. Keep the other ids real.
@@ -29,7 +29,17 @@ bun parts/04-say-what-broke/call-tool.ts submit_finding parts/04-say-what-broke/
 
 Expect: a `REFUSED` line that names your made-up trace id.
 
-Then open the incident in Harbour Control. The audit trail shows a `finding_refused` row with the same reason.
+5. Open the incident in Harbour Control. The audit trail shows a `finding_refused` row with the same reason.
+
+```bash
+bun run verify refuse-the-guess
+```
+
+Expect: `Done. All 5 rules pass.` and a `Progress:` line.
+
+## Do it on your work
+
+Ask your own AI SRE to cite one trace id that it made up. Good looks like: harbour-control refuses the finding and names that id. The refusal also appears in your incident's audit log.
 
 ## Done when
 
@@ -38,15 +48,13 @@ Then open the incident in Harbour Control. The audit trail shows a `finding_refu
 - The reason names your made-up trace id.
 - The guess was never stored as a finding.
 
-```bash
-bun run verify refuse-the-guess
-```
+## Solution
 
-Expect: `Done. All 5 rules pass.` and a `Progress:` line.
+The sample guess is in `solution/findings/guess.json`, and the recorded refusal is in `solution/recorded-world.txt`.
 
 ## If you get stuck
 
-A guess can be refused for the wrong reason. For example, the wrong answer `only-one-trace-id` cites one real id. harbour-control refuses it before it looks at any evidence: `cite at least two trace ids that a tool returned`. The check prints:
+A guess can be refused for the wrong reason. For example, the wrong answer `only-one-trace-id` cites one real id. harbour-control refuses it before it looks at any evidence: "cite at least two trace ids that a tool returned". The check prints:
 
 ```text
   FAIL  the refusal names your made-up trace id as the reason

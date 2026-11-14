@@ -2,18 +2,16 @@
 
 ## The problem
 
-Not every page means something is broken. Sometimes a person pages because a number looks high, and it is normal.
+Not every page means something is broken. Sometimes a number looks high, and it is normal. A distractor is a signal that looks like a cause, but is not. An AI SRE that always finds a cause blames a distractor, and a healthy system gets changed.
 
-A distractor is a signal that looks like a cause, but is not. An AI SRE that always finds a cause is dangerous. It blames a distractor, and a change hits a healthy system.
+## Watch it done
 
-So the right answer is sometimes "nothing changed". The finding still needs proof. It must name each distractor it checked, and say why it is not the cause.
-
-For example, on the noisy-morning scenario, the ops desk pages: "Card declines look high this morning, can someone check payments?". Two signals look bad:
+On the noisy-morning scenario, the ops desk pages: "Card declines look high this morning, can someone check payments?". Two signals look bad:
 
 | Signal                                       | Why it is not the cause                                 |
 | -------------------------------------------- | ------------------------------------------------------- |
-| `card declined by payments gateway`          | about 1 in 30 cards is declined, the same as every hour |
-| `TLS handshake failed with payments gateway` | the errors stopped about 30 minutes before the page     |
+| "card declined by payments gateway"          | about 1 in 30 cards is declined, the same as every hour |
+| "TLS handshake failed with payments gateway" | the errors stopped well before the page                 |
 
 ```mermaid
 flowchart LR
@@ -25,14 +23,22 @@ flowchart LR
   F --> N[no proposal]
 ```
 
-## Your challenge
+So the right answer can be "nothing changed". The finding still needs proof for each distractor it checked.
+
+## Your turn
 
 1. Plant the scenario: `bun run world break noisy-morning`. A `manual_page` incident opens in Harbour Control at once. Copy its id.
-2. Check both signals. Compare the decline rate now with the hour before. Search booking-web logs for TLS errors over the last 60 minutes, and look at when they stopped.
+2. Check both signals. Compare the decline rate now with the hour before. Search booking-web logs for TLS errors over the last hour, and look at when they stopped.
 3. Fill in `findings/noisy-morning.json` in this folder:
-   - `change` is `{"kind": "none", "value": ""}`;
-   - `ruled_out` has one entry for each distractor, each with a `signal` and a `why`;
-   - `trace_ids` holds two or more trace ids of booking-web requests since the page. Card decline lines carry trace ids.
+   - `change` holds the empty no-change value in this block:
+
+```json
+{ "kind": "none", "value": "" }
+```
+
+- `ruled_out` has one entry for each distractor, each with a `signal` and a `why`;
+- `trace_ids` holds two or more trace ids of booking-web requests since the page.
+
 4. Send it, and propose nothing:
 
 ```bash
@@ -41,6 +47,16 @@ bun parts/04-say-what-broke/call-tool.ts submit_finding parts/04-say-what-broke/
 
 Expect: a `finding_id`, written back into the file.
 
+```bash
+bun run verify rule-out-the-distractors
+```
+
+Expect: `Done. All 8 rules pass.` and a `Progress:` line.
+
+## Do it on your work
+
+Run the same check on a quiet hour of your own service. Good looks like: nothing changed, and each false signal has a reason.
+
 ## Done when
 
 - harbour-control stored the finding, for the noisy-morning page.
@@ -48,11 +64,9 @@ Expect: a `finding_id`, written back into the file.
 - `ruled_out` names the card declines and the old TLS blip, each with a reason.
 - No change was proposed for this incident.
 
-```bash
-bun run verify rule-out-the-distractors
-```
+## Solution
 
-Expect: `Done. All 8 rules pass.` and a `Progress:` line.
+The finished finding is in `solution/findings/noisy-morning.json`.
 
 ## If you get stuck
 
@@ -72,5 +86,4 @@ The TLS errors are older than the page, so a short search misses them. For examp
 ## Words you will use
 
 - **Distractor**: a signal that looks like a cause, but is not.
-- **Baseline**: how a number behaves on a normal day. You compare against it.
 - **ruled_out**: the part of a finding that lists each signal you checked, and why it is not the cause.
