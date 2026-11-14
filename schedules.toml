@@ -10,7 +10,7 @@ room_steps = ["meet-the-harbour", "list-the-services", "tag-the-release", "chart
 sessions = [
   { parts = ["orientation", "see-every-signal", "know-when-it-is-broken", "look-without-touching"], minutes = 230 },
   { parts = ["say-what-broke", "ask-before-you-act", "write-it-down", "prove-the-ai-sre-right"], minutes = 305 },
-  { parts = ["do-it-with-the-tools-teams-run"], minutes = 20 },
+  { parts = ["trace-model-calls-with-clickstack"], minutes = 20 },
 ]
 
 [four-evenings]
@@ -19,7 +19,7 @@ sessions = [
   { parts = ["look-without-touching", "say-what-broke"], minutes = 125 },
   { parts = ["ask-before-you-act", "write-it-down"], minutes = 150 },
   { parts = ["prove-the-ai-sre-right"], minutes = 100 },
-  { parts = ["do-it-with-the-tools-teams-run"], minutes = 20 },
+  { parts = ["trace-model-calls-with-clickstack"], minutes = 20 },
 ]
 
 [four-weeks]
@@ -29,5 +29,5 @@ sessions = [
   { parts = ["look-without-touching", "say-what-broke"], minutes = 125 },
   { parts = ["ask-before-you-act", "write-it-down"], minutes = 150 },
   { parts = ["prove-the-ai-sre-right"], minutes = 100 },
-  { parts = ["do-it-with-the-tools-teams-run"], minutes = 20 },
+  { parts = ["trace-model-calls-with-clickstack"], minutes = 20 },
 ]
