@@ -2,11 +2,11 @@
 
 ## The problem
 
-booking-web writes each passenger's email into a span attribute called `passenger.email`. It also writes the email into a log line.
+booking-web writes each passenger's email into a span attribute and a log line. Telemetry goes to dashboards, vendors and an AI SRE. An email is personal data. It belongs in the bookings table, and nowhere else.
 
-Telemetry is copied to many places: to dashboards, to vendors, and now to an AI SRE that reads it. An email address is personal data, because it identifies a person. A passenger's email belongs in the bookings table, and nowhere else.
+## Watch it done
 
-For example, booking-web writes this log line for every booking, with the passenger's email at the end. After your fix, the email is replaced. This line is from the recorded bad-release morning:
+For example, booking-web writes this log line for every booking. After your fix, the email is replaced. This line is from the recorded bad-release morning:
 
 ```text
 booking confirmed GR-BNXNJ9 on the 08:15 port-maren to gullrock for [email]
@@ -21,14 +21,21 @@ flowchart LR
   B -->|email stays| P[(bookings table)]
 ```
 
-## Your challenge
+## Your turn
 
-Open `redact.ts` in this folder. booking-web calls both of its functions on every span and log record, right before it sends them:
+Open `redact.ts` in this folder. booking-web calls both of its functions on every span and log record, right before it sends them.
 
-- `redactBody` gets a log line. It returns the line with every email address replaced by `[email]`.
-- `redactAttributes` gets the attributes of a span or log record. It returns them with every email inside a string value replaced.
+1. In `redactBody`, replace every email address in the log line with `[email]`. This function gets a log line and returns it.
+2. In `redactAttributes`, replace every email inside a string value. This function gets the attributes of a span or log record and returns them.
+3. Change only the email text. Keep every other attribute as it was.
+4. Check that spans still carry `booking.ref` and `http.route`.
+5. Run `bun run verify hide-the-email` to see the result.
 
-Change only the email text. The span must still say which booking and which route it was.
+   Expect: `Done. All 4 rules pass.` and a `Progress:` line.
+
+## Do it on your work
+
+Find one log line from your own service that holds an email. Replace the email with `[email]` in that line. Good looks like this: the line still names the booking or request, and no email address is left in it.
 
 ## Done when
 
@@ -41,6 +48,10 @@ bun run verify hide-the-email
 ```
 
 Expect: `Done. All 4 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The finished file is in `solution/redact.ts`.
 
 ## If you get stuck
 

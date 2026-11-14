@@ -2,15 +2,11 @@
 
 ## The problem
 
-Your AI SRE found the cause of bad-release. Now it wants to fix it. If it can change production at once, one wrong guess becomes a second outage.
+Your AI SRE found the cause of bad-release. Now it wants to fix it. If it can change production at once, one wrong guess becomes a second outage. So the AI SRE can only propose. A proposal waits for a person. For example, booking-web logged: connection pool exhausted: 2 of 2 connections in use.
 
-So at Gullrock the AI SRE can only propose. A proposal is one change, written down and stored, that waits for a person. harbour-control accepts a proposal only when:
+## Watch it done
 
-- it rests on a stored finding for the same incident;
-- its action and target are on the fixed list of actions in `policy.py`;
-- it is the only live proposal for the incident.
-
-For example, the sample solution proposed this change for a recorded bad-release incident:
+The sample solution proposed this change for a recorded bad-release incident:
 
 ```json
 {
@@ -23,11 +19,17 @@ For example, the sample solution proposed this change for a recorded bad-release
 }
 ```
 
-harbour-control stored it as `pending` and gave back the `action_id`. Nothing ran.
+Harbour Control stored it as pending and gave back the `action_id`. Nothing ran.
 
 ![The incident page in Harbour Control with one pending proposal](../images/expected.png)
 
-## Your challenge
+## Your turn
+
+harbour-control accepts a proposal only when:
+
+- it rests on a stored finding for the same incident;
+- its action and target are on the fixed list of actions in `policy.py`;
+- it is the only live proposal for the incident.
 
 1. Plant the fault: `bun run world break bad-release`. Wait for the incident in Harbour Control at http://localhost:8090.
 2. Fill in `finding.json` in this folder and send it, as in write-the-finding. Your own AI SRE can do this, or you can use `call-tool.ts`.
@@ -51,6 +53,10 @@ Expect: a `finding_id`, then an `action_id` with `"state":"pending"`, each writt
 
 Do not approve it yet. The next step needs it pending.
 
+## Do it on your work
+
+Pick one bug in a service you run. Write a finding for it, then propose the one change that undoes it. Good looks like: the proposal is pending and names one listed action.
+
 ## Done when
 
 - `change.json` holds the `action_id`, and harbour-control stored the proposal.
@@ -64,9 +70,13 @@ bun run verify propose-one-change
 
 Expect: `Done. All 6 rules pass.` and a `Progress:` line.
 
+## Solution
+
+The sample answers are in `solution/change.json` and `solution/finding.json`.
+
 ## If you get stuck
 
-A change can be on the list and still be wrong. For example, the wrong answer `restart-instead` proposes `restart_service` on booking-web. A restart keeps release `v2` running, so the errors stay. The check prints:
+A change can be on the list and still be wrong. The wrong answer `restart-instead` proposes `restart_service` on booking-web. A restart keeps release `v2` running, so the errors stay. The check prints:
 
 ```text
   FAIL  it is the right change for that fault: rollback_release booking-web to v1
@@ -83,4 +93,3 @@ A change can be on the list and still be wrong. For example, the wrong answer `r
 
 - **Proposal**: one change the AI SRE asks for. It waits for a person.
 - **Fixed list of actions**: the only changes harbour-control can ever run, in `policy.py`.
-- **Pending**: stored, not yet approved or rejected.

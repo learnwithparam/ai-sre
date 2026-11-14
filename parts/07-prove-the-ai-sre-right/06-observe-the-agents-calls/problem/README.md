@@ -2,7 +2,11 @@
 
 ## The problem
 
-You watch your services. You should also watch the AI SRE. It makes tool calls, and some of them fail, run slow or change things. If you do not look at them, you will not see a write that nobody approved. For example, one write that ran with no approval is worth a fix on the same day.
+Your AI SRE makes tool calls. Some fail, run slow or change things. A write with no approval is the line to worry about. For example, one write that ran with no approval is worth a fix the same day.
+
+## Watch it done
+
+`agent-calls.jsonl` is a sample log, shaped like the one your own agent writes. Each line is one call. It shows the tool, whether it reads or writes, whether it worked, and how long it took. It also shows whether a person approved it.
 
 ```mermaid
 flowchart LR
@@ -11,11 +15,9 @@ flowchart LR
   C --> X[one change you make]
 ```
 
-## Watch it done
+## Your turn
 
-`agent-calls.jsonl` is a sample log shaped like the one your own agent writes. Each line is one call. It has the tool, whether it reads or writes, whether it worked, how long it took, and whether a person approved it. A write that ran with no approval is the line to worry about. Saving a finding is a report, not a write.
-
-## Your challenge
+A **tool call** is one request the agent makes to a tool. A **write call** changes something. A call that only reads does not. Saving a finding is a report, not a write. An **approval** is a person's yes before a write runs.
 
 Open `answers/observe-the-agents-calls.md` in this folder.
 
@@ -29,14 +31,8 @@ Expect: `7 agent-calls.jsonl`.
 
 2. Count the calls that failed, and write the number after `Failed calls:`.
 3. Find the slowest call and write its tool after `Slowest tool:`.
-4. Count the write calls that ran with no approval, and write the number after `Writes without approval:`. A write the gate refused did not run, so it does not count.
+4. Count the write calls that ran with no approval. Write the number on the fourth line of your answers file, after the label already there. A write the gate refused did not run, so it does not count.
 5. Write one change you would make after `Action:`.
-
-```bash
-bun run verify observe-the-agents-calls
-```
-
-Expect: `Done. All 5 rules pass.` and a `Progress:` line.
 
 ## Do it on your work
 
@@ -47,6 +43,16 @@ Look at the last run of your own agent. Count the same four things. Good looks l
 - The counts match the file.
 - The slowest tool is named.
 - You wrote one change in a full sentence.
+
+```bash
+bun run verify observe-the-agents-calls
+```
+
+Expect: `Done. All 5 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The finished answers are in `solution/answers/observe-the-agents-calls.md`. The log it counts is `solution/agent-calls.jsonl`.
 
 ## If you get stuck
 

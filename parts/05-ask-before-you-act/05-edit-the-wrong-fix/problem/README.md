@@ -2,13 +2,11 @@
 
 ## The problem
 
-Sometimes the AI SRE proposes the wrong fix. It blames the service where the errors show up, not the service that causes them. If you approve it, a change runs, nothing gets better, and the real fault keeps hurting passengers.
+Sometimes the AI SRE proposes the wrong fix. It blames the service where the errors show up, not the service that causes them. In timetable-hang, booking-web waits on timetable-loader, which hangs. So you reject the wrong change, edit it, and approve the right one.
 
-In timetable-hang, two requests make timetable-loader build a tide table forever. booking-web waits for timetable-loader, times out, and logs "timetable-loader did not answer". An AI SRE that reads only booking-web logs blames booking-web.
+## Watch it done
 
-You do not have to choose between yes and no. You can reject the proposal with a reason, edit it into the right change, and approve that. The audit log keeps every decision, in order.
-
-For example, the recorded timetable-hang incident shows these decisions for one action:
+For the recorded timetable-hang incident, these decisions were made for one action:
 
 ```text
 remediation_proposed   ai-sre                 rollback_release booking-web
@@ -21,7 +19,11 @@ verification_passed    harbour-control        stuck requests: 0
 
 ![The edited change in Harbour Control: a restart of timetable-loader, run and verified](../images/expected.png)
 
-## Your challenge
+## Your turn
+
+You do not have to choose between yes and no. You can reject the proposal with a reason, edit it into the right change, and approve that. The audit log keeps every decision, in order.
+
+Catch that mistake.
 
 1. Heal the world, then plant the fault. Wait until Harbour Control shows a `stuck_requests` incident for timetable-loader.
 
@@ -52,6 +54,10 @@ Expect: one JSON reply with your `action_id` and `"exit_code":0`.
 
 6. Fill in `decision.md` in this folder: the `Action id` and one sentence for "Why I rejected".
 
+## Do it on your work
+
+Find one case in your own service where the errors show up in a service that is fine. Write what you would reject, and what you would change it to. Good looks like: your note names the service that really hangs.
+
 ## Done when
 
 - `decision.md` names the AI SRE's proposal for the timetable-hang incident.
@@ -64,6 +70,10 @@ bun run verify edit-the-wrong-fix
 ```
 
 Expect: `Done. All 7 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The sample answer is in `solution/decision.md`, with the recorded world in `solution/recorded-world.txt`.
 
 ## If you get stuck
 
@@ -84,4 +94,3 @@ Saying no is half the job. For example, the wrong answer `rejected-and-stopped` 
 
 - **Reject**: say no to a proposal, with a reason the audit log keeps.
 - **Edit**: change the action of a rejected proposal. It goes back to pending.
-- **Victim service**: a service that shows errors because another service it calls is broken.

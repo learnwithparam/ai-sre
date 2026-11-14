@@ -2,11 +2,11 @@
 
 ## The problem
 
-Booking errors go up. The first useful question is "what changed?". A span can answer that only if it says which release served it.
+Booking errors go up. Which release changed? A span can answer that only if it names its release. Right now, booking-web spans name the service but not the release.
 
-A release is one deployed version of a service. At Gullrock, booking-web ships as releases `v1`, `v2` and so on. Right now its spans name the service, but not the release.
+## Watch it done
 
-For example, in the recorded bad-release morning, every booking-web span says its release. So you can count spans per release:
+Every booking-web span names its release. So you can count spans per release:
 
 ```text
 service.version   spans
@@ -14,19 +14,26 @@ v1                 2268
 v2                 4905
 ```
 
-Without the release on each span, you only see one big number. You cannot tell that `v2` is new.
+Without the release on each span, you see one big number. You cannot tell that the new release is different.
 
 ![A booking-web span in HyperDX with service.version in its resource attributes](../images/expected.png)
 
-## Your challenge
+## Your turn
 
 Open `telemetry.ts` in this folder. It uses OpenTelemetry, the open standard that services use to send spans and logs.
 
-The function `bookingResource` builds the resource. The resource is a set of attributes that every span and log line from booking-web carries. An attribute is a name with a value, such as `service.name` = `booking-web`.
+1. Find the function `bookingResource`. It builds the resource: the attributes that every span and log line from booking-web carries. An attribute is a name with a value, such as `service.name` = `booking-web`.
+2. Add the standard attribute `service.version`. Set it to the release that is running.
+3. Read that release from `env.BOOKING_RELEASE`. `env` holds the settings that booking-web reads when it starts. Do not write a fixed value.
+4. To see your version live, run `bun run world try tag-the-release`. Then book a sailing on http://localhost:8000 and open the span in HyperDX.
 
-Add the standard attribute `service.version`. Set it to the release that is running. You find that release in `env.BOOKING_RELEASE`. `env` holds the settings that booking-web reads when it starts.
+   Expect: the span shows `service.version` in its resource attributes.
 
-To see your version live, run `bun run world try tag-the-release`. Book a sailing on http://localhost:8000 and open the span in HyperDX. `bun run world try off` puts the finished version back.
+   `bun run world try off` puts the finished version back.
+
+## Do it on your work
+
+Add the same attribute to one service you run. Read its release from your own deploy setting. Good looks like this: every span from that service names its release, so you can count spans per release.
 
 ## Done when
 
@@ -40,6 +47,10 @@ bun run verify tag-the-release
 ```
 
 Expect: `Done. All 5 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The finished file is in `solution/telemetry.ts`.
 
 ## If you get stuck
 

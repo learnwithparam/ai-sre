@@ -1,5 +1,13 @@
 # Ask before you act
 
+## After this part you can
+
+Stop an AI agent from acting alone. You make it propose one change, and a named person approves it.
+
+## You leave with
+
+A proposal, a refusal, an approval, a rollback and a new rule in the policy. Harbour Control's audit log keeps a record of each one.
+
 ## The problem
 
 Most large outages follow a change. The worst ones come from automation that acted at once, with no person in the loop.
@@ -9,7 +17,7 @@ In this part you build the stop. It has four pieces:
 - **One proposed change.** The AI SRE proposes one fix, tied to a stored finding.
 - **A named human approval.** A person says yes, and the audit log records their name.
 - **A fixed list of actions.** The AI can only propose actions on this list. Each action shows its blast radius. The blast radius is what else breaks, or who is affected, when the action runs.
-- **A check on fresh traffic.** After the fix, harbour-control watches new requests to confirm that the service is healthy again.
+- **A check on fresh traffic.** After the fix, harbour-control watches new requests. It confirms that the service is healthy again.
 
 For example, this is the blast radius text for `rollback_release`, from `world/harbour-control/harbour_control/policy.py`. The approver reads it before saying yes:
 
@@ -19,7 +27,7 @@ the container takes to pass its health check, so passengers mid-booking must try
 shipped in the newer release is withdrawn until it is fixed and deployed again.
 ```
 
-And here is the real order of events in the audit log of the recorded bad-release morning, shortened:
+Here is the real order of events in the audit log of the recorded bad-release morning, shortened:
 
 ```text
 04:24:59.851  remediation_proposed   ai-sre                rollback_release booking-web to v1
@@ -31,7 +39,7 @@ And here is the real order of events in the audit log of the recorded bad-releas
 
 The AI tried to run the fix before approval, and harbour-control refused. It ran only after a person approved it.
 
-Why it matters: in this world, the wrong fix is cheap to make. For example, on a recorded bad-release morning, an approved restart of booking-web ran with exit code 0. The errors went on. After five minutes, harbour-control wrote `verification_failed`. A change that "worked" fixed nothing. Only the rollback, approved by a person and checked on fresh traffic, closed the incident.
+The wrong fix is cheap to make. On a recorded bad-release morning, an approved restart of booking-web ran with exit code 0. The errors went on. Harbour-control wrote `verification_failed`. Only the rollback, approved by a person and checked on fresh traffic, closed the incident.
 
 This picture shows the states of one proposed change:
 
@@ -63,7 +71,7 @@ Every check reads the rows that harbour-control wrote, never what a model said. 
 
 You send the AI SRE's calls with your own MCP client, or with `call-tool.ts`. It is a small MCP client in this part folder. It needs no model key. You make the human decisions in Harbour Control at http://localhost:8090.
 
-Start the world, if it is not running, and plant the bad release.
+Start the world, if it is not running. Then plant the bad release.
 
 ```bash
 bun run world
@@ -87,7 +95,7 @@ bun run verify propose-one-change
 
 Expect: `Done. All 6 rules pass.`
 
-Copy the `action_id` into `parts/05-ask-before-you-act/02-refuse-without-approval/problem/run.json`, and try to run it before anyone approves.
+Copy the `action_id` into `parts/05-ask-before-you-act/02-refuse-without-approval/problem/run.json`. Then try to run it before anyone approves.
 
 ```bash
 bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-before-you-act/02-refuse-without-approval/problem/run.json
@@ -96,7 +104,7 @@ bun run verify refuse-without-approval
 
 Expect: `REFUSED  execute_remediation:` with "a human must approve it", then `Done. All 4 rules pass.`
 
-Read the approval page, fill in `parts/05-ask-before-you-act/03-approve-with-blast-radius/problem/approval.md`, and approve.
+Read the approval page. Fill in `parts/05-ask-before-you-act/03-approve-with-blast-radius/problem/approval.md`, and approve.
 
 ```bash
 bun run approve --yes
@@ -105,7 +113,7 @@ bun run verify approve-with-blast-radius
 
 Expect: `Approved act-` with your action id, then `Done. All 6 rules pass.`
 
-Copy the same `action_id` into `parts/05-ask-before-you-act/04-roll-back-the-release/problem/run.json` and run it. Wait about 90 seconds for the check on fresh traffic.
+Copy the same `action_id` into `parts/05-ask-before-you-act/04-roll-back-the-release/problem/run.json` and run it. Then give the check on fresh traffic a short wait.
 
 ```bash
 bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-before-you-act/04-roll-back-the-release/problem/run.json
@@ -129,7 +137,7 @@ bun parts/05-ask-before-you-act/ai-sre.ts timetable-hang
 
 Expect: `Healed:`, then `Planted timetable-hang.`, then `I proposed rolling booking-web back to v1.`
 
-Reject it in Harbour Control, edit it to `restart_service` on `timetable-loader`, approve it, and run it with `call-tool.ts execute_remediation`. Write `parts/05-ask-before-you-act/05-edit-the-wrong-fix/problem/decision.md`.
+Reject it in Harbour Control. Edit it to `restart_service` on `timetable-loader`, approve it, and run it with `call-tool.ts execute_remediation`. Then write `parts/05-ask-before-you-act/05-edit-the-wrong-fix/problem/decision.md`.
 
 ```bash
 bun run verify edit-the-wrong-fix
@@ -164,9 +172,13 @@ bun run verify part ask-before-you-act
 
 Expect: `harbour-control is running the course's own policy.` and then `Part ask-before-you-act is done: 6/6 steps pass.`
 
-## Assignment
+## Watch and read
 
-The problem: automation acted at once, and made the outage bigger.
+No picks yet. Add four to six picks here, with at least two videos. Check each link before you add it.
+
+## Project
+
+The problem: automation acted at once, and made the outage bigger. Your project is to show the stop works.
 
 Hand in these files from your repo:
 
@@ -184,8 +196,6 @@ The rubric. Each line is yes or no:
 | 5   | Your "Why I rejected" names the service that really hangs.                                    |
 
 For advanced learners: require a second approver for any action whose blast radius covers every route, such as `rollback_config`. Add a test that one approval is not enough.
-
-## Finished
 
 You now have the stop. The AI SRE proposes one change for a stored finding. It cannot run it alone, and the refusal is written down. A named person reads the evidence and the blast radius, then says yes, no, or "not this, that". Every change comes from a fixed list that you can extend, with a test. harbour-control closes an incident only when fresh traffic proves the fix.
 

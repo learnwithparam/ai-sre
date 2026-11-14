@@ -2,7 +2,11 @@
 
 ## The problem
 
-Everything so far ran on the Harbour world. A skill is only yours when it works on something you run. Here you review one real incident from your own service, and a check reads your file, not the course. For example, a payments team can show a log line and a deploy that went out just before it.
+A skill is only yours when it works on something you run. Here you review one real incident from your own service. A check reads your file, not the course. For example, a payments team can show a log line and a deploy that went out just before it.
+
+## Watch it done
+
+Open `incident-review.md` in the `solution` folder. It is about a made-up payments service. Each evidence line has a source, a place and a time. The change has one person who must say yes.
 
 ```mermaid
 flowchart LR
@@ -11,17 +15,13 @@ flowchart LR
   C --> P[proof]
 ```
 
-## Watch it done
+## Your turn
 
-Open `incident-review.md` in the `solution` folder. It is about a made-up payments service. Each evidence line has a source, a place and a time. The change has one person who must say yes.
-
-## Your challenge
-
-Open `incident-review.md` in this folder.
-
-1. Write the name of a service you run after `Service:`. Do not use a course name.
-2. Under `## Evidence`, write at least two lines with two kinds of source, such as a log and a deploy. Use the form `- log | where you looked | date and time`, with the date as year-month-day and the time as hour:minute.
-3. Write the finding, one change, who approves it, and how you will know it worked.
+1. Open `incident-review.md` in this folder.
+2. Write the name of a service you run after `Service:`. Do not use a course name.
+3. Under `## Evidence`, write at least two lines with two kinds of source, such as a log and a deploy. Start each line with a dash, then the kind of source, where you looked, and the time. Split the parts with vertical bars. Write the date as year-month-day and the time as hour:minute.
+4. Write the finding, one change, who approves it, and how you will know it worked. Each one is one clear sentence.
+5. Run the check.
 
 ```bash
 bun run verify do-it-on-your-own-service
@@ -38,6 +38,10 @@ This whole step is on your work. Good looks like this: someone on your team can 
 - The review names your own service.
 - The evidence has two lines with two kinds of source.
 - The finding, change, approver and proof are each one clear sentence.
+
+## Solution
+
+The finished review is in `solution/incident-review.md`. It is about a made-up payments service.
 
 ## If you get stuck
 

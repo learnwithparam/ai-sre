@@ -265,7 +265,11 @@ function checkTroubleshootingTable() {
 // 6. Every schedule covers every part, and the minutes add up.
 type Schedule = Record<
   string,
-  { room_steps?: string[]; sessions: { parts: string[]; minutes: number }[] }
+  {
+    // biome-ignore lint/style/useNamingConvention: schedules.toml spells the key this way
+    room_steps?: string[];
+    sessions: { parts: string[]; minutes: number }[];
+  }
 >;
 
 function minutesPerPart(allParts: Part[]): Record<string, number> {

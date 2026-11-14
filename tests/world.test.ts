@@ -29,7 +29,7 @@ test("the world's finished hooks are the part one solutions, byte for byte", () 
 // Reads the step names from the table in one part's README.
 function stepsInPartTable(partDir: string): string[] {
   const readme = read(join(partDir.replace(`${ROOT}/`, ""), "README.md"));
-  const rows = readme.matchAll(/^\| `([a-z-]+)` +\| \d+/gm);
+  const rows = readme.matchAll(/^\| `([a-z-]+)` +\|/gm);
   return [...rows].map((match) => match[1]);
 }
 

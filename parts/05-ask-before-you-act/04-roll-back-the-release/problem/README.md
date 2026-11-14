@@ -2,11 +2,11 @@
 
 ## The problem
 
-A change that ran is not yet a fix. The fix is proven only when real traffic is healthy again. Many teams stop at "the deploy finished". Then the outage goes on, and nobody is watching.
+A change that ran is not a fix yet. The fix is proven only when real traffic is healthy again. Harbour Control watches for that proof. It judges the new requests after the change, not the deploy log.
 
-At Gullrock, harbour-control watches for you. After an approved change runs, it waits one full minute of new requests. If the error rate is back under its bound, it writes `verification_passed` and resolves the incident. If not, it writes `verification_failed`, and the incident stays open.
+## Watch it done
 
-For example, the recorded bad-release incident ended with these rows in the audit log:
+For the recorded bad-release incident, the audit log ended with these rows:
 
 ```text
 remediation_approved   oncall@gullrock.test
@@ -17,7 +17,9 @@ incident_resolved      harbour-control       Recovery confirmed on a full minute
 
 ![The resolved incident in Harbour Control after the rollback](../images/expected.png)
 
-## Your challenge
+## Your turn
+
+After an approved change runs, harbour-control waits for a full minute of new requests. If the error rate is back under its bound, it writes `verification_passed` and resolves the incident. If not, it writes `verification_failed`, and the incident stays open.
 
 1. Put the `action_id` of your approved rollback in `run.json` in this folder.
 2. Run it once, as the AI SRE would:
@@ -28,8 +30,12 @@ bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-be
 
 Expect: `"exit_code":0` in the result, and "Recovery is verified automatically over the next minute".
 
-3. Wait about 90 seconds. Open the incident in Harbour Control. It turns to Resolved.
+3. Give the check on fresh traffic a short wait. Then open the incident in Harbour Control. It turns to Resolved.
 4. Open http://localhost:8000. The footer reads `Release v1`.
+
+## Do it on your work
+
+Pick one service you run that has a last good release. Propose a rollback to it in your own AI SRE, approve it, and run it. Good looks like: the audit log has a `verification_passed` row, and the service runs the old release.
 
 ## Done when
 
@@ -44,9 +50,13 @@ bun run verify roll-back-the-release
 
 Expect: `Done. All 5 rules pass.` and a `Progress:` line.
 
+## Solution
+
+The sample answer is in `solution/run.json`, with the recorded world in `solution/recorded-world.txt`.
+
 ## If you get stuck
 
-A change can run and still not fix anything. For example, the wrong answer `restarted-instead` restarted booking-web. The restart ran, but release `v2` kept failing. After five minutes, harbour-control wrote `verification_failed`. The check prints:
+A change can run and still not fix anything. For example, the wrong answer `restarted-instead` restarted booking-web. The restart ran, but release `v2` kept failing. After a while, harbour-control wrote `verification_failed`. The check prints:
 
 ```text
   FAIL  harbour-control verified recovery on fresh traffic: verification_passed

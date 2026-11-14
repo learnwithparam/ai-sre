@@ -2,13 +2,18 @@
 
 ## The problem
 
-A postmortem ends with action items. Then everybody goes back to work, and the items stay on the page. Months later the same incident comes back.
+A postmortem ends with action items. Then the items stay on the page, and the incident comes back. An item gets done when one team owns it, it has a due point, and a test proves it worked. For example, the first item of the bad release has an owner and an eval case.
 
-An action item gets done when three things are true. One person or team owns it. It has a point by which it is due. And a test proves it worked. At Gullrock, that test is an eval case: a recorded incident that the AI SRE must get right before anyone trusts a change to it. You build those cases in the next part.
+```mermaid
+flowchart LR
+  M[## Action items in the postmortem] --> Y[postmortems/actions.yaml]
+  Y -->|owner, due| O[someone does it]
+  Y -->|eval_case| E[evals/incidents/bad-release in the next part]
+```
 
-So you move the items out of the page and into a file that a script can read.
+## Watch it done
 
-For example, this is the first item of the recorded bad-release incident:
+This is the first item of the recorded bad-release incident:
 
 ```yaml
 - action: Give each audit trail connection back after the booking is written.
@@ -18,14 +23,9 @@ For example, this is the first item of the recorded bad-release incident:
   eval_case: evals/incidents/bad-release
 ```
 
-```mermaid
-flowchart LR
-  M[## Action items in the postmortem] --> Y[postmortems/actions.yaml]
-  Y -->|owner, due| O[someone does it]
-  Y -->|eval_case| E[evals/incidents/bad-release in the next part]
-```
+Each field has one job. `kind` says how the item helps. `owner` names who does it. `due` says when. `eval_case` names the test that proves it.
 
-## Your challenge
+## Your turn
 
 Open `postmortems/actions.yaml` in this folder.
 
@@ -33,15 +33,19 @@ Open `postmortems/actions.yaml` in this folder.
 2. Add one entry under `items:` for each action item of your postmortem. Add at least two.
 3. Give each entry these fields:
 
-| Field       | What to write                                                                              |
-| ----------- | ------------------------------------------------------------------------------------------ |
-| `action`    | one sentence: what changes                                                                 |
-| `kind`      | `prevent` (stops the cause), `detect` (finds it sooner) or `mitigate` (makes it hurt less) |
-| `owner`     | the one team or role that does it                                                          |
-| `due`       | `before-next-release`, `next-planning` or `next-incident-review`                           |
-| `eval_case` | the eval case that proves it, such as `evals/incidents/bad-release`                        |
+   | Field       | What to write                                                                              |
+   | ----------- | ------------------------------------------------------------------------------------------ |
+   | `action`    | one sentence: what changes                                                                 |
+   | `kind`      | `prevent` (stops the cause), `detect` (finds it sooner) or `mitigate` (makes it hurt less) |
+   | `owner`     | the one team or role that does it                                                          |
+   | `due`       | `before-next-release`, `next-planning` or `next-incident-review`                           |
+   | `eval_case` | the eval case that proves it, such as `evals/incidents/bad-release`                        |
 
 Keep at least one `prevent` item and one `detect` item. The bad release was caused by a leak, and it was also found late.
+
+## Do it on your work
+
+Move the action items of your own last incident into the file. Pick one `prevent` item and one `detect` item. Good looks like this: each item names a real owner, a due point and an eval case.
 
 ## Done when
 
@@ -55,6 +59,10 @@ bun run verify file-the-action-items
 ```
 
 Expect: `Done. All 7 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The finished file is in `solution/postmortems/actions.yaml`.
 
 ## If you get stuck
 

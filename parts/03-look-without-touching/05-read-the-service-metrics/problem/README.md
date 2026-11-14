@@ -2,7 +2,11 @@
 
 ## The problem
 
-A metric is a number over time. Requests, errors and slow answers are three of them. Alone, each can mislead. A count of errors looks big on a busy service. It looks small on a quiet one. So divide by the requests to get a rate. For example, 5 errors in 100 requests is a rate of 5 in 100.
+A metric is a number over time. Requests, errors and slow answers are metrics. A count alone can mislead. A busy service has more errors than a quiet one. So divide by requests to get a rate. For example, 5 errors in 100 requests is a 5% rate.
+
+## Watch it done
+
+For one service, add up the errors of the last five minutes. Divide by the requests of the same five minutes. Do this for each service. The highest rate is the worst service.
 
 ```mermaid
 flowchart LR
@@ -11,15 +15,9 @@ flowchart LR
   W --> F[first bad minute]
 ```
 
-## Watch it done
+## Your turn
 
-For one service, add up the errors of the last five minutes and divide by the requests of the same five minutes. Do this for each service. The highest rate is the worst service.
-
-## Your challenge
-
-Open `answers/read-the-service-metrics.md` in this folder.
-
-1. Read `metrics.csv`. It has a row per minute and service.
+1. Open `answers/read-the-service-metrics.md` in this folder. Read `metrics.csv`. It has one row per minute and service.
 2. Find the error rate of each service over the last five minutes.
 3. Write the worst service and its rate as a percent, in the form `Error rate: 7%`.
 4. Find the first minute where that service has more than five errors in a hundred requests.
@@ -33,13 +31,17 @@ Expect: `Done. All 4 rules pass.` and a `Progress:` line.
 
 ## Do it on your work
 
-Export one hour of requests and errors for your own service. Do the same sums. Good looks like this: you can say the first bad minute, and then check what changed at that minute.
+Export a recent stretch of requests and errors for your own service. Do the same sums. Good looks like: you can name the first bad minute, and then check what changed at that minute.
 
 ## Done when
 
 - The worst service is named.
 - The rate is a percent within one point.
 - The first bad minute is right, and you say what you look at next.
+
+## Solution
+
+The finished answer is in `solution/answers/read-the-service-metrics.md`.
 
 ## If you get stuck
 

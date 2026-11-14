@@ -2,13 +2,18 @@
 
 ## The problem
 
-The bad release is over. Bookings work again. Now the team asks: what happened, and when?
+The bad release is over. Now the team asks what happened, and when. Memory gets the order wrong. The audit log keeps one row per step. For example, the page came at 22:17:52, and the rollback ran at 22:18:24.
 
-People remember an incident in the wrong order, and remember steps that never happened. A timeline from memory starts arguments, not fixes.
+```mermaid
+flowchart LR
+  A[(sre.incident_events)] -->|audit-log.ts prints the rows| R[rows: time, kind, actor]
+  R -->|one line per row| T[## Timeline in postmortems/bad-release.md]
+  T -->|the check looks up each line| A
+```
 
-Gullrock already has a better source. harbour-control writes one row to its audit log for every step of an incident. The audit log is the table `sre.incident_events`. So the timeline comes from the rows, and every line points at one row.
+## Watch it done
 
-For example, these are three rows of the recorded bad-release incident `inc-b1182f037ed0`:
+Open `postmortems/bad-release.md` in the `solution` folder. Each timeline line has the same time and event kind as one audit row. These are three rows of the recorded incident `inc-b1182f037ed0`:
 
 ```text
 22:17:52  incident_opened       detector              booking-web error rate 10% over the last minute
@@ -24,14 +29,7 @@ They become these three timeline lines:
 - 22:18:24 remediation_executed: the rollback ran; booking-web restarted on release v1.
 ```
 
-```mermaid
-flowchart LR
-  A[(sre.incident_events)] -->|audit-log.ts prints the rows| R[rows: time, kind, actor]
-  R -->|one line per row| T[## Timeline in postmortems/bad-release.md]
-  T -->|the check looks up each line| A
-```
-
-## Your challenge
+## Your turn
 
 Open `postmortems/bad-release.md` in this folder.
 
@@ -54,7 +52,9 @@ Expect: `Incident inc-b1182f037ed0: 8 audit rows (times are UTC)` and one line p
 3. Write the id on the `Incident:` line.
 4. Under `## Timeline`, write one line per event: a dash, the time, the event kind, a colon, and what happened in plain words.
 
-You can ask your AI SRE to draft the lines from the rows. Then read each line against its row.
+## Do it on your work
+
+Use the audit rows of a real incident in your own world, the one a rollback fixed. Good looks like this: every line in your timeline has a row, and no line comes from memory.
 
 ## Done when
 
@@ -70,6 +70,10 @@ bun run verify draft-the-timeline
 
 Expect: `Done. All 7 rules pass.` and a `Progress:` line.
 
+## Solution
+
+The finished file is in `solution/postmortems/bad-release.md`. The recording it reads is in `solution/recorded-world.txt`.
+
 ## If you get stuck
 
 | What you see                                    | Fix                                                                                                |
@@ -82,7 +86,7 @@ No world on your machine? Write the word `bad-release` in a file called `recorde
 
 ## Words you will use
 
-- **Postmortem**: a short written report after an incident. It says what happened, what it cost and what changes next.
+- **Postmortem**: a short written report after an incident.
 - **Timeline**: the list of events of an incident, oldest first, each with its time.
 - **Audit log**: a table that only grows. Each row records one step. Nobody edits old rows.
-- **UTC**: the world clock that servers use. Your local clock may be one or more hours away from it.
+- **UTC**: the world clock that servers use.

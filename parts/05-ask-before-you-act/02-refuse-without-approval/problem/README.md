@@ -2,11 +2,11 @@
 
 ## The problem
 
-An agent that can propose a change can also try to run it. It can do so by mistake, because a prompt says "fix it", or because a log line tells it to. A rule in the prompt does not stop that. The model can ignore a prompt.
+An agent that can propose a change can also try to run it. It may do so by mistake, or because a log line tells it to. A rule in the prompt does not stop that. The stop must live in the server.
 
-The stop must live in the server. At Gullrock, `execute_remediation` runs a change only after a person approved it. Any other attempt is refused, and the refusal goes into the audit log. The world does not change.
+## Watch it done
 
-For example, the reference AI SRE tried to run its rollback right after it proposed it. harbour-control answered:
+The reference AI SRE tried to run its rollback right after it proposed it. Harbour Control answered:
 
 ```text
 REFUSED  execute_remediation: act-f8c3206aec14 is pending; a human must approve it at /actions/act-f8c3206aec14 first
@@ -16,7 +16,9 @@ The audit log got a `remediation_refused` row, with `{"state": "pending"}`. book
 
 ![The refusal, as call-tool.ts prints it](../images/expected.png)
 
-## Your challenge
+## Your turn
+
+At Gullrock, `execute_remediation` runs a change only after a person approved it. Any other attempt is refused, and the refusal goes into the audit log. The world does not change.
 
 1. Copy the `action_id` from propose-one-change into `run.json` in this folder. The proposal must still be pending.
 2. Try to run it, as an agent would:
@@ -30,6 +32,10 @@ Expect: `REFUSED  execute_remediation:` and "a human must approve it".
 3. Open http://localhost:8000. The footer still says `Release v2`. Nothing ran.
 4. Open the incident in Harbour Control. The audit trail shows the refused attempt.
 
+## Do it on your work
+
+Ask your own AI SRE to run its proposal before anyone approves it. Good looks like: the tool refuses, the audit log has a refusal row, and the service runs as before.
+
 ## Done when
 
 - `run.json` names a stored proposal.
@@ -42,6 +48,10 @@ bun run verify refuse-without-approval
 ```
 
 Expect: `Done. All 4 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The sample answer is in `solution/run.json`, with the recorded world in `solution/recorded-world.txt`.
 
 ## If you get stuck
 

@@ -2,7 +2,7 @@
 
 ## The problem
 
-Most pages are not new. A team has often seen the same error before and written down what to do. The AI SRE should look there first, and so should you. A runbook is a short page that says what to do for one kind of problem. For example, the error "connection slots are reserved" points at one runbook.
+Most pages are not new. The AI SRE should check the runbooks first, and so should you. A runbook is a short page that says what to do for one kind of problem. For example, inc-0312 matched "connection slots" and was fixed by a rollback.
 
 ```mermaid
 flowchart LR
@@ -14,9 +14,9 @@ flowchart LR
 
 ## Watch it done
 
-The error text is "FATAL remaining connection slots are reserved". A search for the words `connection slots` finds one runbook and one past incident. The runbook says to compare errors by release.
+The error text is "FATAL remaining connection slots are reserved". A search for the words "connection slots" finds one runbook and one past incident. The runbook says to compare errors by release.
 
-## Your challenge
+## Your turn
 
 Open `answers/search-the-runbooks.md` in this folder. The symptom is already filled in.
 
@@ -40,13 +40,17 @@ Expect: `Done. All 4 rules pass.` and a `Progress:` line.
 
 ## Do it on your work
 
-Run the same search over your own runbooks and your last ten tickets. Good looks like this: you find the page that matches, or you learn that you have none, and that is your first runbook to write.
+Run the same search over your own runbooks and your last ten tickets. Good looks like this: you find the page that matches, or you learn that you have none. That gap is your first runbook to write.
 
 ## Done when
 
 - The answer shows the search you ran.
 - The runbook and the past incident both match the symptom.
 - The quote is a real line from the runbook.
+
+## Solution
+
+The finished answer is in `solution/answers/search-the-runbooks.md`.
 
 ## If you get stuck
 

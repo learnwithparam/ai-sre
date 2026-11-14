@@ -1,33 +1,20 @@
 # See every signal
 
+## After this part you can
+
+Find the failing service with one query. Tag every span with its release. Keep emails out of telemetry.
+
+## You leave with
+
+A query in `list-the-services.sql`. Fixes in `telemetry.ts`, `checkin.ts` and `redact.ts`. A map of the services in `topology.txt`.
+
 ## The problem
 
-Gullrock Ferries sells ferry tickets on a website. A booking starts when a passenger clicks on the booking page. The request goes through two services, booking-web and timetable-loader. It ends as a new row in the Postgres database.
+Gullrock Ferries sells ferry tickets on a website. A booking can fail. The person on call must follow that one booking from the click to the database.
 
-Sometimes a booking fails. Then the person on call must follow that one booking from the click to the database. The person on call is the engineer whose job right now is to fix problems.
+Services send telemetry: spans and logs about their own work. Every span must name its release. Without that, nobody can answer "what changed?"
 
-To follow a booking, you need a few words:
-
-- A **span** is a record of one piece of timed work. For example, one HTTP request is one span, and one SQL statement is another.
-- A **trace** is all the spans of one request, across every service. They share one trace id.
-- An **attribute** is a name and a value on a span, such as `service.version` = `v2`.
-- A **release** is one deployed version of a service, such as `v1` or `v2`.
-
-Every span must say which release served it. Without that, nobody can answer the question "what changed?". Not a person, and not an AI SRE. An SRE (site reliability engineer) keeps services running. An AI SRE is a program that helps with that job.
-
-For example, here is the recorded bad-release morning at Gullrock. It counts the `POST /api/bookings` spans of booking-web for each release:
-
-```text
-service.version   requests   errors
-v1                     304        0
-v2                     607      131
-```
-
-Release `v1` has no errors. Release `v2` has 131. This table exists only because every span carries `service.version`. Without that attribute, you see 131 errors and no cause.
-
-Why it matters: Microsoft built a test for AI operations agents called AIOpsLab. It plants 31 kinds of fault. They range from a killed pod (a stopped container) to an app with a wrong setting. We counted 31 fault folders under `aiopslab/orchestrator/problems` in github.com/microsoft/AIOpsLab on the build date. An agent can tell these faults apart only when every signal names its service, its release and its request.
-
-This picture shows where the signals go. The dotted lines are telemetry: the spans and logs that each service sends about its own work. ClickStack stores them in two tables, `otel_traces` and `otel_logs`.
+For example, on the recorded bad-release morning, the new release had 131 errors. The old one had none. Only the release told them apart.
 
 ```mermaid
 flowchart LR
@@ -40,9 +27,13 @@ flowchart LR
   CS --> Q[your SQL: list-the-services]
 ```
 
+The dotted lines are telemetry. ClickStack stores it in two tables, `otel_traces` and `otel_logs`.
+
+Microsoft's AIOpsLab test plants 31 kinds of fault. An agent can tell them apart only when every signal names its service, release and request. See github.com/microsoft/AIOpsLab.
+
 ## Steps
 
-You do four steps. Each one adds one piece to the picture above.
+You do five steps. Each one adds one piece to the picture above.
 
 | Step                   | Minutes | You produce                                 | The check reads                                                           |
 | ---------------------- | ------- | ------------------------------------------- | ------------------------------------------------------------------------- |
@@ -62,7 +53,7 @@ bun run world
 
 Expect: `The world is up: every service is healthy.`
 
-Now work through the steps in order. Each step folder keeps your starter files in `problem/`. When you finish a step, run its check.
+Work through the steps in order. Each step folder keeps your starter files in `problem/`. When you finish a step, run its check.
 
 First, write one query that lists the services.
 
@@ -103,3 +94,14 @@ bun run verify part see-every-signal
 ```
 
 Expect: `Part see-every-signal is done: 4/4 steps pass.`
+
+## Watch and read
+
+The course team has not added picks for this part yet.
+
+| Kind | Title | Author | Why | Link |
+| ---- | ----- | ------ | --- | ---- |
+
+## Project
+
+Pick one service you run. Add its release to every span. Then write one query that counts its spans and failed spans per release. Save the query and a short note. The note names the release that failed most, and what you would check first.

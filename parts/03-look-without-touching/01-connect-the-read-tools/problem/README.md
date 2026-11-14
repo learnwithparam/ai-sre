@@ -2,11 +2,17 @@
 
 ## The problem
 
-Your AI SRE needs to see the telemetry, and never change it. Two MCP servers offer it tools: HyperDX's and harbour-control's. Some tools only read. Others save, delete or run things.
+Your AI SRE must see telemetry, but never change it. Two MCP servers offer tools. A flag says which tools only read. A flag is only a promise. The real lock is the database user `sre_agent`, which may only SELECT.
 
-Each tool says what it does with a flag, `readOnlyHint`. But a flag is only a promise from the server. The real lock is the database user: `sre_agent` may only SELECT. So you need both: a client that allows only read tools, and a database that refuses every write.
+For example, ClickHouse refuses a write as `sre_agent`:
 
-For example, this is part of what harbour-control's server says about its own tools:
+```text
+Code: 497. DB::Exception: sre_agent: Not enough privileges. ... (ACCESS_DENIED)
+```
+
+## Watch it done
+
+The check lists every tool of both servers. Each one says READ or WRITE:
 
 ```text
 harbour-control  http://localhost:8090/mcp  14 tools, 3 can write
@@ -17,19 +23,13 @@ harbour-control  http://localhost:8090/mcp  14 tools, 3 can write
   WRITE  execute_remediation
 ```
 
-And this is ClickHouse when something tries to write as `sre_agent`:
-
-```text
-Code: 497. DB::Exception: sre_agent: Not enough privileges. ... (ACCESS_DENIED)
-```
-
 ![Both MCP servers and their tools, READ or WRITE](../images/expected.png)
 
-## Your challenge
+## Your turn
 
-The files in this folder are a Claude Code project: `.mcp.json` names the servers, and `.claude/settings.json` says which tools may run. Other clients use the same `mcpServers` block.
+The folder is a Claude Code project. `.mcp.json` names the servers. `.claude/settings.json` says which tools may run. The world must be running.
 
-1. List every tool of both servers. The world must be running.
+1. List every tool of both servers.
 
 ```bash
 bun parts/03-look-without-touching/list-tools.ts
@@ -38,8 +38,8 @@ bun parts/03-look-without-touching/list-tools.ts
 Expect: `hyperdx  http://localhost:8080/api/mcp  32 tools, 9 can write`, then harbour-control with 14 tools, 3 can write.
 
 2. In `.mcp.json`, add harbour-control at `http://localhost:8090/mcp`, next to HyperDX. Each header names a variable, never the key itself: `"Bearer ${HYPERDX_ACCESS_KEY}"` and `"Bearer ${SRE_MCP_TOKEN}"`.
-3. In `.claude/settings.json`, replace `mcp__hyperdx` (the whole server) with single tools. Put READ tools in `allow` and every WRITE tool in `deny`. A tool's full name is `mcp__<server name>__<tool` `name>`, such as `mcp__hyperdx__clickstack_search`.
-4. Try a write as `sre_agent`, and paste the line that starts with `Code:` into `answers.md`, after `ClickHouse said:`.
+3. In `.claude/settings.json`, replace `mcp__hyperdx` (the whole server) with single tools. Put READ tools in `allow`. Put every WRITE tool in `deny`. A tool's full name is its server name, two underscores, then its tool name, such as `mcp__hyperdx__clickstack_search`.
+4. Try a write as `sre_agent`. Paste the line that starts with `Code:` into `answers.md`, after `ClickHouse said:`.
 
 ```bash
 bun parts/03-look-without-touching/try-insert.ts
@@ -55,6 +55,10 @@ cd parts/03-look-without-touching/01-connect-the-read-tools/problem && set -a &&
 
 Expect: Claude Code starts and asks you to approve the two servers of this folder.
 
+## Do it on your work
+
+Do the same on a service you run. Allow only the read tools, and deny each write tool. Try one write as its database user. Good looks like: every allowed tool says it reads, and the database refuses your write.
+
 ## Done when
 
 - `.mcp.json` names both servers, with no key written in it.
@@ -66,6 +70,10 @@ bun run verify connect-the-read-tools
 ```
 
 Expect: `Done. All 9 rules pass.` and a `Progress:` line.
+
+## Solution
+
+The finished files are in `solution/`: `.mcp.json`, `.claude/settings.json` and `answers.md`.
 
 ## If you get stuck
 
@@ -86,4 +94,3 @@ A common mistake is to allow a tool because its name sounds safe. For example, `
 
 - **MCP server**: a program that offers tools to an AI client, such as `search_logs`.
 - **readOnlyHint**: a flag a tool sets to say "I only read". It is a hint, not a lock.
-- **Grant**: what a database user may do. `sre_agent` has only `SELECT`.

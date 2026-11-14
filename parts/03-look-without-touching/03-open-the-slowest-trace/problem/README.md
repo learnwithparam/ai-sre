@@ -2,11 +2,9 @@
 
 ## The problem
 
-The new pattern says "connection pool exhausted". booking-web has only two database connections. Something holds them too long. A count cannot tell you what. One trace can.
+The new pattern says "connection pool exhausted". booking-web has only two database connections. Something holds them too long. A count cannot say what. One trace can.
 
-A trace is every span of one request. Its spans show where the time went. So you open the slowest booking and read its spans, one by one.
-
-For example, on the recorded bad-release morning a failed booking looks like this. It waited about 300 ms for a free connection, then gave up:
+A trace is every span of one request. Each span shows where its time went. For example, a failed booking waited about 300 ms for a free connection, then gave up:
 
 ```text
 span                  duration_ms   status
@@ -14,17 +12,25 @@ POST /api/bookings          316.9   Error
 SELECT sailings               0.5   Unset
 ```
 
-The failed bookings are the victims. The slowest booking that worked shows who holds the connections.
+## Watch it done
+
+The failed bookings are the victims. The slowest booking that worked shows who holds the connections. This is every span of that booking:
 
 ![Every span of the slowest booking](../images/expected.png)
 
-## Your challenge
+## Your turn
 
-Open `open-the-slowest-trace.sql`. The outer SELECT lists every span of one trace. The inner SELECT, in brackets, picks the trace. Right now it picks any booking.
-
-Change the inner SELECT so it picks the slowest `POST /api/bookings` of the last `15 minutes`. Then run the query and read the spans. Which one takes most of the time?
+1. Open `open-the-slowest-trace.sql`. The outer SELECT lists every span of one trace. The inner SELECT, in brackets, picks the trace.
+2. Change the inner SELECT so it picks the slowest `POST /api/bookings` of the last `15 minutes`. Right now it picks any booking.
+3. Run the query and read the spans. Which one takes the most time?
 
 `Duration` is in nanoseconds. The starter divides it by 1e6, so `duration_ms` is in milliseconds.
+
+4. Optional: on the live world, paste the trace id into HyperDX's search. It shows the same spans as a waterfall.
+
+## Do it on your work
+
+Find the slowest request of your own service in a recent stretch of traffic. Read its spans. Good looks like: you name the span that takes the most time, and you can say why it is slow.
 
 ## Done when
 
@@ -38,11 +44,15 @@ bun run verify open-the-slowest-trace
 
 Expect: `Done. All 7 rules pass.` and a `Progress:` line.
 
-The check runs your query on the recorded bad-release morning. On the live world, paste the trace id into HyperDX's search to see the same spans as a waterfall.
+The check runs your query on the recorded bad-release morning.
+
+## Solution
+
+The finished query is in `solution/open-the-slowest-trace.sql`.
 
 ## If you get stuck
 
-`ORDER BY` `Duration` sorts from the fastest. The check prints:
+Sorting by `Duration` with no DESC puts the fastest booking first. The check prints:
 
 ```text
   FAIL  the trace is the slowest booking of the last 15 minutes

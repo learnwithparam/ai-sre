@@ -2,13 +2,11 @@
 
 ## The problem
 
-You get paged at Gullrock Ferries. A page is an alert that calls the person on call. Your first questions are simple. Which services are running? How busy is each one? Which one is failing?
+You get paged. Which services run, how busy is each, and which one fails? One query answers all three. On the recorded bad-release morning, booking-web had 131 failed spans. timetable-loader had none.
 
-You want to answer all three with one query. Without that answer, every later step is a guess.
+## Watch it done
 
-ClickStack stores the telemetry: the data that services send about their own work. It keeps every span in one ClickHouse table, `otel_traces`. ClickHouse is a database made for very large tables. One row in `otel_traces` is one span. A span is one piece of timed work, such as one HTTP request or one SQL statement.
-
-For example, this is what the finished query prints on the recorded bad-release morning:
+Before, you have no query. After, the query prints one row per service:
 
 ```text
 service            spans   error_spans
@@ -16,23 +14,31 @@ booking-web         7173           131
 timetable-loader     196             0
 ```
 
-booking-web is the busiest service. It is also the only one with failed spans.
-
 ![The finished query in HyperDX's SQL view](../images/expected.png)
 
-## Your challenge
+## Your turn
 
-Open `list-the-services.sql` in this folder. Write one SELECT over `otel_traces`. It looks at the last `60 minutes` and returns these columns:
+Open `list-the-services.sql` in this folder.
 
-| Column        | Meaning                                        |
-| ------------- | ---------------------------------------------- |
-| `service`     | the service that sent the span (`ServiceName`) |
-| `spans`       | how many spans it sent                         |
-| `error_spans` | how many of them failed (`StatusCode`)         |
+1. Write one SELECT over `otel_traces`. One row in that table is one span. Look at the last `60 minutes`.
 
-Put the busiest service first.
+   Return these columns:
 
-Try your query in HyperDX before you run the check. HyperDX is the web screen of ClickStack. Open http://localhost:8080, choose SQL, and run your query there.
+   | Column        | Meaning                                        |
+   | ------------- | ---------------------------------------------- |
+   | `service`     | the service that sent the span (`ServiceName`) |
+   | `spans`       | how many spans it sent                         |
+   | `error_spans` | how many of them failed (`StatusCode`)         |
+
+   Put the busiest service first.
+
+2. Open http://localhost:8080 in your browser. This is HyperDX, the web screen of ClickStack. Choose SQL and run your query there.
+
+   Expect: the same three columns as the table above.
+
+## Do it on your work
+
+Run the same query on your own service's telemetry. Count spans and failed spans per service for the last hour. Good looks like this: the busiest service is first, and its error count matches what you see in HyperDX.
 
 ## Done when
 
@@ -47,6 +53,10 @@ bun run verify list-the-services
 Expect: `Done. All 7 rules pass.` and a `Progress:` line.
 
 When the world is up, the check runs your query against the live world. In CI, it uses a recorded morning at Gullrock instead. CI is the robot that runs every check when someone pushes code. The recording plays back so that it ends at the moment you query it.
+
+## Solution
+
+The finished query is in `solution/list-the-services.sql`.
 
 ## If you get stuck
 
