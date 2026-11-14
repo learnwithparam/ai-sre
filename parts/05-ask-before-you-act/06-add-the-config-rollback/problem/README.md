@@ -45,7 +45,7 @@ Expect: `harbour-control is running your policy.py.` and then `Pushed fare table
 
 ## Done when
 
-- Your policy allows `rollback_config fares previous`, and refuses a named file, a path and any other target.
+- Your policy allows `rollback_config fares` `previous`, and refuses a named file, a path and any other target.
 - `BLAST_RADIUS` and `TARGETS` describe the new action.
 - Your tests pass on your policy and fail on the starter policy. Every harbour-control test passes.
 - The fare-file-push incident resolved through `rollback_config`.

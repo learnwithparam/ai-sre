@@ -22,13 +22,13 @@ The failed bookings are the victims. The slowest booking that worked shows who h
 
 Open `open-the-slowest-trace.sql`. The outer SELECT lists every span of one trace. The inner SELECT, in brackets, picks the trace. Right now it picks any booking.
 
-Change the inner SELECT so it picks the slowest `POST /api/bookings` of the last 15 minutes. Then run the query and read the spans. Which one takes most of the time?
+Change the inner SELECT so it picks the slowest `POST /api/bookings` of the last `15 minutes`. Then run the query and read the spans. Which one takes most of the time?
 
 `Duration` is in nanoseconds. The starter divides it by 1e6, so `duration_ms` is in milliseconds.
 
 ## Done when
 
-- Every row belongs to one trace: the slowest booking of the last 15 minutes.
+- Every row belongs to one trace: the slowest booking of the last `15 minutes`.
 - The rows list every span of that trace.
 - One of them is `INSERT audit_trail`, and it takes more than 1 second.
 
@@ -42,7 +42,7 @@ The check runs your query on the recorded bad-release morning. On the live world
 
 ## If you get stuck
 
-`ORDER BY Duration` sorts from the fastest. The check prints:
+`ORDER BY` `Duration` sorts from the fastest. The check prints:
 
 ```text
   FAIL  the trace is the slowest booking of the last 15 minutes

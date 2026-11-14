@@ -2,7 +2,7 @@
 
 ## The problem
 
-Most pages are not new. A team has often seen the same error before and written down what to do. The AI SRE should look there first, and so should you. A runbook is a short page that says what to do for one kind of problem. For example, the error `connection slots are reserved` points at one runbook.
+Most pages are not new. A team has often seen the same error before and written down what to do. The AI SRE should look there first, and so should you. A runbook is a short page that says what to do for one kind of problem. For example, the error "connection slots are reserved" points at one runbook.
 
 ```mermaid
 flowchart LR
@@ -14,7 +14,7 @@ flowchart LR
 
 ## Watch it done
 
-The error text is `FATAL remaining connection slots are reserved`. A search for the words `connection slots` finds one runbook and one past incident. The runbook says to compare errors by release.
+The error text is "FATAL remaining connection slots are reserved". A search for the words `connection slots` finds one runbook and one past incident. The runbook says to compare errors by release.
 
 ## Your challenge
 

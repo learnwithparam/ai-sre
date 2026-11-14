@@ -54,7 +54,7 @@ Do not approve it yet. The next step needs it pending.
 ## Done when
 
 - `change.json` holds the `action_id`, and harbour-control stored the proposal.
-- It rests on a stored finding for the same incident, and that finding blames booking-web release v2.
+- It rests on a stored finding for the same incident, and that finding blames booking-web release `v2`.
 - It is the right change: `rollback_release` on `booking-web` to `v1`.
 - It is the only proposal for the incident.
 
@@ -66,7 +66,7 @@ Expect: `Done. All 6 rules pass.` and a `Progress:` line.
 
 ## If you get stuck
 
-A change can be on the list and still be wrong. For example, the wrong answer `restart-instead` proposes `restart_service` on booking-web. A restart keeps release v2 running, so the errors stay. The check prints:
+A change can be on the list and still be wrong. For example, the wrong answer `restart-instead` proposes `restart_service` on booking-web. A restart keeps release `v2` running, so the errors stay. The check prints:
 
 ```text
   FAIL  it is the right change for that fault: rollback_release booking-web to v1

@@ -53,7 +53,7 @@ stateDiagram-v2
 | `propose-one-change`        | 15      | a propose_remediation call from your agent                            | one pending proposal for a stored finding, inside the action list                    |
 | `refuse-without-approval`   | 10      | an attempt to run the change before approval                          | a remediation_refused row and the same booking-web image as before                   |
 | `approve-with-blast-radius` | 15      | your approval after reading evidence and blast radius                 | a remediation_approved row naming the approver, after the pending row                |
-| `roll-back-the-release`     | 15      | the approved rollback, run and verified                               | executed then verification_passed rows; the footer reads Release v1                  |
+| `roll-back-the-release`     | 15      | the approved rollback, run and verified                               | executed then verification_passed rows; the footer reads Release `v1`                |
 | `edit-the-wrong-fix`        | 20      | for timetable-hang: reject the rollback, edit to a restart, approve   | event order pending, rejected, pending, approved, executed; timetable-loader healthy |
 | `add-the-config-rollback`   | 25      | rollback_config in the action list, with blast radius text and a test | policy test passes, an unknown file is refused, fare-file-push resolves through it   |
 
@@ -79,7 +79,7 @@ bun parts/05-ask-before-you-act/call-tool.ts submit_finding parts/05-ask-before-
 bun parts/05-ask-before-you-act/call-tool.ts propose_remediation parts/05-ask-before-you-act/01-propose-one-change/problem/change.json
 ```
 
-Expect: `Wrote finding_id fnd-` and then `Wrote action_id act-`, each with twelve characters.
+Expect: `Wrote finding_id` `fnd-` and then `Wrote action_id` `act-`, each with twelve characters.
 
 ```bash
 bun run verify propose-one-change
@@ -94,7 +94,7 @@ bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-be
 bun run verify refuse-without-approval
 ```
 
-Expect: `REFUSED  execute_remediation:` with `a human must approve it`, then `Done. All 4 rules pass.`
+Expect: `REFUSED  execute_remediation:` with "a human must approve it", then `Done. All 4 rules pass.`
 
 Read the approval page, fill in `parts/05-ask-before-you-act/03-approve-with-blast-radius/problem/approval.md`, and approve.
 
@@ -111,7 +111,7 @@ Copy the same `action_id` into `parts/05-ask-before-you-act/04-roll-back-the-rel
 bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-before-you-act/04-roll-back-the-release/problem/run.json
 ```
 
-Expect: `"exit_code":0` and `Recovery is verified automatically over the next minute`.
+Expect: `"exit_code":0` and "Recovery is verified automatically over the next minute".
 
 ```bash
 bun run verify roll-back-the-release
@@ -181,7 +181,7 @@ The rubric. Each line is yes or no:
 | 2   | `bun run verify add-the-config-rollback` passes: your tests pass, an unknown file is refused. |
 | 3   | No `remediation_executed` row in your audit log comes before an approval of the same action.  |
 | 4   | Your blast radius text for `rollback_config` says who is affected and what is lost.           |
-| 5   | Your `Why I rejected` names the service that really hangs.                                    |
+| 5   | Your "Why I rejected" names the service that really hangs.                                    |
 
 For advanced learners: require a second approver for any action whose blast radius covers every route, such as `rollback_config`. Add a test that one approval is not enough.
 

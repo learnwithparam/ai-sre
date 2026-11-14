@@ -46,7 +46,7 @@ Expect: `Done. All 5 rules pass.` and a `Progress:` line.
 
 ## If you get stuck
 
-A guess can be refused for the wrong reason. For example, the wrong answer `only-one-trace-id` cites one real id. harbour-control refuses it before it looks at any evidence: `cite at least two trace ids that a tool returned`. The check prints:
+A guess can be refused for the wrong reason. For example, the wrong answer `only-one-trace-id` cites one real id. harbour-control refuses it before it looks at any evidence: "cite at least two trace ids that a tool returned". The check prints:
 
 ```text
   FAIL  the refusal names your made-up trace id as the reason

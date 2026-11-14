@@ -12,7 +12,7 @@ For example, the reference AI SRE tried to run its rollback right after it propo
 REFUSED  execute_remediation: act-f8c3206aec14 is pending; a human must approve it at /actions/act-f8c3206aec14 first
 ```
 
-The audit log got a `remediation_refused` row, with `{"state": "pending"}`. booking-web kept running release v2.
+The audit log got a `remediation_refused` row, with `{"state": "pending"}`. booking-web kept running release `v2`.
 
 ![The refusal, as call-tool.ts prints it](../images/expected.png)
 
@@ -25,7 +25,7 @@ The audit log got a `remediation_refused` row, with `{"state": "pending"}`. book
 bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-before-you-act/02-refuse-without-approval/problem/run.json
 ```
 
-Expect: `REFUSED  execute_remediation:` and `a human must approve it`.
+Expect: `REFUSED  execute_remediation:` and "a human must approve it".
 
 3. Open http://localhost:8000. The footer still says `Release v2`. Nothing ran.
 4. Open the incident in Harbour Control. The audit trail shows the refused attempt.

@@ -38,14 +38,14 @@ bun parts/03-look-without-touching/list-tools.ts
 Expect: `hyperdx  http://localhost:8080/api/mcp  32 tools, 9 can write`, then harbour-control with 14 tools, 3 can write.
 
 2. In `.mcp.json`, add harbour-control at `http://localhost:8090/mcp`, next to HyperDX. Each header names a variable, never the key itself: `"Bearer ${HYPERDX_ACCESS_KEY}"` and `"Bearer ${SRE_MCP_TOKEN}"`.
-3. In `.claude/settings.json`, replace `mcp__hyperdx` (the whole server) with single tools. Put READ tools in `allow` and every WRITE tool in `deny`. A tool's full name is `mcp__<server name>__<tool name>`, such as `mcp__hyperdx__clickstack_search`.
+3. In `.claude/settings.json`, replace `mcp__hyperdx` (the whole server) with single tools. Put READ tools in `allow` and every WRITE tool in `deny`. A tool's full name is `mcp__<server name>__<tool` `name>`, such as `mcp__hyperdx__clickstack_search`.
 4. Try a write as `sre_agent`, and paste the line that starts with `Code:` into `answers.md`, after `ClickHouse said:`.
 
 ```bash
 bun parts/03-look-without-touching/try-insert.ts
 ```
 
-Expect: `ClickHouse refused it:` and a line with `ACCESS_DENIED`.
+Expect: "ClickHouse refused it:" and a line with `ACCESS_DENIED`.
 
 5. Optional: start Claude Code in this folder, with the keys from `.env`, and ask it which tools it has. This also puts the approver password in its shell.
 

@@ -1,4 +1,4 @@
-Symptom: FATAL remaining connection slots are reserved
+Symptom: connection slots are reserved
 Search:
 Runbook:
 Past incident:

@@ -76,7 +76,7 @@ Expect: `Done. All 7 rules pass.` and a `Progress:` line.
 | ----------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `FAIL every timeline line matches an audit row` | Use the UTC times that `audit-log.ts` prints, not your own clock. Delete any line that has no row. |
 | `FAIL the incident is in the audit log`         | Copy the id from `audit-log.ts`. It starts with `inc-` and has 12 more characters.                 |
-| `the world is not running`                      | Start it with `bun run world`. Or use the recording, as below.                                     |
+| "the world is not running"                      | Start it with `bun run world`. Or use the recording, as below.                                     |
 
 No world on your machine? Write the word `bad-release` in a file called `recorded-world.txt` in this folder. The check then reads the recorded morning. Add `--recorded` to the `audit-log.ts` commands to see the same rows.
 

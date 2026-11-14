@@ -25,12 +25,12 @@ shipped in the newer release is withdrawn until it is fixed and deployed again.
 ## Your challenge
 
 1. Open your pending change at `http://localhost:8090/actions/<action_id>`. Sign in with `SRE_APPROVER_EMAIL` and `SRE_APPROVER_PASSWORD` from `.env`.
-2. Open one of its trace ids in HyperDX at http://localhost:8080. Check that it is a failing booking on release v2.
+2. Open one of its trace ids in HyperDX at http://localhost:8080. Check that it is a failing booking on release `v2`.
 3. Fill in `approval.md` in this folder:
    - `Action id:` the change you approve;
    - `Evidence:` the full trace id you opened;
    - `Blast radius:` the sentence about who is affected, copied from the page;
-   - `Why I approve:` one sentence in your own words.
+   - "Why I approve:" one sentence in your own words.
 4. Press Approve. Or run this, which approves as the person in `.env`:
 
 ```bash
@@ -45,7 +45,7 @@ Expect: `Approved act-` and the id, `as oncall@gullrock.test`.
 - The approval came after the proposal.
 - `Evidence` is a trace id of the finding behind the change.
 - `Blast radius` is copied from this action's blast radius.
-- `Why I approve` has four words or more.
+- "Why I approve" has four words or more.
 
 ```bash
 bun run verify approve-with-blast-radius

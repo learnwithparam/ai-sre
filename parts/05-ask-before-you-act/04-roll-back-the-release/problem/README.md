@@ -26,17 +26,17 @@ incident_resolved      harbour-control       Recovery confirmed on a full minute
 bun parts/05-ask-before-you-act/call-tool.ts execute_remediation parts/05-ask-before-you-act/04-roll-back-the-release/problem/run.json
 ```
 
-Expect: `"exit_code":0` in the result, and `Recovery is verified automatically over the next minute`.
+Expect: `"exit_code":0` in the result, and "Recovery is verified automatically over the next minute".
 
 3. Wait about 90 seconds. Open the incident in Harbour Control. It turns to Resolved.
 4. Open http://localhost:8000. The footer reads `Release v1`.
 
 ## Done when
 
-- `run.json` names a stored rollback of booking-web to v1.
+- `run.json` names a stored rollback of booking-web to `v1`.
 - It ran after a person approved it.
 - harbour-control wrote `verification_passed`, and the incident is resolved.
-- booking-web runs release v1 again.
+- booking-web runs release `v1` again.
 
 ```bash
 bun run verify roll-back-the-release
@@ -46,7 +46,7 @@ Expect: `Done. All 5 rules pass.` and a `Progress:` line.
 
 ## If you get stuck
 
-A change can run and still not fix anything. For example, the wrong answer `restarted-instead` restarted booking-web. The restart ran, but release v2 kept failing. After five minutes, harbour-control wrote `verification_failed`. The check prints:
+A change can run and still not fix anything. For example, the wrong answer `restarted-instead` restarted booking-web. The restart ran, but release `v2` kept failing. After five minutes, harbour-control wrote `verification_failed`. The check prints:
 
 ```text
   FAIL  harbour-control verified recovery on fresh traffic: verification_passed

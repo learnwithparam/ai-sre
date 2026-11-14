@@ -14,7 +14,7 @@ burn rate = error rate / error budget
 
 A burn rate of 1 spends the budget at exactly the planned speed. A burn rate of 10 spends it ten times too fast. At 10, a budget meant to last 30 days is gone in 3 days.
 
-You measure the burn over two windows. The short window, 5 minutes, sees a fault quickly. The long window, 1 hour, proves it is not a short burst. You page only while both burn faster than 10.
+You measure the burn over two windows. The short window, `5 minutes`, sees a fault quickly. The long window, 1 hour, proves it is not a short burst. You page only while both burn faster than 10.
 
 For example, on the recorded bad-release morning at 08:25:10 the two windows read:
 
@@ -23,7 +23,7 @@ burn_5m   burn_1h   page
  15.21     12.94      1
 ```
 
-In the last 5 minutes, 7.6% of requests failed. 0.076 / 0.005 is about 15.
+In the last `5 minutes`, 7.6% of requests failed. 0.076 / 0.005 is about 15.
 
 ```mermaid
 flowchart LR
@@ -40,13 +40,13 @@ flowchart LR
 
 Open `burn-the-budget.sql`. Make it return one row with three columns:
 
-| Column    | Meaning                                                |
-| --------- | ------------------------------------------------------ |
-| `burn_5m` | the error rate of the last 5 minutes, divided by 0.005 |
-| `burn_1h` | the error rate of the last hour, divided by 0.005      |
-| `page`    | `burn_5m > 10 AND burn_1h > 10`                        |
+| Column    | Meaning                                                  |
+| --------- | -------------------------------------------------------- |
+| `burn_5m` | the error rate of the last `5 minutes`, divided by 0.005 |
+| `burn_1h` | the error rate of the last hour, divided by 0.005        |
+| `page`    | `burn_5m >` `10 AND` `burn_1h >` `10`                    |
 
-The starter already reads the last hour of booking-web requests. For the 5 minute window, count with `countIf` and add `Timestamp > now() - INTERVAL 5 MINUTE` to the condition.
+The starter already reads the last hour of booking-web requests. For the `5 minute` window, count with `countIf` and add `Timestamp > now() - INTERVAL 5 MINUTE` to the condition.
 
 ## Done when
 

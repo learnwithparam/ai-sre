@@ -48,16 +48,16 @@ flowchart LR
 
 You do four steps. Every check runs on two recorded mornings at Gullrock, so you do not need the world running. You can still try each query on the live world in HyperDX.
 
-| Step                   | Minutes | You produce                                                           | The check reads                                                                |
-| ---------------------- | ------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `chart-the-error-rate` | 15      | `chart-the-error-rate.sql`: errors over requests per 10 second bucket | every bucket against the reference on the recorded bad-release morning         |
-| `flag-the-anomaly`     | 20      | `flag-the-anomaly.sql`: a 3 sigma rule over a clean baseline          | your rule, replayed every 30 s: pages on bad-release, silent on noisy-morning  |
-| `burn-the-budget`      | 20      | `burn-the-budget.sql`: burn for a 99.5% objective over 5 min and 1 h  | both burn rates within 1% of the reference; the page fires on bad-release only |
-| `count-the-pages`      | 15      | `count-the-pages.md`: pages before and after your rule                | both rules replayed, and the pages counted again, to match your two numbers    |
+| Step                   | Minutes | You produce                                                            | The check reads                                                                |
+| ---------------------- | ------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `chart-the-error-rate` | 15      | `chart-the-error-rate.sql`: errors over requests per 10 second bucket  | every bucket against the reference on the recorded bad-release morning         |
+| `flag-the-anomaly`     | 20      | `flag-the-anomaly.sql`: a 3 sigma rule over a clean baseline           | your rule, replayed every 30 s: pages on bad-release, silent on noisy-morning  |
+| `burn-the-budget`      | 20      | `burn-the-budget.sql`: burn for a 99.5% objective over `5 min` and 1 h | both burn rates within 1% of the reference; the page fires on bad-release only |
+| `count-the-pages`      | 15      | `count-the-pages.md`: pages before and after your rule                 | both rules replayed, and the pages counted again, to match your two numbers    |
 
 The two recordings:
 
-- **bad-release**: release v2 of booking-web runs out of database connections, and about 1 booking in 5 fails. The AI SRE rolls it back near the end.
+- **bad-release**: release `v2` of booking-web runs out of database connections, and about 1 booking in 5 fails. The AI SRE rolls it back near the end.
 - **noisy-morning**: nothing is broken. There are card declines, as on every morning, and a short TLS blip to the payments gateway that ended long before. TLS is the encryption on a network connection, and a blip is a short failure that fixes itself.
 
 ## Walkthrough

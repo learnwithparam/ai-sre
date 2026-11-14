@@ -74,4 +74,4 @@ A finding can be real and still wrong. For example, the wrong answer `blames-the
 
 - **Finding**: the AI SRE's answer to "what broke?", with the proof attached.
 - **Grounding**: checking that every piece of proof exists in the telemetry.
-- **Incident window**: from 15 minutes before the page until now.
+- **Incident window**: from `15 minutes` before the page until now.

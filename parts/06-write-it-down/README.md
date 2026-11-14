@@ -21,7 +21,7 @@ For example, these are real rows from `sre.incident_events` in the recorded bad-
 22:19:33  incident_resolved     harbour-control       Recovery confirmed on a full minute of traffic after the approved change
 ```
 
-The same records hold a surprise. Release v2 served its first booking at 22:10:35. The page that stayed open came at 22:17:52. So passengers saw errors for more than seven minutes before anyone was paged. A postmortem from memory would start the story at the page.
+The same records hold a surprise. Release `v2` served its first booking at 22:10:35. The page that stayed open came at 22:17:52. So passengers saw errors for more than seven minutes before anyone was paged. A postmortem from memory would start the story at the page.
 
 Why it matters: teams that publish their postmortems teach everyone else. Dan Luu keeps a public list of published postmortems at github.com/danluu/post-mortems. It links 240 write-ups, and 59 of them sit under "Config Errors". We counted them in its README on the build date. Each one exists because a team wrote the incident down instead of moving on.
 

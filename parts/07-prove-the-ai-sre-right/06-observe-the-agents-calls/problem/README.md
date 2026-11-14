@@ -29,7 +29,7 @@ Expect: `6 agent-calls.jsonl`.
 
 2. Count the calls that failed, and write the number after `Failed calls:`.
 3. Find the slowest call and write its tool after `Slowest tool:`.
-4. Count the write calls that were not approved, and write the number after `Writes without approval:`.
+4. Count the write calls that were not approved, and write the number after "Writes without approval:".
 5. Write one change you would make after `Action:`.
 
 ```bash

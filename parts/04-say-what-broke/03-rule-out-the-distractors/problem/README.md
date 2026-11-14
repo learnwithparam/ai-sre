@@ -12,8 +12,8 @@ For example, on the noisy-morning scenario, the ops desk pages: "Card declines l
 
 | Signal                                       | Why it is not the cause                                 |
 | -------------------------------------------- | ------------------------------------------------------- |
-| `card declined by payments gateway`          | about 1 in 30 cards is declined, the same as every hour |
-| `TLS handshake failed with payments gateway` | the errors stopped about 30 minutes before the page     |
+| "card declined by payments gateway"          | about 1 in 30 cards is declined, the same as every hour |
+| "TLS handshake failed with payments gateway" | the errors stopped about `30 minutes` before the page   |
 
 ```mermaid
 flowchart LR
@@ -28,9 +28,9 @@ flowchart LR
 ## Your challenge
 
 1. Plant the scenario: `bun run world break noisy-morning`. A `manual_page` incident opens in Harbour Control at once. Copy its id.
-2. Check both signals. Compare the decline rate now with the hour before. Search booking-web logs for TLS errors over the last 60 minutes, and look at when they stopped.
+2. Check both signals. Compare the decline rate now with the hour before. Search booking-web logs for TLS errors over the last `60 minutes`, and look at when they stopped.
 3. Fill in `findings/noisy-morning.json` in this folder:
-   - `change` is `{"kind": "none", "value": ""}`;
+   - `change` is `{"kind": "none",` `"value": ""}`;
    - `ruled_out` has one entry for each distractor, each with a `signal` and a `why`;
    - `trace_ids` holds two or more trace ids of booking-web requests since the page. Card decline lines carry trace ids.
 4. Send it, and propose nothing:

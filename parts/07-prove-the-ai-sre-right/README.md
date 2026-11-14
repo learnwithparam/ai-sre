@@ -15,7 +15,7 @@ For example, each recorded incident has a ground truth file. This is part of `wo
 "distractors": [ { "signal": "card declined by payments gateway", ... } ]
 ```
 
-A good answer names booking-web and release v2. It proposes the rollback to v1. It does not blame the card declines.
+A good answer names booking-web and release `v2`. It proposes the rollback to `v1`. It does not blame the card declines.
 
 Most of the score comes from code checks like this one. The scorer reads only the audit rows each run left behind, never the agent's own words about how it did. One question needs an AI to judge it. That AI is the LLM judge. An LLM (large language model) is the kind of AI model that reads and writes text. You check the judge against your own labels, using two numbers:
 

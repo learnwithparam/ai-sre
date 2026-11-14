@@ -23,7 +23,7 @@ An error rate of 0.05 means 5% of the requests in that bucket failed.
 
 ## Your challenge
 
-Open `chart-the-error-rate.sql` in this folder. Write one SELECT over `otel_traces` that returns one row per 10 second bucket of the last 15 minutes:
+Open `chart-the-error-rate.sql` in this folder. Write one SELECT over `otel_traces` that returns one row per 10 second bucket of the last `15 minutes`:
 
 | Column       | Meaning                                                                     |
 | ------------ | --------------------------------------------------------------------------- |
@@ -63,7 +63,7 @@ A common mistake is to count every span. One booking makes several spans: the re
 | --------------------------------------------- | --------------------------------------------------------------------- |
 | `FAIL every error_rate is a fraction`         | Do not multiply by 100. The detector in the next step expects 0 to 1. |
 | `FAIL each bucket counts the failed requests` | Use `countIf(StatusCode = 'Error')`. The value is case sensitive.     |
-| `FAIL the oldest bucket comes first`          | Add `ORDER BY bucket`.                                                |
+| `FAIL the oldest bucket comes first`          | Add `ORDER BY` `bucket`.                                              |
 
 ## Words you will use
 

@@ -22,7 +22,7 @@ booking-web is the busiest service. It is also the only one with failed spans.
 
 ## Your challenge
 
-Open `list-the-services.sql` in this folder. Write one SELECT over `otel_traces`. It looks at the last 60 minutes and returns these columns:
+Open `list-the-services.sql` in this folder. Write one SELECT over `otel_traces`. It looks at the last `60 minutes` and returns these columns:
 
 | Column        | Meaning                                        |
 | ------------- | ---------------------------------------------- |
@@ -57,11 +57,11 @@ Each FAIL line tells you what to try next. For example, a query that writes `'ER
         Try next: count spans with count() and errors with countIf(StatusCode = 'Error'); the value is case sensitive, so look at one row first
 ```
 
-| What you see                       | Fix                                                                                                               |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `FAIL the query runs`              | Paste the query into the SQL view of HyperDX. It shows the full ClickHouse error.                                 |
-| `FAIL one row per service`         | Add `GROUP BY service`. Without it, you get one row for each span.                                                |
-| `FAIL span and error counts match` | Look at the values first: `SELECT DISTINCT StatusCode FROM otel_traces` prints `Unset` and `Error`. Case matters. |
+| What you see                       | Fix                                                                                                                   |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `FAIL the query runs`              | Paste the query into the SQL view of HyperDX. It shows the full ClickHouse error.                                     |
+| `FAIL one row per service`         | Add `GROUP BY` `service`. Without it, you get one row for each span.                                                  |
+| `FAIL span and error counts match` | Look at the values first: `SELECT DISTINCT` `StatusCode FROM` `otel_traces` prints `Unset` and `Error`. Case matters. |
 
 ## Words you will use
 

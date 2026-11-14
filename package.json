@@ -4,7 +4,7 @@
   "type": "module",
   "packageManager": "bun@1.4.4",
   "scripts": {
-    "check": "bun scripts/readable.ts && bun scripts/plain-english.ts && bun install --frozen-lockfile && bun scripts/check.ts && bun scripts/verify.ts --all && bun test && bun run text-audit",
+    "check": "bun scripts/readable.ts && bun scripts/plain-english.ts && bun install --frozen-lockfile && bun scripts/check.ts && bun scripts/verify.ts --all && bun run text-audit && bun test && bun test scripts/dates.test.ts && bun scripts/capstone.ts && bun test scripts/shape.test.ts && bun scripts/picks.ts && bun scripts/ladder.ts && bun test scripts/workfiles.test.ts scripts/picks.test.ts scripts/ladder.test.ts scripts/changed.test.ts",
     "text-audit": "playwright install chromium && AUDIT_URL=http://localhost:8000 AUDIT_SERVER=\"bash $PWD/e2e/serve.sh\" playwright test -c e2e/playwright.config.ts --trace off",
     "readable": "bun scripts/readable.ts",
     "plain-english": "bun scripts/plain-english.ts",
@@ -15,7 +15,10 @@
     "approve": "bun scripts/approve.ts",
     "models": "bun scripts/models.ts",
     "record": "bun scripts/record.ts",
-    "shots": "bun scripts/shots.ts"
+    "shots": "bun scripts/shots.ts",
+    "check:changed": "bun scripts/changed.ts",
+    "picks": "bun scripts/picks.ts",
+    "ladder": "bun scripts/ladder.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "4.0.103",
@@ -42,5 +45,8 @@
     "@types/bun": "1.4.4",
     "chdb": "3.5.0",
     "playwright": "1.65.0"
+  },
+  "plainEnglish": {
+    "grade": 6
   }
 }

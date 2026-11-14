@@ -4,7 +4,7 @@
 
 Sometimes the AI SRE proposes the wrong fix. It blames the service where the errors show up, not the service that causes them. If you approve it, a change runs, nothing gets better, and the real fault keeps hurting passengers.
 
-In timetable-hang, two requests make timetable-loader build a tide table forever. booking-web waits for timetable-loader, times out, and logs `timetable-loader did not answer`. An AI SRE that reads only booking-web logs blames booking-web.
+In timetable-hang, two requests make timetable-loader build a tide table forever. booking-web waits for timetable-loader, times out, and logs "timetable-loader did not answer". An AI SRE that reads only booking-web logs blames booking-web.
 
 You do not have to choose between yes and no. You can reject the proposal with a reason, edit it into the right change, and approve that. The audit log keeps every decision, in order.
 
@@ -50,7 +50,7 @@ bun parts/05-ask-before-you-act/call-tool.ts execute_remediation '{"action_id": 
 
 Expect: one JSON reply with your `action_id` and `"exit_code":0`.
 
-6. Fill in `decision.md` in this folder: the `Action id` and one sentence for `Why I rejected`.
+6. Fill in `decision.md` in this folder: the `Action id` and one sentence for "Why I rejected".
 
 ## Done when
 

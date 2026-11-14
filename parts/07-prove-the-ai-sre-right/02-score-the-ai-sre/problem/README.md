@@ -66,7 +66,7 @@ Expect: `Done. All 6 rules pass.` and a `Progress:` line.
 | ------------------------------ | ---------------------------------------------------------------------------- |
 | `FAIL every run is real`       | Save runs only with `run-evals.ts`, with your world running.                 |
 | `FAIL ... the scorer's output` | You ran more runs after scoring, or edited the report. Run `score.ts` again. |
-| `no incident opened`           | Check that the world is up with `bun run world status`, then run it again.   |
+| "no incident opened"           | Check that the world is up with `bun run world status`, then run it again.   |
 
 ## Words you will use
 

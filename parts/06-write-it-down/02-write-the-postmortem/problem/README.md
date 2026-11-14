@@ -15,7 +15,7 @@ Failed bookings: 131          POST /api/bookings spans with an error (traces)
 Bookings confirmed: 513       rows in the bookings table (Postgres)
 ```
 
-Look at the start time. The page came at 22:17:52, but the impact started more than seven minutes earlier, when v2 went live. The impact starts at the change, not at the page.
+Look at the start time. The page came at 22:17:52, but the impact started more than seven minutes earlier, when `v2` went live. The impact starts at the change, not at the page.
 
 ```mermaid
 flowchart LR
@@ -39,7 +39,7 @@ Open `postmortems/bad-release.md` in this folder. Fill in every section of the s
 bun parts/06-write-it-down/audit-log.ts inc-b1182f037ed0
 ```
 
-Expect: an `Impact window:` line, then `Failed bookings: 131` and `Bookings confirmed: 513` for the recorded incident.
+Expect: an `Impact window:` line, then "Failed bookings: 131" and "Bookings confirmed: 513" for the recorded incident.
 
 3. Write `Impact started:`, `Impact ended:`, `Failed bookings:` and `Bookings confirmed:` with those values.
 4. Under Trigger, name the service and the release. Under Root causes, say what in the system let it happen.

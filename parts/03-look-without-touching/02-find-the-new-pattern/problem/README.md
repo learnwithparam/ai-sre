@@ -35,13 +35,13 @@ Open `find-the-new-pattern.sql`. The `pattern`, `incident_start` and `baseline_s
 | `baseline_lines` | lines in the minute before                                                                 |
 | `is_new`         | `baseline_lines = 0 AND incident_lines > 0`                                                |
 
-Read both windows: `Timestamp >= baseline_start`. Keep only patterns with lines in the incident window. For example, add `HAVING incident_lines > 0` after the `GROUP BY`. Put new patterns first, then the most lines.
+Read both windows: `Timestamp >= baseline_start`. Keep only patterns with lines in the incident window. For example, add `HAVING incident_lines` `> 0` after the `GROUP BY`. Put new patterns first, then the most lines.
 
 ## Done when
 
 - Each row is a pattern, with the five columns.
 - The access log line is not new: it was in the baseline too. The access log is the line booking-web writes for every request.
-- The top row is the connection pool error, it is new, and it comes from release v2.
+- The top row is the connection pool error, it is new, and it comes from release `v2`.
 
 ```bash
 bun run verify find-the-new-pattern
@@ -60,11 +60,11 @@ If you count only the incident window, every pattern looks new. Then the busiest
         Try next: read the baseline minute too: WHERE Timestamp >= baseline_start, and is_new is baseline_lines = 0 AND incident_lines > 0
 ```
 
-| What you see                                        | Fix                                          |
-| --------------------------------------------------- | -------------------------------------------- |
-| `FAIL each row is a pattern`                        | Group by `pattern`, not by `Body`.           |
-| `FAIL the top row is the new connection pool error` | `ORDER BY is_new DESC, incident_lines DESC`. |
-| `FAIL the top row is new, it comes from release v2` | Add the `release` column with `argMax`.      |
+| What you see                                        | Fix                                              |
+| --------------------------------------------------- | ------------------------------------------------ |
+| `FAIL each row is a pattern`                        | Group by `pattern`, not by `Body`.               |
+| `FAIL the top row is the new connection pool error` | `ORDER BY` `is_new DESC,` `incident_lines DESC`. |
+| `FAIL the top row is new, it comes from release v2` | Add the `release` column with `argMax`.          |
 
 ## Words you will use
 

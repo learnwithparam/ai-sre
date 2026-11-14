@@ -33,7 +33,7 @@ POST /api/bookings failed: connection pool exhausted: 2 of 2 connections in use 
 
 The AI uses tools through MCP. MCP (Model Context Protocol) is a standard way to give an AI model tools. An MCP server lists its tools. An MCP client, such as your agent, calls them. Each tool can declare `readOnlyHint`. When it is true, the tool says it only reads.
 
-Why it matters: ClickStack 2.44.0 from ClickHouse ships an MCP server with 32 tools. Nine of them can create, change or delete things, such as `clickstack_delete_dashboard`. Each of those nine declares readOnlyHint false. We counted them in the tools/list answer of the clickhouse/clickstack-all-in-one:2.44.0 image on the build date. An AI client that allows the whole server allows all nine.
+Why it matters: ClickStack from ClickHouse ships an MCP server with 32 tools. Nine of them can create, change or delete things, such as `clickstack_delete_dashboard`. Each of those nine declares readOnlyHint false. We counted them in the tools/list answer of the `clickhouse/clickstack-all-in-one` image on the build date. An AI client that allows the whole server allows all nine.
 
 This picture shows the read path. The dotted line is what the agent may not do.
 
@@ -51,13 +51,13 @@ flowchart LR
 
 You do four steps. The first one needs the world running. The other three run on the recorded bad-release morning, so the check gives the same answer on every machine.
 
-| Step                       | Minutes | You produce                                                                  | The check reads                                                                     |
-| -------------------------- | ------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `connect-the-read-tools`   | 20      | `.mcp.json` and `.claude/settings.json`: both servers, read tools only       | your config against each server's tools/list; a real INSERT as sre_agent, refused   |
-| `find-the-new-pattern`     | 20      | `find-the-new-pattern.sql`: log patterns new in the incident window          | the top row, one minute after the first failure: the pool error, new, on release v2 |
-| `open-the-slowest-trace`   | 15      | `open-the-slowest-trace.sql`: every span of the slowest booking              | the trace id, its spans, and an `INSERT audit_trail` over 1 s                       |
-| `name-the-release`         | 15      | `name-the-release.sql`: booking errors by release                            | v2 fails more than 20% of bookings, v1 under 1%, on the recording                   |
-| `read-the-service-metrics` | 15      | `answers/read-the-service-metrics.md`: worst service, rate, first bad minute | the numbers worked out again from `metrics.csv`                                     |
+| Step                       | Minutes | You produce                                                                  | The check reads                                                                       |
+| -------------------------- | ------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `connect-the-read-tools`   | 20      | `.mcp.json` and `.claude/settings.json`: both servers, read tools only       | your config against each server's tools/list; a real INSERT as sre_agent, refused     |
+| `find-the-new-pattern`     | 20      | `find-the-new-pattern.sql`: log patterns new in the incident window          | the top row, one minute after the first failure: the pool error, new, on release `v2` |
+| `open-the-slowest-trace`   | 15      | `open-the-slowest-trace.sql`: every span of the slowest booking              | the trace id, its spans, and an `INSERT audit_trail` over 1 s                         |
+| `name-the-release`         | 15      | `name-the-release.sql`: booking errors by release                            | `v2` fails more than 20% of bookings, `v1` under 1%, on the recording                 |
+| `read-the-service-metrics` | 15      | `answers/read-the-service-metrics.md`: worst service, rate, first bad minute | the numbers worked out again from `metrics.csv`                                       |
 
 ## Walkthrough
 
@@ -83,7 +83,7 @@ Then try to write as the AI SRE's database user.
 bun parts/03-look-without-touching/try-insert.ts
 ```
 
-Expect: `ClickHouse refused it:` and a line that ends in `(ACCESS_DENIED)` and the ClickHouse version.
+Expect: "ClickHouse refused it:" and a line that ends in `(ACCESS_DENIED)` and the ClickHouse version.
 
 Now allow the read tools, and deny the rest.
 
@@ -115,7 +115,7 @@ Last, split the booking errors by release.
 bun run verify name-the-release
 ```
 
-Expect: `Done. All 7 rules pass.` once v2 is the first row.
+Expect: `Done. All 7 rules pass.` once `v2` is the first row.
 
 This command runs all four checks at once.
 

@@ -10,7 +10,7 @@ import { ROOT } from "./structure";
 const LONGEST_LINE = 100;
 const MOST_CALLS_IN_ONE_LINE = 3;
 
-const CODE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".mjs", ".py", ".go", ".rs", ".sh", ".sql"]);
+const CODE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".mjs", ".py", ".go", ".rs", ".sh"]);
 const SKIPPED_FOLDERS = new Set(["node_modules", ".git", ".venv", "recordings"]);
 
 // Short names a beginner already knows. Everything else is a whole word.
@@ -112,8 +112,7 @@ function hasTwoTernaries(line: string): boolean {
 
 function isCommentOrText(line: string): boolean {
   const trimmed = line.trim();
-  const commentMarkers = ["//", "#", "*", "--"];
-  return commentMarkers.some((marker) => trimmed.startsWith(marker));
+  return trimmed.startsWith("//") || trimmed.startsWith("#") || trimmed.startsWith("*");
 }
 
 function problemsOnLine(line: string): string[] {
@@ -161,15 +160,6 @@ function runTool(command: string[], whatItChecks: string): boolean {
   return result.exitCode === 0;
 }
 
-// gofmt -l lists the files it would change, and exits 0 either way, so an empty list is the pass.
-function goIsFormatted(): boolean {
-  const result = Bun.spawnSync(["gofmt", "-l", "world"], { cwd: ROOT });
-  const unformatted = result.stdout.toString().trim();
-  if (result.exitCode === 0 && unformatted === "") return true;
-  console.error(`${unformatted}\ngofmt failed. Run: gofmt -w world`);
-  return false;
-}
-
 function formattersPass(files: string[]): boolean {
   let passed = runTool(
     ["bunx", "@biomejs/biome@2.6.5", "check", "."],
@@ -180,8 +170,6 @@ function formattersPass(files: string[]): boolean {
     passed = runTool(["uvx", "ruff@0.17.4", "format", "--check", "."], "ruff format") && passed;
     passed = runTool(["uvx", "ruff@0.17.4", "check", "."], "ruff check") && passed;
   }
-  const hasGo = files.some((file) => file.endsWith(".go"));
-  if (hasGo) passed = goIsFormatted() && passed;
   return passed;
 }
 

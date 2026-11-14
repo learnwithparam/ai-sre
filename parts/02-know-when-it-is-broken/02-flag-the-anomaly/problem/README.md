@@ -26,7 +26,7 @@ flowchart LR
   C -->|yes| X[left out]
   C -->|no| M[baseline: mean and sigma]
   M --> BD[bound = mean + 3 sigma]
-  N[last minute] --> J{above the bound, and 0.05 above the mean?}
+  N[last minute] --> J{above the bound, and `0.05` above the mean?}
   BD --> J
   J -->|yes| P[page]
 ```
@@ -41,8 +41,8 @@ Open `flag-the-anomaly.sql`. The top part is written for you:
 Your work is the last SELECT:
 
 1. Build the baseline from every bucket that is older than the last minute and not `in_past_incident`.
-2. Set `bound` to `baseline_mean + 3 * baseline_sigma`.
-3. Keep the rule for `anomalous`: above the bound, and at least 0.05 above the mean. The 0.05 stops one failed request from paging when the baseline is all zeros.
+2. Set `bound` to `baseline_mean +` `3 *` `baseline_sigma`.
+3. Keep the rule for `anomalous`: above the bound, and at least `0.05` above the mean. That small floor stops one failed request from paging when the baseline is all zeros.
 
 ## Done when
 
@@ -67,11 +67,11 @@ If you keep the past incidents in the baseline, the rule never pages. The check 
         Try next: a baseline full of old errors has a high bound; leave the past incidents out, so a normal morning sets the bound
 ```
 
-| What you see                             | Fix                                                               |
-| ---------------------------------------- | ----------------------------------------------------------------- |
-| `FAIL the bound is baseline_mean + 3`    | Change the `bound` line. The starter sets it to the mean only.    |
-| `FAIL the baseline leaves out`           | Add `AND NOT in_past_incident` to both `avgIf` and `stddevPopIf`. |
-| `FAIL it stays quiet after the rollback` | Keep the 0.05 floor in `anomalous`.                               |
+| What you see                             | Fix                                                                 |
+| ---------------------------------------- | ------------------------------------------------------------------- |
+| `FAIL the bound is baseline_mean + 3`    | Change the `bound` line. The starter sets it to the mean only.      |
+| `FAIL the baseline leaves out`           | Add `AND NOT` `in_past_incident` to both `avgIf` and `stddevPopIf`. |
+| `FAIL it stays quiet after the rollback` | Keep the `0.05` floor in `anomalous`.                               |
 
 ## Words you will use
 
