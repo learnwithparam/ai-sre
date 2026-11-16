@@ -161,7 +161,9 @@ Expect: `Part say-what-broke is done: 3/3 steps pass.`
 
 ## Project
 
-Pick one page from your own work, such as an alert that fired last week. Work on a copy of its notes or logs. Write a finding for it. Name the service, the change, two trace ids and one quoted log line. Then list one signal you ruled out and say why. Keep the finding in a new folder. Do not send it to anyone yet.
+Pick one page from your own work, such as an alert that fired last week. Work on a copy of its notes or logs. Write a finding for it. Name the service, the change, two trace ids and one quoted log line. Then list one signal you ruled out and say why.
+
+Keep the finding in a new folder. Do not send it to anyone yet.
 
 ## Assignment
 

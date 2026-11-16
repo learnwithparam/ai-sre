@@ -39,7 +39,9 @@ This lock covers one database user only. The HyperDX tool `clickstack_sql` uses 
 
 One more limit. The file `.env` holds the approver password, `SRE_APPROVER_PASSWORD`. If you load `.env` into the shell that starts your agent, the agent can read it. In this workshop, keep the approver login to yourself. In production, give the agent its own environment.
 
-MCP (Model Context Protocol) is a standard way to give an AI model tools. Each tool can declare `readOnlyHint`. When it is true, the tool says it only reads. ClickStack from ClickHouse ships an MCP server with 32 tools. Nine of them can write, such as `clickstack_delete_dashboard`. Each of those nine declares readOnlyHint false. An AI client that allows the whole server allows all nine.
+MCP (Model Context Protocol) is a standard way to give an AI model tools. Each tool can declare `readOnlyHint`. When it is true, the tool says it only reads. ClickStack from ClickHouse ships an MCP server with 32 tools.
+
+Nine of them can write, such as `clickstack_delete_dashboard`. Each of those nine declares readOnlyHint false. An AI client that allows the whole server allows all nine.
 
 The diagram shows the read path. The dotted line is what the agent may not do.
 

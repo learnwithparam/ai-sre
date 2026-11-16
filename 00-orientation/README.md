@@ -2,7 +2,9 @@
 
 You are the new on-call engineer at Gullrock Ferries. On call means you answer when the system breaks. Gullrock Ferries is an island ferry company with three ports: Port Maren, Gullrock and Skerry Head.
 
-Passengers book a sailing on the website. Then they check in at the quay. Cars queue by booking reference, a code such as `GR-CTZPCM`. When booking breaks, you see the cost at once. Car spaces stay empty. Drivers with no booking wait at the kiosk. The phone queue grows.
+Passengers book a sailing on the website. Then they check in at the quay. Cars queue by booking reference, a code such as `GR-CTZPCM`. When booking breaks, you see the cost at once.
+
+Car spaces stay empty. Drivers with no booking wait at the kiosk. The phone queue grows.
 
 In this orientation you do five things:
 

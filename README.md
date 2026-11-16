@@ -30,7 +30,9 @@ All three of you follow the same path to the end.
 
 ## Run the finished system first
 
-You need Docker with 4 GB of memory or more, Bun, uv and a bash shell. On Windows, use WSL. You do not need a model key. Replay mode plays back a recorded AI SRE against your own live world. The trace ids and the log line it cites must exist in the data from your run. Part 4 lists what that check does not prove.
+You need Docker with 4 GB of memory or more, Bun, uv and a bash shell. On Windows, use WSL. You do not need a model key.
+
+Replay mode plays back a recorded AI SRE against your own live world. The trace ids and the log line it cites must exist in the data from your run. Part 4 lists what that check does not prove.
 
 ```bash
 bun install

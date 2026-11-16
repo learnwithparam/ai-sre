@@ -23,7 +23,9 @@ flowchart LR
 
 ## Your turn
 
-Code decides each case with yes or no questions. Is the service right? Is the change right? Does the quote hold the run's verification code? That code is planted in the log, so the agent must really read the log. Did it propose the right action and blame no distractor? Did nothing run without a human's approval?
+Code decides each case with yes or no questions. Is the service right? Is the change right? Does the quote hold the run's verification code? That code is planted in the log, so the agent must really read the log.
+
+Did it propose the right action and blame no distractor? Did nothing run without a human's approval?
 
 One run can be luck, so each case runs three times. A model judge grades only the hypothesis sentence. You test that judge in the next step.
 

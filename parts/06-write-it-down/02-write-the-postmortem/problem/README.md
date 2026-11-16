@@ -2,7 +2,9 @@
 
 ## The problem
 
-You have a timeline. Now the team needs the whole story. Two things often go wrong. The numbers become guesses, and a name becomes the cause. So a good postmortem is blameless. It takes every number from data. For example, the impact started at 22:10:35, more than seven minutes before the page.
+You have a timeline. Now the team needs the whole story. Two things often go wrong. The numbers become guesses, and a name becomes the cause.
+
+So a good postmortem is blameless. It takes every number from data. For example, the impact started at 22:10:35, more than seven minutes before the page.
 
 ```mermaid
 flowchart LR

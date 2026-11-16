@@ -176,6 +176,8 @@ Pick one real incident from your own work, with a known cause. Write it as an ev
 
 ## Finished
 
-You now have a record for your AI SRE. It is scored on known incidents by code. Each case has three runs. The judge is checked against your own labels. It treats orders in logs as data. No prompt change ships unless the scorecard says no case got worse.
+You now have a record for your AI SRE. It is scored on known incidents by code. Each case has three runs.
+
+The judge is checked against your own labels. It treats orders in logs as data. No prompt change ships unless the scorecard says no case got worse.
 
 This is the last part. Go back to the root README and run the finished loop once more. This time you can say, with numbers, how often your AI SRE gets it right.

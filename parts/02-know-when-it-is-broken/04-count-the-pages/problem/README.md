@@ -41,7 +41,7 @@ Expect: one run of `P` on the `bad-release` line, and only dots on the `noisy-mo
 4. Count the pages in each replay. A page is one alert that calls a person. It starts when the alert turns on, and it ends when the alert turns off. So one run of `P` is one page, and five checks in a row are still one page. Add up both lines.
 5. Write the two totals in `count-the-pages.md`, after `Pages before:` and `Pages after:`.
 
-Do not change `old-alert.sql`. You measure it; you do not fix it.
+Do not change `old-alert.sql`. You measure it. You do not fix it.
 
 ## Do it on your work
 

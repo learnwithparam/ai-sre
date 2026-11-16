@@ -2,7 +2,9 @@
 
 ## The problem
 
-A metric is a number over time. Requests, errors and slow answers are metrics. A count alone can mislead. A busy service has more errors than a quiet one. So divide by requests to get a rate. For example, 5 errors in 100 requests is a 5% rate.
+A metric is a number over time. Requests, errors and slow answers are metrics. A count alone can mislead.
+
+A busy service has more errors than a quiet one. So divide by requests to get a rate. For example, 5 errors in 100 requests is a 5% rate.
 
 ## Watch it done
 

@@ -197,6 +197,8 @@ The rubric. Each line is yes or no:
 
 For advanced learners: require a second approver for any action whose blast radius covers every route, such as `rollback_config`. Add a test that one approval is not enough.
 
-You now have the stop. The AI SRE proposes one change for a stored finding. It cannot run it alone, and the refusal is written down. A named person reads the evidence and the blast radius, then says yes, no, or "not this, that". Every change comes from a fixed list that you can extend, with a test. harbour-control closes an incident only when fresh traffic proves the fix.
+You now have the stop. The AI SRE proposes one change for a stored finding. It cannot run it alone, and the refusal is written down.
+
+A named person reads the evidence and the blast radius, then says yes, no, or "not this, that". Every change comes from a fixed list that you can extend, with a test. harbour-control closes an incident only when fresh traffic proves the fix.
 
 Next, in write-it-down, you turn this audit log into a blameless postmortem. Every line of its timeline must match a row you made in this part.

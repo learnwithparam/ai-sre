@@ -6,7 +6,9 @@ The AI SRE can only reason about data it can read. A service with no name and pl
 
 ## Watch it done
 
-The starter export has four faults. The service name is `unknown_service`. There is no version. A span is named only `GET`. An email sits in an attribute. The solution fixes all four.
+The starter export has four faults. The service name is `unknown_service`. There is no version. A span is named only `GET`. An email sits in an attribute.
+
+The solution fixes all four.
 
 ```mermaid
 flowchart LR
@@ -27,7 +29,9 @@ Open `otel-export.json` in this folder.
 
 ## Do it on your work
 
-This step fixes a file we give you, so it cannot prove the data is yours. To use it on your own service, set `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` for it. Make one request that calls a second service or a database. Save what it exports. Copy that file over `otel-export.json`, and run the same seven rules on it. Good looks like this: the backend shows your service name, your release, and one trace with a parent and a child.
+This step fixes a file we give you, so it cannot prove the data is yours. To use it on your own service, set `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` for it. Make one request that calls a second service or a database.
+
+Save what it exports. Copy that file over `otel-export.json`, and run the same seven rules on it. Good looks like this: the backend shows your service name, your release, and one trace with a parent and a child.
 
 ## Done when
 
