@@ -1,7 +1,14 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
-    "includes": ["**", "!**/node_modules", "!**/world/recordings", "!e2e/page-checks.js"]
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/world/recordings",
+      "!**/.venv",
+      "!**/test-results",
+      "!e2e/page-checks.js"
+    ]
   },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
   "javascript": { "formatter": { "quoteStyle": "double", "trailingCommas": "all" } },
