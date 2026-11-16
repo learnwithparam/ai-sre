@@ -23,9 +23,9 @@ The approval page in Harbour Control shows three things. The evidence is the fin
 1. Open your pending change at `http://localhost:8090/actions/<action_id>`. Sign in with `SRE_APPROVER_EMAIL` and `SRE_APPROVER_PASSWORD` from `.env`.
 2. Open one of its trace ids in HyperDX at http://localhost:8080. Check that it is a failing booking on release `v2`.
 3. Fill in `approval.md` in this folder:
-   - `Action id:` the change you approve;
-   - `Evidence:` the full trace id you opened;
-   - `Blast radius:` the sentence about who is affected, copied from the page;
+   - `Action id:` the change you approve.
+   - `Evidence:` the full trace id you opened.
+   - `Blast radius:` the sentence about who is affected, copied from the page.
    - "Why I approve:" one sentence in your own words.
 4. Press Approve. Or run this, which approves as the person in `.env`:
 

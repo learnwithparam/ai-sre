@@ -14,8 +14,8 @@ A wrong cause, said with confidence, sends the team the wrong way. So every clai
 
 The AI SRE writes each claim as a finding. A finding names the broken service, the change that caused it, and the proof. The proof has three parts:
 
-- trace ids that exist in the incident window, the time when the incident happened;
-- a log line, quoted word for word;
+- trace ids that exist in the incident window, the time when the incident happened.
+- a log line, quoted word for word.
 - the release or config that changed.
 
 harbour-control checks every finding before it stores it. This check is called grounding. Each piece of evidence must exist in the data. If a piece is made up, harbour-control refuses the finding and says why. For example, it refuses a finding with only one trace id and says: "cite at least two trace ids that a tool returned".
@@ -38,7 +38,7 @@ trace_ids:  d3155dd2299429ac40f0f022ed6852dc, 699c33a2ff95daf7c83df58a3e34e782, 
 hypothesis: Release v2 of booking-web opens a new database connection for each booking's audit trail and holds it, so the two audit connections run out and bookings fail.
 ```
 
-It matches the planted fault in `world/scenarios/bad-release.json`. The service is booking-web. The change kind is release, with the value `v2`.
+This finding matches the planted fault in `world/scenarios/bad-release.json`. The service is booking-web. The change kind is release, with the value `v2`.
 
 Some signals look like a cause, but are not. These are distractors. For example, card declines happen in every scenario, at their usual rate. A good finding names them as ruled out.
 
@@ -171,8 +171,8 @@ The problem: a confident wrong cause sends the team the wrong way for an hour.
 
 Hand in these files from your repo:
 
-- `parts/04-say-what-broke/01-write-the-finding/problem/findings/bad-release.json`, sent by your agent;
-- `parts/04-say-what-broke/02-refuse-the-guess/problem/findings/guess.json`, the refused guess;
+- `parts/04-say-what-broke/01-write-the-finding/problem/findings/bad-release.json`, sent by your agent.
+- `parts/04-say-what-broke/02-refuse-the-guess/problem/findings/guess.json`, the refused guess.
 - `parts/04-say-what-broke/03-rule-out-the-distractors/problem/findings/noisy-morning.json`.
 
 The rubric. Each line is yes or no:

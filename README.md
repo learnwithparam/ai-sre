@@ -106,14 +106,14 @@ Each step also has one command: `bun run verify <step-name>`. It prints what pas
 | Part                                                                                      | What you do                                                                      | Steps | Minutes |
 | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ----- | ------- |
 | [Orientation](00-orientation/README.md)                                                   | Start the world, follow one booking, run the finished loop                       | 1     | 20      |
-| [See every signal](parts/01-see-every-signal/README.md)                                   | Query the services, tag every span with its release, add a span, keep emails out | 4     | 70      |
+| [See every signal](parts/01-see-every-signal/README.md)                                   | Query the services, tag every span with its release, add a span, keep emails out | 5     | 85      |
 | [Know when it is broken](parts/02-know-when-it-is-broken/README.md)                       | Error rate, 3 sigma, burn rate, fewer pages                                      | 4     | 70      |
-| [Look without touching](parts/03-look-without-touching/README.md)                         | Read-only MCP, find the new pattern, the slowest trace, the release              | 4     | 70      |
-| [Say what broke and prove it](parts/04-say-what-broke/README.md)                          | A grounded finding, a refused guess, distractors ruled out                       | 3     | 55      |
+| [Look without touching](parts/03-look-without-touching/README.md)                         | Read-only MCP, find the new pattern, the slowest trace, the release              | 5     | 85      |
+| [Say what broke and prove it](parts/04-say-what-broke/README.md)                          | A grounded finding, a refused guess, distractors ruled out                       | 4     | 70      |
 | [Ask before you act](parts/05-ask-before-you-act/README.md)                               | Propose, refuse, approve, roll back, edit the wrong fix, add a config rollback   | 6     | 100     |
-| [Write it down without blame](parts/06-write-it-down/README.md)                           | Timeline from the audit log, the postmortem, action items                        | 3     | 50      |
-| [Prove the AI SRE is right](parts/07-prove-the-ai-sre-right/README.md)                    | Incident set, scorer, judge check, injection, prompt gate                        | 5     | 100     |
-| [Trace model calls with ClickStack](parts/08-trace-model-calls-with-clickstack/README.md) | Put model calls into traces with the GenAI attributes                            | 1     | 20      |
+| [Write it down without blame](parts/06-write-it-down/README.md)                           | Timeline from the audit log, the postmortem, action items                        | 4     | 65      |
+| [Prove the AI SRE is right](parts/07-prove-the-ai-sre-right/README.md)                    | Incident set, scorer, judge check, injection, prompt gate                        | 7     | 130     |
+| [Trace model calls with ClickStack](parts/08-trace-model-calls-with-clickstack/README.md) | Put model calls into traces with the GenAI attributes                            | 2     | 40      |
 
 The file `schedules.toml` fits the parts into one day, four evenings or four weeks.
 

@@ -48,7 +48,7 @@ flowchart LR
 
 ## Walkthrough
 
-You write about an incident that really happened in your world. If you did the orientation or the part "Make Claude ask before it acts", you already have one. If your world is not running, start it first.
+You write about an incident that really happened in your world. If you did the orientation or the part "Ask before you act", you already have one. If your world is not running, start it first.
 
 ```bash
 bun run world
@@ -96,7 +96,7 @@ bun run verify file-the-action-items
 
 Expect: `Done. All 7 rules pass.` once every item has an owner, a due marker and an eval case.
 
-This command runs all three checks at once.
+This command runs the checks of every step in the part at once.
 
 ```bash
 bun run verify part write-it-down

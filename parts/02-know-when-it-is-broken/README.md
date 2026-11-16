@@ -51,7 +51,7 @@ You do four steps. Every check runs on two recorded mornings, so you do not need
 | ---------------------- | ------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | `chart-the-error-rate` | 15      | `chart-the-error-rate.sql`: errors over requests per 10 second bucket  | every bucket against the reference on the recorded bad-release morning         |
 | `flag-the-anomaly`     | 20      | `flag-the-anomaly.sql`: a 3 sigma rule over a clean baseline           | your rule, replayed every 30 s: pages on bad-release, silent on noisy-morning  |
-| `burn-the-budget`      | 20      | `burn-the-budget.sql`: burn for a 99.5% objective over `5 min` and 1 h | both burn rates within 1% of the reference; the page fires on bad-release only |
+| `burn-the-budget`      | 20      | `burn-the-budget.sql`: burn for a 99.5% objective over `5 min` and 1 h | both burn rates within 1% of the reference. The page fires on bad-release only |
 | `count-the-pages`      | 15      | `count-the-pages.md`: pages before and after your rule                 | both rules replayed, and the pages counted again, to match your two numbers    |
 
 The two recordings:

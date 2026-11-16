@@ -87,7 +87,7 @@ bun run verify hide-the-email
 
 Expect: `Done. All 4 rules pass.` once no email leaves booking-web.
 
-This command runs all four checks at once.
+This command runs the checks of every step in the part at once.
 
 ```bash
 bun run verify part see-every-signal

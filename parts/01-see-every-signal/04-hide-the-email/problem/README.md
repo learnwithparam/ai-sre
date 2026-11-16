@@ -65,7 +65,7 @@ A common mistake is to clean the spans and forget the log line. For example, the
 | What you see                                               | Fix                                                                               |
 | ---------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `FAIL no log line or log attribute holds an email address` | The "booking confirmed" line names the passenger. `redactBody` must clean it too. |
-| `FAIL spans still say what happened`                       | Return every attribute. Replace only the email inside the value; keep the rest.   |
+| `FAIL spans still say what happened`                       | Return every attribute. Replace only the email inside the value. Keep the rest.   |
 
 ## Words you will use
 

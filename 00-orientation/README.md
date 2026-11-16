@@ -8,10 +8,10 @@ Car spaces stay empty. Drivers with no booking wait at the kiosk. The phone queu
 
 In this orientation you do five things:
 
-- set up the repo;
-- start the world, the set of ferry services that runs on your computer;
-- book a sailing;
-- follow that booking in HyperDX, the tool where you search traces and logs;
+- set up the repo.
+- start the world, the set of ferry services that runs on your computer.
+- book a sailing.
+- follow that booking in HyperDX, the tool where you search traces and logs.
 - watch the finished AI SRE fix a real fault, from the first alert to the checked recovery.
 
 Every later step builds one piece of what you see here.

@@ -25,8 +25,8 @@ In fare-file-push, someone pushes fare table `fares-42`. It holds every row twic
 
 A new action gives the AI SRE a new power. It needs three things:
 
-- the narrowest rule: it may only put back the previous table, never a file the agent names;
-- blast radius text, so the approver sees who is affected;
+- the narrowest rule: it may only put back the previous table, never a file the agent names.
+- blast radius text, so the approver sees who is affected.
 - a test that proves both.
 
 1. Open `policy.py`. It is harbour-control's policy without `rollback_config`.

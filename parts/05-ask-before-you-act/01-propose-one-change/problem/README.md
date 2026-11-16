@@ -4,7 +4,7 @@
 
 Your AI SRE found the cause of bad-release. Now it wants to fix it. If it can change production at once, one wrong guess becomes a second outage. So the AI SRE can only propose.
 
-A proposal waits for a person. For example, booking-web logged: connection pool exhausted: 2 of 2 connections in use.
+A proposal waits for a person. In this incident, booking-web logged: connection pool exhausted: 2 of 2 connections in use.
 
 ## Watch it done
 
@@ -29,8 +29,8 @@ Harbour Control stored it as pending and gave back the `action_id`. Nothing ran.
 
 harbour-control accepts a proposal only when:
 
-- it rests on a stored finding for the same incident;
-- its action and target are on the fixed list of actions in `policy.py`;
+- it rests on a stored finding for the same incident.
+- its action and target are on the fixed list of actions in `policy.py`.
 - it is the only live proposal for the incident.
 
 1. Plant the fault: `bun run world break bad-release`. Wait for the incident in Harbour Control at http://localhost:8090.

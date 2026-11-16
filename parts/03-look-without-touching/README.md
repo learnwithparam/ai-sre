@@ -61,7 +61,7 @@ You do five steps. The first one needs the world running. The other four run on 
 
 | Step                       | Minutes | You produce                                                                  | The check reads                                                                       |
 | -------------------------- | ------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `connect-the-read-tools`   | 20      | `.mcp.json` and `.claude/settings.json`: both servers, read tools only       | your config against each server's tools/list; a real INSERT as sre_agent, refused     |
+| `connect-the-read-tools`   | 20      | `.mcp.json` and `.claude/settings.json`: both servers, read tools only       | your config against each server's tools/list. A real INSERT as sre_agent, refused     |
 | `find-the-new-pattern`     | 20      | `find-the-new-pattern.sql`: log patterns new in the incident window          | the top row, one minute after the first failure: the pool error, new, on release `v2` |
 | `open-the-slowest-trace`   | 15      | `open-the-slowest-trace.sql`: every span of the slowest booking              | the trace id, its spans, and an `INSERT audit_trail` over 1 s                         |
 | `name-the-release`         | 15      | `name-the-release.sql`: booking errors by release                            | `v2` fails more than 20% of bookings, `v1` under 1%, on the recording                 |

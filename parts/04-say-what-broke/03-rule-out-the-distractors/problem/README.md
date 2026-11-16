@@ -36,7 +36,7 @@ So the right answer can be "nothing changed". The finding still needs proof for 
 { "kind": "none", "value": "" }
 ```
 
-- `ruled_out` has one entry for each distractor, each with a `signal` and a `why`;
+- `ruled_out` has one entry for each distractor, each with a `signal` and a `why`.
 - `trace_ids` holds two or more trace ids of booking-web requests since the page.
 
 4. Send it, and propose nothing:

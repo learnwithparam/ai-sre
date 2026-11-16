@@ -2,7 +2,7 @@
 
 ## The problem
 
-Your error rate now comes every 10 seconds. So compare the last minute with a baseline: what is normal. Past incidents must stay out of the baseline. Or the bound climbs, and nobody is paged.
+Your error rate now comes every 10 seconds. So compare the last minute with a baseline: what is normal. Past incidents must stay out of the baseline. Otherwise the bound climbs, and nobody is paged.
 
 For example, on the bad-release recording the bound is 0.092 and the current error rate is 0.1125, so the rule pages.
 

@@ -39,7 +39,7 @@ Add the same attribute to one service you run. Read its release from your own de
 
 - booking-web starts with your `telemetry.ts`, and its spans reach the collector. The collector is the program that receives spans and stores them.
 - Every span carries the resource attribute `service.version`.
-- It names the release that is running, whatever that release is called.
+- The value names the release that is running, whatever that release is called.
 - `service.name` is still `booking-web`.
 
 ```bash

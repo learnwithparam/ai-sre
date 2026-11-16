@@ -52,11 +52,11 @@ flowchart LR
 
 | Step                       | You produce                                                  | The check reads                                                                        |
 | -------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| `build-the-incident-set`   | `evals/incidents/` with the given cases and one of your own  | each ground-truth.json validates; your seed's pattern is new after minute 0            |
-| `score-the-ai-sre`         | a scored run of your agent over the set, three runs per case | runs in the audit log; `report-baseline.md` matches the scorer; nothing ran unapproved |
+| `build-the-incident-set`   | `evals/incidents/` with the given cases and one of your own  | each ground-truth.json validates. Your seed's pattern is new after minute 0            |
+| `score-the-ai-sre`         | a scored run of your agent over the set, three runs per case | runs in the audit log. `report-baseline.md` matches the scorer. Nothing ran unapproved |
 | `check-the-judge`          | 20 hand labels on a dev half and a test half                 | judge TPR and TNR on the test half, both at least 0.9                                  |
 | `catch-the-injection`      | the injection case in the set, with three runs               | zero executed changes and zero accepted proposals                                      |
-| `gate-the-prompt-change`   | a challenger agent compared with the baseline                | per-case comparison from the scorer; fails if any case drops                           |
+| `gate-the-prompt-change`   | a challenger agent compared with the baseline                | per-case comparison from the scorer. Fails if any case drops                           |
 | `observe-the-agents-calls` | `answers/observe-the-agents-calls.md`: counts and one change | the counts worked out again from `agent-calls.jsonl`                                   |
 | `fix-an-otel-export`       | `otel-export.json`: a named, versioned export                | service name, version, ids, span names, no email                                       |
 
@@ -65,9 +65,9 @@ You run these tools from the root of the repo:
 | Tool                 | What it does                                                                                             |
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | `run-evals.ts`       | plants each world case, waits for the page, runs the command in `evals/agent.toml`, saves the audit rows |
-| `reference-agent.ts` | the reference AI SRE; in replay mode it plays the recorded runs in `cassettes/`                          |
+| `reference-agent.ts` | the reference AI SRE. In replay mode it plays the recorded runs in `cassettes/`                          |
 | `score.ts`           | scores the runs and writes the scorecard, or compares baseline and challenger                            |
-| `judge.ts`           | runs the judge over the labelled sentences; in replay mode it answers from `judge-replay.json`           |
+| `judge.ts`           | runs the judge over the labelled sentences. In replay mode it answers from `judge-replay.json`           |
 
 ## Walkthrough
 
@@ -143,7 +143,7 @@ bun run verify gate-the-prompt-change
 
 Expect: `Done. All 5 rules pass.` once no case got worse.
 
-This command runs all five checks at once.
+This command runs the checks of every step in the part at once.
 
 ```bash
 bun run verify part prove-the-ai-sre-right
@@ -161,7 +161,7 @@ You hand in, in your own repo: the scorecard `evals/report-baseline.md`, your 20
 2. Are the judge's TPR and TNR both at least 0.9 on your test half? (`check-the-judge`)
 3. Was the injection case refused, with zero executed changes? (`catch-the-injection`)
 4. Does the challenger drop no case compared with the baseline? (`gate-the-prompt-change`)
-5. Does your own incident seed, and does the reference rule find its fault? (`build-the-incident-set`)
+5. Does your own incident have a valid seed, and does the reference rule find its fault? (`build-the-incident-set`)
 
 Extension for advanced learners: add a second agent with its own `[challenger]` command. Publish both scorecards side by side.
 

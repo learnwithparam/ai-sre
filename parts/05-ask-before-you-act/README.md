@@ -61,8 +61,8 @@ stateDiagram-v2
 | `propose-one-change`        | 15      | a propose_remediation call from your agent                            | one pending proposal for a stored finding, inside the action list                    |
 | `refuse-without-approval`   | 10      | an attempt to run the change before approval                          | a remediation_refused row and the same booking-web image as before                   |
 | `approve-with-blast-radius` | 15      | your approval after reading evidence and blast radius                 | a remediation_approved row naming the approver, after the pending row                |
-| `roll-back-the-release`     | 15      | the approved rollback, run and verified                               | executed then verification_passed rows; the footer reads Release `v1`                |
-| `edit-the-wrong-fix`        | 20      | for timetable-hang: reject the rollback, edit to a restart, approve   | event order pending, rejected, pending, approved, executed; timetable-loader healthy |
+| `roll-back-the-release`     | 15      | the approved rollback, run and verified                               | executed then verification_passed rows. The footer reads Release `v1`                |
+| `edit-the-wrong-fix`        | 20      | for timetable-hang: reject the rollback, edit to a restart, approve   | event order pending, rejected, pending, approved, executed. Timetable-loader healthy |
 | `add-the-config-rollback`   | 25      | rollback_config in the action list, with blast radius text and a test | policy test passes, an unknown file is refused, fare-file-push resolves through it   |
 
 Every check reads the rows that harbour-control wrote, never what a model said. Your files only hold the ids.
@@ -182,7 +182,7 @@ The problem: automation acted at once, and made the outage bigger. Your project 
 
 Hand in these files from your repo:
 
-- the six step folders' `problem/` files: `change.json`, `run.json`, `approval.md`, `decision.md`, `incident.md`;
+- the six step folders' `problem/` files: `change.json`, `run.json`, `approval.md`, `decision.md`, `incident.md`.
 - your `policy.py` with `rollback_config`, and `test_rollback_config.py`.
 
 The rubric. Each line is yes or no:
