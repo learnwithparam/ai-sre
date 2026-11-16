@@ -2,9 +2,9 @@
 
 ## The problem
 
-Your AI SRE found the cause of bad-release. Now it wants to fix it. If it can change production at once, one wrong guess becomes a second outage. So the AI SRE can only propose.
+Your AI SRE found the cause of bad-release. If it can change production at once, one wrong guess becomes a second outage. So it can only propose.
 
-A proposal waits for a person. In this incident, booking-web logged: connection pool exhausted: 2 of 2 connections in use.
+A proposal waits for a person. For example, a rollback of booking-web stays pending until someone approves it. Here, booking-web logged: connection pool exhausted: 2 of 2 connections in use.
 
 ## Watch it done
 

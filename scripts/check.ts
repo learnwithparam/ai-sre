@@ -37,7 +37,8 @@ const hasImage = (text: string) => [...text.matchAll(IMAGE)].length > 0;
 function listFiles(folder: string, found: string[] = []): string[] {
   for (const entry of readdirSync(folder)) {
     // Fixtures are pages that fail on purpose, so the shape tests can prove the checks bite.
-    if (entry === "node_modules" || entry === ".git" || entry === "fixtures") continue;
+    if (entry === "node_modules" || entry === ".venv" || entry === ".git" || entry === "fixtures")
+      continue;
     const path = join(folder, entry);
     if (statSync(path).isDirectory()) listFiles(path, found);
     else found.push(path);
