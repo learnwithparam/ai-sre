@@ -129,6 +129,22 @@ bun run verify catch-the-injection
 
 Expect: `Done. All 5 rules pass.` once no run left a change behind.
 
+Then count your agent's own calls in a sample log.
+
+```bash
+bun run verify observe-the-agents-calls
+```
+
+Expect: `Done. All 5 rules pass.` once the counts match the log and you wrote one change.
+
+Then fix an OTel export so the AI SRE can read it.
+
+```bash
+bun run verify fix-an-otel-export
+```
+
+Expect: `Done. All 7 rules pass.` once the export has a service name, a version and no email.
+
 Last, change your agent, run the challenger, and compare.
 
 ```bash
@@ -149,7 +165,7 @@ This command runs the checks of every step in the part at once.
 bun run verify part prove-the-ai-sre-right
 ```
 
-Expect: `Part prove-the-ai-sre-right is done: 5/5 steps pass.`
+Expect: `Part prove-the-ai-sre-right is done: 7/7 steps pass.`
 
 ## The assignment
 

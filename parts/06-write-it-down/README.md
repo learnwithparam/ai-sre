@@ -72,7 +72,15 @@ bun parts/06-write-it-down/audit-log.ts --recorded inc-b1182f037ed0
 
 Expect: `Incident inc-b1182f037ed0: 8 audit rows (times are UTC)`, then `Failed bookings: 131 (from the traces)` and `Bookings confirmed: 513 (from the bookings table)`.
 
-First, write the timeline from those rows.
+First, name three people for the incident and write a state note and timed updates.
+
+```bash
+bun run verify run-the-incident-command
+```
+
+Expect: `Done. All 8 rules pass.` once three people hold the three roles.
+
+Next, write the timeline from those rows.
 
 ```bash
 bun run verify draft-the-timeline
@@ -80,7 +88,7 @@ bun run verify draft-the-timeline
 
 Expect: `Done. All 7 rules pass.` once every line matches a row.
 
-Next, write the rest of the postmortem.
+Then write the rest of the postmortem.
 
 ```bash
 bun run verify write-the-postmortem
@@ -102,7 +110,7 @@ This command runs the checks of every step in the part at once.
 bun run verify part write-it-down
 ```
 
-Expect: `Part write-it-down is done: 3/3 steps pass.`
+Expect: `Part write-it-down is done: 4/4 steps pass.`
 
 ## Watch and read
 

@@ -66,13 +66,21 @@ bun assignment/check.ts
 
 Expect: `All Done-when lines pass. Wrote assignment/result.json.` once `assignment/genai.ts` is right.
 
+Then review one real incident from a service you run.
+
+```bash
+bun run verify do-it-on-your-own-service
+```
+
+Expect: `Done. All 7 rules pass.` once the review names your service and has two kinds of evidence.
+
 Run the whole part.
 
 ```bash
 bun run verify part trace-model-calls-with-clickstack
 ```
 
-Expect: `Part trace-model-calls-with-clickstack is done: 1/1 steps pass.`
+Expect: `Part trace-model-calls-with-clickstack is done: 2/2 steps pass.`
 
 ## Options
 

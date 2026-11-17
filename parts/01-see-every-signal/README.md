@@ -79,7 +79,7 @@ bun run verify add-the-checkin-span
 
 Expect: `Done. All 5 rules pass.` once the span is inside the check-in request.
 
-Last, keep passenger emails out of the telemetry.
+Next, keep passenger emails out of the telemetry.
 
 ```bash
 bun run verify hide-the-email
@@ -87,13 +87,21 @@ bun run verify hide-the-email
 
 Expect: `Done. All 4 rules pass.` once no email leaves booking-web.
 
+Then draw the map of which service calls which.
+
+```bash
+bun run verify map-the-topology
+```
+
+Expect: `Done. All 4 rules pass.` once every call is an edge and the entry service is named.
+
 This command runs the checks of every step in the part at once.
 
 ```bash
 bun run verify part see-every-signal
 ```
 
-Expect: `Part see-every-signal is done: 4/4 steps pass.`
+Expect: `Part see-every-signal is done: 5/5 steps pass.`
 
 ## Watch and read
 

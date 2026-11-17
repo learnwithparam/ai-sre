@@ -85,6 +85,14 @@ bun run world break bad-release
 
 Expect: `Planted bad-release. Harbour Control opens an incident when its detector sees it (about a minute).`
 
+First, search the runbooks and past incidents for the symptom.
+
+```bash
+bun run verify search-the-runbooks
+```
+
+Expect: `Done. All 4 rules pass.` once your answers file names the runbook and the past incident.
+
 Find the incident id and the failing log lines.
 
 ```bash
@@ -151,7 +159,7 @@ This command checks the whole part.
 bun run verify part say-what-broke
 ```
 
-Expect: `Part say-what-broke is done: 3/3 steps pass.`
+Expect: `Part say-what-broke is done: 4/4 steps pass.`
 
 ## Watch and read
 
